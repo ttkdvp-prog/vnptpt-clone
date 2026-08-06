@@ -1,0 +1,372 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// An Hung Thinh — columns match Hono API (id_cha / id_phong_ban / ho_va_ten / tai_khoan)
+model var_phong_ban {
+  id            Int             @id @default(autoincrement())
+  ma_phong_ban  String
+  ten_phong_ban String
+  id_cha        Int?
+  trang_thai    String          @default("active")
+  mo_ta         String?
+  thu_tu        Int             @default(0)
+  nguoi_tao     Int?
+  tg_tao        DateTime        @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat   DateTime        @default(now()) @db.Timestamptz(6)
+  parent        var_phong_ban?  @relation("PhongBanTree", fields: [id_cha], references: [id])
+  children      var_phong_ban[] @relation("PhongBanTree")
+  chuc_vu       var_chuc_vu[]
+  nhan_vien     var_nhan_vien[]
+  hop_dong      ns_hop_dong[]
+
+  @@index([id_cha])
+}
+
+model var_chuc_vu {
+  id           Int             @id @default(autoincrement())
+  id_phong_ban Int?
+  ma_chuc_vu   String
+  ten_chuc_vu  String
+  cap_bac      Int             @default(1)
+  mo_ta        String?
+  thu_tu       Int             @default(0)
+  trang_thai   String          @default("active")
+  nguoi_tao    Int?
+  tg_tao       DateTime        @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat  DateTime        @default(now()) @db.Timestamptz(6)
+  phong_ban    var_phong_ban?  @relation(fields: [id_phong_ban], references: [id], onDelete: SetNull)
+  nhan_vien    var_nhan_vien[]
+  phan_quyen   var_phan_quyen[]
+  hop_dong     ns_hop_dong[]
+
+  @@index([id_phong_ban])
+  @@index([trang_thai])
+}
+
+model var_nhan_vien {
+  id                   Int       @id @default(autoincrement())
+  ho_va_ten            String
+  hinh_anh             String?
+  email                String?   @default("")
+  email_ca_nhan        String?
+  so_dien_thoai        String?   @default("")
+  gioi_tinh            String?   @default("Nam")
+  ngay_sinh            DateTime? @db.Date
+  so_cccd              String?
+  ngay_cap_cccd        DateTime? @db.Date
+  noi_cap_cccd         String?
+  dia_chi_thuong_tru   String?
+  dia_chi_hien_tai     String?
+  que_quan             String?
+  dan_toc              String?
+  ton_giao             String?
+  tinh_trang_hon_nhan  String?
+  quoc_tich            String?
+  ngay_vao_lam         DateTime? @db.Date
+  ngay_chinh_thuc      DateTime? @db.Date
+  ngay_nghi_viec       DateTime? @db.Date
+  ly_do_nghi           String?
+  so_tai_khoan         String?
+  ten_chu_tai_khoan    String?
+  ngan_hang            String?
+  chi_nhanh            String?
+  nguoi_lien_he_khan   String?
+  sdt_khan             String?
+  moi_quan_he          String?
+  so_so_bhxh           String?
+  so_bhyt              String?
+  ma_so_thue_ca_nhan   String?
+  trinh_do             String?
+  chuyen_nganh         String?
+  truong               String?
+  trang_thai           String    @default("ACTIVE")
+  id_chuc_vu           Int?
+  id_phong_ban         Int?
+  cap_bac              Int?
+  tai_khoan            String    @unique
+  mat_khau             String
+  must_change_password Boolean   @default(false)
+  nguoi_tao            Int?
+  tg_tao               DateTime  @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat          DateTime  @default(now()) @db.Timestamptz(6)
+  chuc_vu              var_chuc_vu?  @relation(fields: [id_chuc_vu], references: [id])
+  phong_ban            var_phong_ban? @relation(fields: [id_phong_ban], references: [id])
+  phieu_hanh_chinh     cong_luong_phieu_hanh_chinh[]
+  hop_dong             ns_hop_dong[]
+  bulk_audit           sys_bulk_audit[]
+
+  @@index([id_phong_ban])
+  @@index([id_chuc_vu])
+  @@index([tai_khoan])
+  @@index([trang_thai])
+  @@index([ngay_vao_lam])
+}
+
+/// Audit hành động hàng loạt. Ghi SAU khi xử lý dữ liệu và NGOÀI transaction
+/// nghiệp vụ: lỗi ghi audit không được phép rollback dữ liệu (writeBulkAudit
+/// không bao giờ throw — xem server/repositories/bulk-audit.ts).
+model sys_bulk_audit {
+  id            BigInt   @id @default(autoincrement())
+  module_key    String
+  action        String
+  mode          String
+  actor_id      Int?
+  target_count  Int      @default(0)
+  success_count Int      @default(0)
+  fail_count    Int      @default(0)
+  target_ids    Int[]    @default([])
+  failed_ids    Int[]    @default([])
+  payload       Json?
+  reason        String?
+  error_sample  String?
+  tg_tao        DateTime @default(now()) @db.Timestamptz(6)
+
+  // SetNull, không Restrict: một nhân viên từng chạy bulk vẫn phải xoá được —
+  // bảng audit không được biến thành thứ chặn xoá.
+  actor var_nhan_vien? @relation(fields: [actor_id], references: [id], onDelete: SetNull)
+
+  @@index([module_key, tg_tao])
+  @@index([actor_id, tg_tao])
+  @@index([tg_tao])
+}
+
+model var_cong_ty {
+  id                     Int      @id @default(1)
+  ten_ung_dung           String   @default("")
+  mo_ta_ung_dung         String?
+  logo                   String?
+  ten_cong_ty            String   @default("")
+  ma_so_thue             String   @default("")
+  dia_chi                String?
+  so_dien_thoai          String?
+  email                  String?
+  website                String?
+  nguoi_dai_dien         String?
+  chuc_vu_nguoi_dai_dien String?
+  dia_diem_ky            String?
+  tg_tao                 DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat            DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model var_phan_quyen {
+  id         Int       @id @default(autoincrement())
+  module_key String
+  chuc_vu_id Int
+  quyen      String    @default("")
+  tg_tao     DateTime  @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat DateTime @default(now()) @db.Timestamptz(6)
+  chuc_vu    var_chuc_vu @relation(fields: [chuc_vu_id], references: [id], onDelete: Cascade)
+
+  @@unique([chuc_vu_id, module_key])
+  @@index([chuc_vu_id])
+  @@index([module_key])
+}
+
+/// Kinh doanh — nhóm khách hàng (thiết lập)
+model kh_thiet_lap_nhom_khach_hang {
+  id          Int      @id @default(autoincrement())
+  ten_nhom    String   @unique
+  mo_ta       String?
+  nguoi_tao   Int?
+  tg_tao      DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat DateTime @default(now()) @db.Timestamptz(6)
+  khach_hang  kh_danh_sach_khach_hang[]
+}
+
+/// Kinh doanh — trạng thái khách hàng (thiết lập)
+model kh_thiet_lap_trang_thai {
+  id             Int      @id @default(autoincrement())
+  ten_trang_thai String   @unique
+  mo_ta          String?
+  nguoi_tao      Int?
+  tg_tao         DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat    DateTime @default(now()) @db.Timestamptz(6)
+  khach_hang     kh_danh_sach_khach_hang[]
+}
+
+/// Kinh doanh — danh sách khách hàng
+model kh_danh_sach_khach_hang {
+  id             Int      @id @default(autoincrement())
+  ma_khach_hang  String   @unique
+  ten_khach_hang String
+  so_dien_thoai  String?
+  dia_chi        String?
+  ghi_chu        String?
+  id_nhom        Int
+  id_trang_thai  Int
+  nguoi_tao      Int?
+  tg_tao         DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat    DateTime @default(now()) @db.Timestamptz(6)
+
+  nhom       kh_thiet_lap_nhom_khach_hang @relation(fields: [id_nhom], references: [id])
+  trang_thai kh_thiet_lap_trang_thai      @relation(fields: [id_trang_thai], references: [id])
+  nguoi_lien_he kh_nguoi_lien_he[]
+  market_in     sx_market_in[]
+
+  @@index([id_nhom])
+  @@index([id_trang_thai])
+}
+
+/// Kinh doanh — người liên hệ (bảng con của khách hàng)
+model kh_nguoi_lien_he {
+  id            Int      @id @default(autoincrement())
+  id_khach_hang Int
+  ho_ten        String
+  ngay_sinh     String?
+  chuc_vu       String?
+  so_dien_thoai String?
+  email         String?
+  dia_chi       String?
+  ghi_chu       String?
+  nguoi_tao     Int?
+  tg_tao        DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat   DateTime @default(now()) @db.Timestamptz(6)
+
+  khach_hang kh_danh_sach_khach_hang @relation(fields: [id_khach_hang], references: [id])
+
+  @@index([id_khach_hang])
+}
+
+/// Hành chính — loại tài liệu (thiết lập tài liệu)
+model tai_lieu_thiet_lap_loai_tai_lieu {
+  id                Int      @id @default(autoincrement())
+  thu_tu            Int      @default(0)
+  ten_loai_tai_lieu String   @unique
+  mo_ta             String?
+  nguoi_tao         Int?     @map("id_nguoi_tao")
+  tg_tao            DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat       DateTime @default(now()) @db.Timestamptz(6)
+  danh_sach         tai_lieu_danh_sach_tai_lieu[]
+}
+
+/// Hành chính — phiếu hành chính (`ma_phieu` = hardcoded type code)
+model cong_luong_phieu_hanh_chinh {
+  id            Int       @id @default(autoincrement())
+  ma_phieu      String
+  id_nhan_vien  Int
+  tu_ngay       DateTime  @db.Date
+  buoi_bat_dau  String
+  den_ngay      DateTime  @db.Date
+  buoi_ket_thuc String
+  gio_bat_dau   String?
+  gio_ket_thuc  String?
+  ly_do         String?
+  hinh_anh      String[]  @default([])
+  trang_thai    String    @default("cho_ql_duyet")
+  id_ql_duyet   Int?
+  tg_ql_duyet   DateTime? @db.Timestamptz(6)
+  ghi_chu_ql    String?
+  id_hcns_duyet Int?
+  tg_hcns_duyet DateTime? @db.Timestamptz(6)
+  ghi_chu_hcns  String?
+  ly_do_tu_choi String?
+  nguoi_tao     Int?      @map("id_nguoi_tao")
+  tg_tao        DateTime  @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat   DateTime  @default(now()) @db.Timestamptz(6)
+
+  nhan_vien  var_nhan_vien @relation(fields: [id_nhan_vien], references: [id])
+
+  @@index([ma_phieu])
+  @@index([id_nhan_vien])
+  @@index([trang_thai])
+  @@index([tu_ngay])
+}
+
+/// Hành chính — danh sách tài liệu
+model tai_lieu_danh_sach_tai_lieu {
+  id               Int      @id @default(autoincrement())
+  id_loai_tai_lieu Int
+  ten_tai_lieu     String
+  mo_ta            String?
+  link_tai_lieu    String?
+  ghi_chu          String?
+  trang_thai       String   @default("du_thao")
+  id_chuc_vu       Int[]    @default([])
+  id_nhan_vien     Int[]    @default([])
+  nguoi_tao        Int?     @map("id_nguoi_tao")
+  tg_tao           DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat      DateTime @default(now()) @db.Timestamptz(6)
+
+  loai tai_lieu_thiet_lap_loai_tai_lieu @relation(fields: [id_loai_tai_lieu], references: [id])
+
+  @@index([id_loai_tai_lieu])
+  @@index([trang_thai])
+}
+
+/// Nhân sự — hợp đồng (thử việc / chính thức)
+model ns_hop_dong {
+  id                  Int       @id @default(autoincrement())
+  loai_hop_dong       String
+  ma_hop_dong         String    @unique
+  ngay_ky             DateTime  @db.Date
+  ngay_hieu_luc       DateTime  @db.Date
+  ngay_ket_thuc       DateTime? @db.Date
+  id_nhan_vien        Int
+  id_chuc_vu          Int
+  id_phong_ban        Int
+  muc_luong           String
+  hinh_thuc_tra_luong String
+  che_do_khac         String?
+  noi_lam_viec        String?
+  thoi_gian_lam_viec  String?
+  luu_y_khac          String?
+  ghi_chu             String?
+  trang_thai          String    @default("chua_xong")
+  nguoi_tao           Int?      @map("id_nguoi_tao")
+  tg_tao              DateTime  @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat         DateTime  @default(now()) @db.Timestamptz(6)
+
+  nhan_vien var_nhan_vien @relation(fields: [id_nhan_vien], references: [id])
+  chuc_vu   var_chuc_vu   @relation(fields: [id_chuc_vu], references: [id])
+  phong_ban var_phong_ban @relation(fields: [id_phong_ban], references: [id])
+
+  @@index([id_nhan_vien])
+  @@index([id_phong_ban])
+  @@index([loai_hop_dong])
+  @@index([trang_thai])
+}
+
+/// Hành chính — thông báo nội bộ
+model hc_thong_bao {
+  id          Int      @id @default(autoincrement())
+  tg_dang     DateTime @default(now()) @db.Timestamptz(6)
+  tieu_de     String
+  noi_dung    String
+  id_chuc_vu  Int[]    @default([])
+  nguoi_tao   Int?     @map("id_nguoi_tao")
+  tg_tao      DateTime @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([tg_dang])
+  @@index([nguoi_tao])
+}
+
+/// Sản xuất — danh sách market in
+model sx_market_in {
+  id             Int       @id @default(autoincrement())
+  thu_tu         Int       @default(0)
+  id_khach_hang  Int
+  ma_san_pham    String
+  ma_market      String    @unique
+  mo_ta          String?
+  link_file      String?
+  id_nguoi_ve    Int?
+  trang_thai     String    @default("cho_duyet")
+  ngay_hieu_luc  DateTime? @db.Date
+  id_nguoi_duyet Int?
+  tg_duyet       DateTime? @db.Timestamptz(6)
+  nguoi_tao      Int?
+  tg_tao         DateTime  @default(now()) @db.Timestamptz(6)
+  tg_cap_nhat    DateTime  @default(now()) @db.Timestamptz(6)
+
+  khach_hang kh_danh_sach_khach_hang @relation(fields: [id_khach_hang], references: [id])
+
+  @@index([id_khach_hang])
+  @@index([trang_thai])
+}

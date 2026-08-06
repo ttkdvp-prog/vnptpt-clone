@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+.vite/
+.next/
+.next-review/
+out/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local self-hosted uploads (dev)
+.data/
+.env.upload-key.local
+
+# Test / coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE (local only)
+.idea/
+*.swp
+*.swo
+
+# Build dirs song song (NEXT_DIST_DIR)
+.next-*/

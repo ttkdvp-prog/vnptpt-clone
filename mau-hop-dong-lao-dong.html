@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Hợp đồng lao động - {{ma_hop_dong}}</title>
+<style>
+  @page { size: A4; margin: 2cm 2cm 2cm 2cm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13.5pt;
+    line-height: 1.5;
+    color: #111;
+    max-width: 21cm;
+    margin: 0 auto;
+    padding: 2cm;
+    background: #fff;
+  }
+  .quochieu { text-align: center; margin-bottom: 4px; }
+  .quochieu .dong1 { font-weight: bold; text-transform: uppercase; font-size: 13.5pt; }
+  .quochieu .dong2 { font-weight: bold; margin-top: 2px; }
+  .quochieu .dong2::after {
+    content: ""; display: block; width: 140px; height: 0; border-top: 1px solid #111;
+    margin: 4px auto 0;
+  }
+  .so-hd { text-align: right; font-style: italic; margin: 16px 0 6px; font-size: 12.5pt; }
+  .ten-hd {
+    text-align: center; font-weight: bold; text-transform: uppercase;
+    font-size: 17pt; margin: 18px 0 4px;
+  }
+  .ten-hd .loai {
+    display: block; font-size: 13.5pt; font-weight: normal; font-style: italic; margin-top: 4px;
+  }
+  .can-cu { font-style: italic; margin: 4px 0; }
+  .ben {
+    margin-top: 18px;
+  }
+  .ben-tieu-de {
+    font-weight: bold; text-transform: uppercase;
+  }
+  .field-row { margin: 3px 0; }
+  .field-row .label { display: inline-block; min-width: 0; }
+  .dieu { margin-top: 20px; }
+  .dieu-tieu-de { font-weight: bold; text-transform: uppercase; margin-bottom: 6px; }
+  .khoan { margin: 6px 0 6px 0; }
+  .khoan-list { margin: 0; padding-left: 20px; }
+  .khoan-list li { margin-bottom: 4px; }
+  table.thong-tin { width: 100%; border-collapse: collapse; margin: 6px 0; }
+  table.thong-tin td { padding: 2px 4px; vertical-align: top; }
+  .placeholder { background: #fff3cd; padding: 0 2px; }
+  .chu-ky-wrap {
+    display: flex; justify-content: space-between; margin-top: 40px; text-align: center;
+  }
+  .chu-ky-wrap .cot { width: 45%; }
+  .chu-ky-wrap .chuc-danh { font-weight: bold; text-transform: uppercase; margin-bottom: 70px; }
+  .ghi-chu-cuoi { font-size: 11.5pt; font-style: italic; margin-top: 30px; border-top: 1px dashed #999; padding-top: 8px; }
+  @media print {
+    body { padding: 0; }
+    .no-print { display: none; }
+  }
+  .no-print {
+    background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 24px; font-family: system-ui, sans-serif; font-size: 13px; color: #3730a3;
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <strong>Ghi chú khi tích hợp:</strong> Các phần <code>{{ten_bien}}</code> là placeholder — dùng docxtemplater/hoặc hàm replace ở backend để điền dữ liệu thật từ bảng <code>ns_hop_dong</code> (join thêm <code>var_nhan_vien</code>, <code>var_chuc_vu</code>, <code>var_phong_ban</code>, và bảng cấu hình công ty). Xoá khối này trước khi xuất file cho nhân viên.
+</div>
+
+<!-- QUỐC HIỆU TIÊU NGỮ -->
+<div class="quochieu">
+  <div class="dong1">Cộng hòa xã hội chủ nghĩa Việt Nam</div>
+  <div class="dong2">Độc lập – Tự do – Hạnh phúc</div>
+</div>
+
+<div class="so-hd">Số: <strong>{{ma_hop_dong}}</strong></div>
+
+<div class="ten-hd">
+  Hợp đồng lao động
+  <span class="loai">({{loai_hop_dong_ten}})</span>
+</div>
+
+<p class="can-cu">
+  Căn cứ Bộ luật Lao động số 45/2019/QH14 ngày 20/11/2019;<br/>
+  Căn cứ Nghị định số 145/2020/NĐ-CP ngày 14/12/2020 của Chính phủ quy định chi tiết và hướng dẫn thi hành một số điều của Bộ luật Lao động;<br/>
+  Căn cứ nhu cầu và khả năng thực tế của hai bên,
+</p>
+
+<p>Hôm nay, ngày <strong>{{ngay_ky_ngay}}</strong> tháng <strong>{{ngay_ky_thang}}</strong> năm <strong>{{ngay_ky_nam}}</strong>, tại <span class="placeholder">{{dia_diem_ky}}</span>, chúng tôi gồm:</p>
+
+<!-- BÊN A -->
+<div class="ben">
+  <div class="ben-tieu-de">Bên A (Người sử dụng lao động):</div>
+  <table class="thong-tin">
+    <tr><td width="220">Tên công ty</td><td>: <span class="placeholder">{{ten_cong_ty}}</span></td></tr>
+    <tr><td>Địa chỉ trụ sở</td><td>: <span class="placeholder">{{dia_chi_cong_ty}}</span></td></tr>
+    <tr><td>Mã số thuế</td><td>: <span class="placeholder">{{mst_cong_ty}}</span></td></tr>
+    <tr><td>Người đại diện</td><td>: <span class="placeholder">{{nguoi_dai_dien_cong_ty}}</span></td></tr>
+    <tr><td>Chức vụ</td><td>: <span class="placeholder">{{chuc_vu_nguoi_dai_dien}}</span></td></tr>
+    <tr><td>Điện thoại</td><td>: <span class="placeholder">{{dien_thoai_cong_ty}}</span></td></tr>
+  </table>
+</div>
+
+<!-- BÊN B -->
+<div class="ben">
+  <div class="ben-tieu-de">Bên B (Người lao động):</div>
+  <table class="thong-tin">
+    <tr><td width="220">Họ và tên</td><td>: <span class="placeholder">{{ho_ten_nhan_vien}}</span></td></tr>
+    <tr><td>Ngày sinh</td><td>: <span class="placeholder">{{ngay_sinh_nhan_vien}}</span></td></tr>
+    <tr><td>Giới tính</td><td>: <span class="placeholder">{{gioi_tinh_nhan_vien}}</span></td></tr>
+    <tr><td>Số CCCD/CMND</td><td>: <span class="placeholder">{{cccd_nhan_vien}}</span> &nbsp; Ngày cấp: <span class="placeholder">{{ngay_cap_cccd}}</span> &nbsp; Nơi cấp: <span class="placeholder">{{noi_cap_cccd}}</span></td></tr>
+    <tr><td>Địa chỉ thường trú</td><td>: <span class="placeholder">{{dia_chi_thuong_tru}}</span></td></tr>
+    <tr><td>Chỗ ở hiện tại</td><td>: <span class="placeholder">{{dia_chi_hien_tai}}</span></td></tr>
+    <tr><td>Điện thoại</td><td>: <span class="placeholder">{{so_dien_thoai_nhan_vien}}</span></td></tr>
+    <tr><td>Số sổ BHXH (nếu có)</td><td>: <span class="placeholder">{{so_so_bhxh}}</span></td></tr>
+  </table>
+</div>
+
+<p>Hai bên thỏa thuận ký kết hợp đồng lao động và cam kết thực hiện đúng những điều khoản sau đây:</p>
+
+<!-- ĐIỀU 1 -->
+<div class="dieu">
+  <div class="dieu-tieu-de">Điều 1: Thời hạn và công việc hợp đồng</div>
+  <div class="khoan">1. Loại hợp đồng lao động: <strong>{{loai_hop_dong_ten}}</strong></div>
+  <div class="khoan">2. Thời hạn hợp đồng: từ ngày <strong>{{ngay_hieu_luc}}</strong> đến ngày <strong>{{ngay_ket_thuc_hoac_khong_xac_dinh}}</strong></div>
+  <div class="khoan">3. Chức danh/vị trí công việc: <strong>{{ten_chuc_vu}}</strong></div>
+  <div class="khoan">4. Bộ phận công tác: <strong>{{ten_phong_ban}}</strong></div>
+  <div class="khoan">5. Địa điểm làm việc: <strong>{{noi_lam_viec}}</strong></div>
+</div>
+
+<!-- ĐIỀU 2 -->
+<div class="dieu">
+  <div class="dieu-tieu-de">Điều 2: Chế độ làm việc</div>
+  <div class="khoan">1. Thời giờ làm việc: <strong>{{thoi_gian_lam_viec}}</strong></div>
+  <div class="khoan">2. Được cấp phát những dụng cụ, trang thiết bị cần thiết theo yêu cầu của công việc.</div>
+  <div class="khoan">3. Điều kiện an toàn, vệ sinh lao động tại nơi làm việc theo quy định hiện hành của Nhà nước.</div>
+</div>
+
+<!-- ĐIỀU 3 -->
+<div class="dieu">
+  <div class="dieu-tieu-de">Điều 3: Nghĩa vụ và quyền lợi của người lao động</div>
+  <div class="khoan"><em>Quyền lợi:</em></div>
+  <ul class="khoan-list">
+    <li>Mức lương: <strong>{{muc_luong}}</strong></li>
+    <li>Hình thức trả lương: <strong>{{hinh_thuc_tra_luong_ten}}</strong></li>
+    <li>Chế độ khác (phụ cấp, thưởng, bảo hiểm...): <strong>{{che_do_khac}}</strong></li>
+    <li>Được đảm bảo các chế độ bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định pháp luật hiện hành (áp dụng theo loại hợp đồng).</li>
+    <li>Được nghỉ hàng năm, nghỉ lễ, tết, nghỉ việc riêng theo quy định của Bộ luật Lao động và nội quy công ty.</li>
+  </ul>
+  <div class="khoan"><em>Nghĩa vụ:</em></div>
+  <ul class="khoan-list">
+    <li>Hoàn thành công việc đã cam kết trong hợp đồng lao động.</li>
+    <li>Chấp hành nội quy lao động, kỷ luật lao động, an toàn vệ sinh lao động và sự điều hành hợp pháp của người sử dụng lao động.</li>
+    <li>Bồi thường vi phạm và vật chất theo quy định của công ty và pháp luật hiện hành (nếu có).</li>
+  </ul>
+</div>
+
+<!-- ĐIỀU 4 -->
+<div class="dieu">
+  <div class="dieu-tieu-de">Điều 4: Nghĩa vụ và quyền hạn của người sử dụng lao động</div>
+  <div class="khoan"><em>Nghĩa vụ:</em></div>
+  <ul class="khoan-list">
+    <li>Bảo đảm việc làm và thực hiện đầy đủ các điều khoản đã ký trong hợp đồng lao động.</li>
+    <li>Thanh toán đầy đủ, đúng thời hạn các chế độ và quyền lợi cho người lao động theo hợp đồng lao động, thỏa ước lao động tập thể (nếu có).</li>
+  </ul>
+  <div class="khoan"><em>Quyền hạn:</em></div>
+  <ul class="khoan-list">
+    <li>Điều hành người lao động hoàn thành công việc theo hợp đồng (bố trí, điều chuyển, tạm ngừng việc...).</li>
+    <li>Tạm hoãn, chấm dứt hợp đồng lao động, kỷ luật người lao động theo quy định của pháp luật, thỏa ước lao động tập thể và nội quy lao động của công ty.</li>
+  </ul>
+</div>
+
+<!-- ĐIỀU 5 -->
+<div class="dieu">
+  <div class="dieu-tieu-de">Điều 5: Điều khoản thi hành</div>
+  <div class="khoan">1. Những vấn đề về lao động không ghi trong hợp đồng này thì áp dụng theo quy định của thỏa ước tập thể, nội quy lao động và pháp luật lao động hiện hành.</div>
+  <div class="khoan">2. Lưu ý khác: <span class="placeholder">{{luu_y_khac}}</span></div>
+  <div class="khoan">3. Hợp đồng này được lập thành 02 (hai) bản có giá trị pháp lý như nhau, mỗi bên giữ 01 (một) bản, có hiệu lực kể từ ngày <strong>{{ngay_hieu_luc}}</strong>.</div>
+</div>
+
+<!-- CHỮ KÝ -->
+<div class="chu-ky-wrap">
+  <div class="cot">
+    <div class="chuc-danh">Người lao động</div>
+    <div>(Ký, ghi rõ họ tên)</div>
+  </div>
+  <div class="cot">
+    <div class="chuc-danh">Người sử dụng lao động</div>
+    <div>(Ký tên, đóng dấu)</div>
+  </div>
+</div>
+
+<div class="ghi-chu-cuoi">
+  Mã hợp đồng nội bộ: {{ma_hop_dong}} · Trạng thái: {{trang_thai_ten}} · Ngày tạo: {{tg_tao}}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+---
+description: Core stack rules for An Hung Thinh ERP — React 19, Next.js 16, TypeScript, Tailwind v4
+alwaysApply: true
+---
+
+# Core Stack — An Hung Thinh ERP
+
+You are an expert in TypeScript, React 19, Next.js 16, Tailwind CSS v4, and Vietnamese ERP admin UIs.
+
+## Stack (this project)
+
+- **Language:** TypeScript strict — no `any`; use `unknown` + type guards
+- **UI:** React 19 functional components only (no class components)
+- **Build:** Next.js 16 (`npm run dev`, port 3000)
+- **Routing:** App Router (`app/`)
+- **Styling:** Tailwind CSS v4 (`@import "tailwindcss"` in `app/globals.css`, `@theme` tokens)
+- **Icons:** Lucide React
+- **Motion:** `framer-motion`
+- **Dates:** `dayjs`
+- **Toasts:** Sonner
+- **Charts:** Recharts
+- **Monitoring:** Sentry (`@sentry/react`)
+- **Backend:** PostgreSQL + Prisma + Auth.js + Hono Route Handlers
+- **Testing:** Vitest + Testing Library
+- **Lint/Format:** ESLint 9 + Prettier
+
+## Code Style
+
+- Functional and declarative patterns; avoid classes
+- Prefer iteration and modularization over duplication
+- Descriptive names with auxiliary verbs: `isLoading`, `hasError`, `canDelete`
+- Use `@/*` path aliases — never cross-folder relative imports like `../../lib/...`
+- Use `cn()` from `lib/utils` for conditional Tailwind classes (clsx + tailwind-merge)
+
+## TypeScript
+
+- Strict mode everywhere; explicit return types on exported functions
+- Prefer `interface` for object shapes; use `type` for unions/intersections
+- Avoid enums — use `const` objects + `as const` + derived union types
+- Infer form types from Zod schemas (`z.infer<typeof schema>`)
+
+## React
+
+- Do not import `React` by default (React 19 JSX transform)
+- Keep components focused on rendering; extract logic to custom hooks
+- Vietnamese UI copy via `txt()` from `lib/text`
+
+## Banned
+
+- `any`, class components, CSS-in-JS
+- Redux, MobX, Formik, Yup
+- Adding alternate ORM/auth stacks without explicit approval
+- Default/generic AI aesthetics — follow `06-project-5f.mdc`
+
+## Verification before merge
+
+Run: `npm run lint:ci` · `npm run test` · `npm run build`

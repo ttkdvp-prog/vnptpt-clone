@@ -1,0 +1,52 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev-5172",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "node scripts/dev.mjs"
+      ],
+      "port": 5172,
+      "autoPort": true
+    },
+    {
+      "name": "dev-5599",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "PORT=5599 NEXT_DIST_DIR=.next-review NEXT_PUBLIC_DATA_SOURCE=mock node scripts/dev.mjs"
+      ],
+      "port": 5599
+    },
+    {
+      "name": "dev-sec",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "NEXT_DIST_DIR=.next-sec NEXT_PUBLIC_DATA_SOURCE=mock node scripts/dev.mjs"
+      ],
+      "port": 5610,
+      "autoPort": true
+    },
+    {
+      "name": "dev-5601",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "PORT=5601 NEXT_DIST_DIR=.next-duplicate NEXT_PUBLIC_DATA_SOURCE=mock node scripts/dev.mjs"
+      ],
+      "port": 5601
+    },
+    {
+      "name": "dev-3001",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "PORT=3001 NEXT_DIST_DIR=.next-3001 NEXT_PUBLIC_DATA_SOURCE=api node scripts/dev.mjs"
+      ],
+      "port": 3001
+    }
+  ]
+}
