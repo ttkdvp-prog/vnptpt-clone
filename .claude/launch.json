@@ -2,11 +2,17 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "dev-3000",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3000"],
+      "port": 3000
+    },
+    {
       "name": "dev-5172",
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "node scripts/dev.mjs"
+        "npx next dev -p ${PORT:-3000}"
       ],
       "port": 5172,
       "autoPort": true
@@ -16,7 +22,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "PORT=5599 NEXT_DIST_DIR=.next-review NEXT_PUBLIC_DATA_SOURCE=mock node scripts/dev.mjs"
+        "PORT=5599 NEXT_DIST_DIR=.next-review NEXT_PUBLIC_DATA_SOURCE=mock npx next dev -p ${PORT:-3000}"
       ],
       "port": 5599
     },
@@ -25,7 +31,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "NEXT_DIST_DIR=.next-sec NEXT_PUBLIC_DATA_SOURCE=mock node scripts/dev.mjs"
+        "NEXT_DIST_DIR=.next-sec NEXT_PUBLIC_DATA_SOURCE=mock npx next dev -p ${PORT:-3000}"
       ],
       "port": 5610,
       "autoPort": true
@@ -35,7 +41,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "PORT=5601 NEXT_DIST_DIR=.next-duplicate NEXT_PUBLIC_DATA_SOURCE=mock node scripts/dev.mjs"
+        "PORT=5601 NEXT_DIST_DIR=.next-duplicate NEXT_PUBLIC_DATA_SOURCE=mock npx next dev -p ${PORT:-3000}"
       ],
       "port": 5601
     },
@@ -44,7 +50,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "PORT=3001 NEXT_DIST_DIR=.next-3001 NEXT_PUBLIC_DATA_SOURCE=api node scripts/dev.mjs"
+        "PORT=3001 NEXT_DIST_DIR=.next-3001 NEXT_PUBLIC_DATA_SOURCE=api npx next dev -p ${PORT:-3000}"
       ],
       "port": 3001
     }

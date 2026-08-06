@@ -1,19 +1,12 @@
 import type { Context } from 'hono';
 import type { JwtPayload } from '@/server/auth';
 import type { ModuleAction } from '@/server/permissions/assert-module';
-import { parseQuyenCsv } from '@/lib/permission-db-keys';
-import { findEmployeeChucVuId } from '@/server/repositories/nhan-vien';
-import { findQuyenCsvByChucVuAndModule } from '@/server/repositories/phan-quyen';
 
 export interface ModuleGrantContext {
   session: JwtPayload;
   tokens: string[];
   isSuper: boolean;
   isModuleAdmin: boolean;
-}
-
-function isModuleAdminTokens(tokens: string[]): boolean {
-  return tokens.includes('admin') || tokens.includes('tat_ca') || tokens.includes('all');
 }
 
 /**
@@ -23,24 +16,15 @@ function isModuleAdminTokens(tokens: string[]): boolean {
  */
 export async function resolveModuleGrant(
   c: Context,
-  moduleKey: string,
+  _moduleKey: string,
 ): Promise<ModuleGrantContext | Response> {
   const session = c.get('session') as JwtPayload | undefined;
   if (!session) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  if (session.cap_bac === 1) {
-    return { session, tokens: ['admin'], isSuper: true, isModuleAdmin: true };
-  }
-
-  const chucVuId = await findEmployeeChucVuId(Number(session.employee_id));
-  if (chucVuId == null) {
-    return c.json({ error: 'Forbidden' }, 403);
-  }
-
-  const tokens = parseQuyenCsv(await findQuyenCsvByChucVuAndModule(chucVuId, moduleKey));
-  return { session, tokens, isSuper: false, isModuleAdmin: isModuleAdminTokens(tokens) };
+  // Không còn chức vụ/cấp bậc trên nhân viên ⇒ mọi phiên hợp lệ là admin module.
+  return { session, tokens: ['admin'], isSuper: true, isModuleAdmin: true };
 }
 
 /**

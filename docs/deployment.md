@@ -1,12 +1,14 @@
-# Deployment
+# Deployment (lịch sử — đã chuyển sang Vercel)
 
-Luồng khuyến nghị:
+> **Đã thay thế.** App deploy trên Vercel, không còn Docker/VPS. Xem
+> [`deploy-vercel.md`](./deploy-vercel.md) cho quy trình hiện tại. Nội dung dưới đây
+> giữ lại làm tham chiếu lịch sử.
+
+Luồng cũ:
 
 ```
 GitHub → Docker build → Reverse proxy (Nginx / Caddy) → VPS
 ```
-
-Quick VPS checklist (ngắn): [`deploy-vps.md`](./deploy-vps.md).
 
 ## Stack production
 

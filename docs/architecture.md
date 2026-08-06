@@ -2,6 +2,11 @@
 
 Tài liệu kiến trúc An Hưng Thịnh ERP. README chỉ tóm tắt — đây là nguồn chi tiết.
 
+> **Lưu ý:** data layer đã chuyển từ PostgreSQL/Prisma sang Google Sheets API
+> (`lib/sheets/`) và deploy target sang Vercel — xem [`AGENTS.md`](../AGENTS.md) và
+> [`deploy-vercel.md`](./deploy-vercel.md). Các đoạn nhắc tới Prisma/Postgres/Docker
+> dưới đây là lịch sử, chưa cập nhật hết.
+
 ## Mục tiêu
 
 - ERP nội bộ, UI tiếng Việt, module hóa theo domain.

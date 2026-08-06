@@ -1,5 +1,7 @@
-import { prisma } from '@/server/db';
+import { insertRow, readTable, updateRowById } from '@/lib/sheets/generic-repository';
+import { SHEET_TABS } from '@/lib/sheets/config';
 
+const TAB = SHEET_TABS.var_cong_ty;
 const COMPANY_ID = 1;
 
 export type CompanyRow = {
@@ -19,6 +21,26 @@ export type CompanyRow = {
   tg_tao: Date;
   tg_cap_nhat: Date;
 };
+
+function fromSheetRow(row: Record<string, string>): CompanyRow {
+  return {
+    id: Number(row.id),
+    ten_ung_dung: row.ten_ung_dung ?? '',
+    mo_ta_ung_dung: row.mo_ta_ung_dung || null,
+    logo: row.logo || null,
+    ten_cong_ty: row.ten_cong_ty ?? '',
+    ma_so_thue: row.ma_so_thue ?? '',
+    dia_chi: row.dia_chi || null,
+    so_dien_thoai: row.so_dien_thoai || null,
+    email: row.email || null,
+    website: row.website || null,
+    nguoi_dai_dien: row.nguoi_dai_dien || null,
+    chuc_vu_nguoi_dai_dien: row.chuc_vu_nguoi_dai_dien || null,
+    dia_diem_ky: row.dia_diem_ky || null,
+    tg_tao: row.tg_tao ? new Date(row.tg_tao) : new Date(0),
+    tg_cap_nhat: row.tg_cap_nhat ? new Date(row.tg_cap_nhat) : new Date(0),
+  };
+}
 
 export function mapCompanyRow(row: CompanyRow) {
   return {
@@ -40,7 +62,6 @@ export function mapCompanyRow(row: CompanyRow) {
   };
 }
 
-/** Shell / PWA branding only — no tax/address/contact fields. */
 export function mapCompanyBranding(row: CompanyRow | null): {
   appName: string;
   appDescription: string;
@@ -53,7 +74,6 @@ export function mapCompanyBranding(row: CompanyRow | null): {
   };
 }
 
-/** Empty defaults — no side-effect create on GET. */
 export function emptyCompanyDefaults() {
   const now = new Date().toISOString();
   return {
@@ -76,7 +96,9 @@ export function emptyCompanyDefaults() {
 }
 
 export async function findCompany(): Promise<CompanyRow | null> {
-  return prisma.var_cong_ty.findUnique({ where: { id: COMPANY_ID } });
+  const { rows } = await readTable(TAB);
+  const row = rows.find((r) => Number(r.id) === COMPANY_ID);
+  return row ? fromSheetRow(row) : null;
 }
 
 export interface CompanyUpsertInput {
@@ -95,48 +117,32 @@ export interface CompanyUpsertInput {
 }
 
 export async function upsertCompany(input: CompanyUpsertInput): Promise<CompanyRow> {
-  const now = new Date();
-  return prisma.var_cong_ty.upsert({
-    where: { id: COMPANY_ID },
-    create: {
-      id: COMPANY_ID,
-      ten_ung_dung: input.ten_ung_dung,
-      mo_ta_ung_dung: input.mo_ta_ung_dung ?? null,
-      logo: input.logo ?? null,
-      ten_cong_ty: input.ten_cong_ty,
-      ma_so_thue: input.ma_so_thue,
-      dia_chi: input.dia_chi ?? null,
-      so_dien_thoai: input.so_dien_thoai ?? null,
-      email: input.email ?? null,
-      website: input.website ?? null,
-      nguoi_dai_dien: input.nguoi_dai_dien ?? null,
-      chuc_vu_nguoi_dai_dien: input.chuc_vu_nguoi_dai_dien ?? null,
-      dia_diem_ky: input.dia_diem_ky ?? null,
-      tg_tao: now,
-      tg_cap_nhat: now,
-    },
-    update: {
-      ten_ung_dung: input.ten_ung_dung,
-      ...(input.mo_ta_ung_dung !== undefined
-        ? { mo_ta_ung_dung: input.mo_ta_ung_dung }
-        : {}),
-      ...(input.logo !== undefined ? { logo: input.logo } : {}),
-      ten_cong_ty: input.ten_cong_ty,
-      ma_so_thue: input.ma_so_thue,
-      ...(input.dia_chi !== undefined ? { dia_chi: input.dia_chi } : {}),
-      ...(input.so_dien_thoai !== undefined
-        ? { so_dien_thoai: input.so_dien_thoai }
-        : {}),
-      ...(input.email !== undefined ? { email: input.email } : {}),
-      ...(input.website !== undefined ? { website: input.website } : {}),
-      ...(input.nguoi_dai_dien !== undefined
-        ? { nguoi_dai_dien: input.nguoi_dai_dien }
-        : {}),
-      ...(input.chuc_vu_nguoi_dai_dien !== undefined
-        ? { chuc_vu_nguoi_dai_dien: input.chuc_vu_nguoi_dai_dien }
-        : {}),
-      ...(input.dia_diem_ky !== undefined ? { dia_diem_ky: input.dia_diem_ky } : {}),
-      tg_cap_nhat: now,
-    },
-  });
+  const now = new Date().toISOString();
+  const existing = await findCompany();
+  const values: Record<string, string> = {
+    id: String(COMPANY_ID),
+    ten_ung_dung: input.ten_ung_dung,
+    ten_cong_ty: input.ten_cong_ty,
+    ma_so_thue: input.ma_so_thue,
+    tg_cap_nhat: now,
+  };
+  if (input.mo_ta_ung_dung !== undefined) values.mo_ta_ung_dung = input.mo_ta_ung_dung ?? '';
+  if (input.logo !== undefined) values.logo = input.logo ?? '';
+  if (input.dia_chi !== undefined) values.dia_chi = input.dia_chi ?? '';
+  if (input.so_dien_thoai !== undefined) values.so_dien_thoai = input.so_dien_thoai ?? '';
+  if (input.email !== undefined) values.email = input.email ?? '';
+  if (input.website !== undefined) values.website = input.website ?? '';
+  if (input.nguoi_dai_dien !== undefined) values.nguoi_dai_dien = input.nguoi_dai_dien ?? '';
+  if (input.chuc_vu_nguoi_dai_dien !== undefined)
+    values.chuc_vu_nguoi_dai_dien = input.chuc_vu_nguoi_dai_dien ?? '';
+  if (input.dia_diem_ky !== undefined) values.dia_diem_ky = input.dia_diem_ky ?? '';
+
+  if (existing) {
+    await updateRowById(TAB, COMPANY_ID, values);
+  } else {
+    await insertRow(TAB, { ...values, tg_tao: now });
+  }
+  const row = await findCompany();
+  if (!row) throw new Error('Failed to upsert company row');
+  return row;
 }

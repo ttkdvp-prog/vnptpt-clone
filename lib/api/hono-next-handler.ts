@@ -24,11 +24,6 @@ export async function forwardToHono(req: Request): Promise<Response> {
     const proof = computeInternalProof();
     if (proof) {
       headers.set('x-aht-employee-id', session.user.employee_id);
-      headers.set('x-aht-tai-khoan', session.user.ten_dang_nhap ?? '');
-      headers.set(
-        'x-aht-cap-bac',
-        session.user.cap_bac == null ? '' : String(session.user.cap_bac),
-      );
       headers.set(INTERNAL_PROOF_HEADER, proof);
     }
   }

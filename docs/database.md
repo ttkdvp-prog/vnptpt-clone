@@ -1,7 +1,11 @@
-# Database
+# Database (lịch sử — đã thay bằng Google Sheets)
 
-PostgreSQL + Prisma. Schema nguồn: [`prisma/schema.prisma`](../prisma/schema.prisma).  
-Lịch sử schema: [`prisma/migrations/`](../prisma/migrations/).
+> **Đã thay thế.** App không còn dùng PostgreSQL/Prisma — data layer hiện là Google Sheets API
+> (`lib/sheets/`), xem [`AGENTS.md`](../AGENTS.md) và [`deploy-vercel.md`](./deploy-vercel.md).
+> Nội dung dưới đây giữ lại làm tham chiếu tên bảng/cột lịch sử (mỗi model cũ → 1 sheet tab cùng tên,
+> xem `lib/sheets/config.ts` → `SHEET_TABS`), không còn phản ánh cách lưu trữ thật.
+
+PostgreSQL + Prisma (lịch sử). Schema nguồn cũ: `prisma/schema.prisma` (đã xoá).
 
 ## Models chính (Hệ thống)
 

@@ -8,8 +8,6 @@ const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 export interface JwtPayload {
   employee_id: string;
-  tai_khoan: string;
-  cap_bac: number | null;
 }
 
 function getSecret(): Uint8Array {
@@ -23,8 +21,6 @@ function getSecret(): Uint8Array {
 export async function signSessionToken(payload: JwtPayload): Promise<string> {
   return new SignJWT({
     employee_id: payload.employee_id,
-    tai_khoan: payload.tai_khoan,
-    cap_bac: payload.cap_bac,
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -36,19 +32,8 @@ export async function verifySessionToken(token: string): Promise<JwtPayload | nu
   try {
     const { payload } = await jwtVerify(token, getSecret());
     const employeeId = payload.employee_id;
-    const taiKhoan = payload.tai_khoan;
-    if (typeof employeeId !== 'string' || typeof taiKhoan !== 'string') return null;
-    const capBac =
-      typeof payload.cap_bac === 'number'
-        ? payload.cap_bac
-        : payload.cap_bac == null
-          ? null
-          : Number(payload.cap_bac);
-    return {
-      employee_id: employeeId,
-      tai_khoan: taiKhoan,
-      cap_bac: Number.isFinite(capBac as number) ? (capBac as number) : null,
-    };
+    if (typeof employeeId !== 'string') return null;
+    return { employee_id: employeeId };
   } catch {
     return null;
   }
@@ -78,14 +63,7 @@ export function clearSessionCookie(c: Context): void {
 export async function readSession(c: Context): Promise<JwtPayload | null> {
   const fromHeaderId = c.req.header('x-aht-employee-id')?.trim();
   if (fromHeaderId && verifyInternalProof(c.req.header(INTERNAL_PROOF_HEADER)?.trim())) {
-    const taiKhoan = c.req.header('x-aht-tai-khoan')?.trim() ?? '';
-    const capRaw = c.req.header('x-aht-cap-bac')?.trim();
-    const capBac = capRaw === '' || capRaw == null ? null : Number(capRaw);
-    return {
-      employee_id: fromHeaderId,
-      tai_khoan: taiKhoan,
-      cap_bac: Number.isFinite(capBac as number) ? (capBac as number) : null,
-    };
+    return { employee_id: fromHeaderId };
   }
 
   const fromCookie = getCookie(c, COOKIE_NAME);
@@ -123,8 +101,6 @@ export async function requireAuthOrUploadKey(
   if (configured && provided && provided === configured) {
     c.set('session', {
       employee_id: 'upload-key',
-      tai_khoan: 'upload-key',
-      cap_bac: 1,
     });
     await next();
     return;

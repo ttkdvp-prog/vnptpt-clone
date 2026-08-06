@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   reactStrictMode: true,
   /**
    * Cho phép chạy instance dev thứ hai song song (vd. phiên review/agent khác):
@@ -10,10 +9,12 @@ const nextConfig: NextConfig = {
    */
   distDir: process.env.NEXT_DIST_DIR || undefined,
   /**
-   * Bắt buộc với `output: 'standalone'`: puppeteer nạp Chromium bằng đường dẫn runtime,
-   * bundle nó vào server chunk sẽ làm hỏng trace binary. `docx` để ngoài cho nhẹ bundle.
+   * `@sparticuz/chromium` + `puppeteer-core` nạp binary Chromium bằng đường dẫn runtime
+   * (không phải import tĩnh) — bundle chúng vào server chunk sẽ làm hỏng trace binary.
+   * `docx` để ngoài cho nhẹ bundle. Vercel tự nhận diện các package này qua
+   * `serverExternalPackages`/Next tracing, không cần `output: 'standalone'` như VPS Docker.
    */
-  serverExternalPackages: ['puppeteer', 'docx'],
+  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core', 'docx'],
 };
 
 export default nextConfig;

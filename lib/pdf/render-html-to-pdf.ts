@@ -6,11 +6,14 @@
  * - Kể cả khi chạy, jsPDF.html() cho ra PDF dạng ẢNH raster: chữ mờ khi zoom, không tìm
  *   được chữ, file 2–5MB. Chromium cho ra chữ vector, tiếng Việt đúng dấu, file ~100–300KB.
  *
- * Docker (`node:22-alpine`) cần: `apk add chromium nss freetype harfbuzz ca-certificates
- * ttf-freefont font-noto` + `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`.
- * `font-noto` là bắt buộc — thiếu nó tiếng Việt có dấu render thành ô vuông.
+ * Chạy trên Vercel serverless functions bằng `@sparticuz/chromium` (binary Chromium nén,
+ * tối ưu cho môi trường /tmp read-only + không sandbox) thay vì Puppeteer full Chromium.
+ * Local dev: đặt `PUPPETEER_EXECUTABLE_PATH` trỏ tới Chrome cài sẵn để tránh tải lại binary
+ * mỗi lần; nếu không set, dùng thẳng `@sparticuz/chromium` (chậm hơn nhưng luôn chạy được).
  */
-import type { Browser } from 'puppeteer';
+import type { Browser } from 'puppeteer-core';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { PRINT_MARGIN_MM } from '@/lib/print-document/constants';
 
 const RENDER_TIMEOUT_MS = 30_000;
@@ -41,12 +44,15 @@ function releaseSlot(): void {
 async function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
     browserPromise = (async () => {
-      const puppeteer = await import('puppeteer');
-      return puppeteer.default.launch({
+      const localExecutable = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+      const executablePath = localExecutable || (await chromium.executablePath());
+      return puppeteer.launch({
         headless: true,
-        // container chạy user không phải root nên không có sandbox namespace
-        args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        // Vercel serverless: chạy user không phải root, không có sandbox namespace, /tmp read-write only.
+        args: localExecutable
+          ? ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+          : chromium.args,
+        executablePath,
       });
     })().catch((err) => {
       browserPromise = null;

@@ -9,18 +9,6 @@ function toIso(value: Date | string | null | undefined): string | undefined {
   return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
 }
 
-export function mapPhongBanTrangThaiToApp(raw: string | null | undefined): 'Đang hoạt động' | 'Ngừng hoạt động' {
-  const v = String(raw ?? '').toLowerCase();
-  if (v === 'inactive' || v === 'ngừng hoạt động' || v === 'disabled') {
-    return 'Ngừng hoạt động';
-  }
-  return 'Đang hoạt động';
-}
-
-export function mapPhongBanTrangThaiToDb(app: string): 'active' | 'inactive' {
-  return app === 'Ngừng hoạt động' ? 'inactive' : 'active';
-}
-
 export function mapNhanVienTrangThaiToApp(raw: string | null | undefined): string {
   const v = String(raw ?? '').toUpperCase();
   if (v === 'INACTIVE' || v === 'RESIGNED' || v === 'NGHỈ VIỆC') return 'Nghỉ việc';
@@ -36,261 +24,21 @@ export function mapNhanVienTrangThaiToDb(app: string): string {
   return 'ACTIVE';
 }
 
-export interface DbPhongBan {
-  id: number | string;
-  ma_phong_ban: string;
-  ten_phong_ban: string;
-  id_cha: number | string | null;
-  trang_thai: string;
-  mo_ta?: string | null;
-  thu_tu?: number | null;
-  nguoi_tao?: number | string | null;
-  tg_tao?: Date | string | null;
-  tg_cap_nhat?: Date | string | null;
-  ten_nguoi_tao?: string | null;
-}
-
-export interface AppDepartment {
-  id: string;
-  ma_phong_ban: string;
-  ten_phong_ban: string;
-  mo_ta?: string;
-  cha_id: string | null;
-  cap_do: number;
-  duong_dan: string;
-  trang_thai: 'Đang hoạt động' | 'Ngừng hoạt động';
-  thu_tu: number;
-  tg_tao: string;
-  tg_cap_nhat: string;
-  nguoi_tao?: string | null;
-  ten_nguoi_tao?: string | null;
-}
-
-export function mapDepartmentFromDb(
-  row: DbPhongBan,
-  extras?: { cap_do?: number; duong_dan?: string },
-): AppDepartment {
-  const id = String(row.id);
-  const chaId = row.id_cha == null ? null : String(row.id_cha);
-  const capDo = extras?.cap_do ?? (chaId ? 2 : 1);
-  const duongDan = extras?.duong_dan ?? (chaId ? `/${chaId}/${id}` : `/${id}`);
-  const fallbackTs = nowIso();
-  return {
-    id,
-    ma_phong_ban: row.ma_phong_ban,
-    ten_phong_ban: row.ten_phong_ban,
-    mo_ta: row.mo_ta ?? '',
-    cha_id: chaId,
-    cap_do: capDo,
-    duong_dan: duongDan,
-    trang_thai: mapPhongBanTrangThaiToApp(row.trang_thai),
-    thu_tu: row.thu_tu ?? (Number(id) || 0),
-    tg_tao: toIso(row.tg_tao) ?? fallbackTs,
-    tg_cap_nhat: toIso(row.tg_cap_nhat) ?? fallbackTs,
-    nguoi_tao: row.nguoi_tao == null ? null : String(row.nguoi_tao),
-    ten_nguoi_tao: row.ten_nguoi_tao ?? null,
-  };
-}
-
-export function enrichDepartmentsHierarchy(rows: DbPhongBan[]): AppDepartment[] {
-  const byId = new Map(rows.map((r) => [String(r.id), r]));
-  const capDoCache = new Map<string, number>();
-  const pathCache = new Map<string, string>();
-
-  function levelOf(id: string, visiting = new Set<string>()): number {
-    if (capDoCache.has(id)) return capDoCache.get(id)!;
-    if (visiting.has(id)) return 1;
-    visiting.add(id);
-    const row = byId.get(id);
-    if (!row?.id_cha) {
-      capDoCache.set(id, 1);
-      return 1;
-    }
-    const lvl = levelOf(String(row.id_cha), visiting) + 1;
-    capDoCache.set(id, lvl);
-    return lvl;
-  }
-
-  function pathOf(id: string, visiting = new Set<string>()): string {
-    if (pathCache.has(id)) return pathCache.get(id)!;
-    if (visiting.has(id)) return `/${id}`;
-    visiting.add(id);
-    const row = byId.get(id);
-    if (!row?.id_cha) {
-      const p = `/${id}`;
-      pathCache.set(id, p);
-      return p;
-    }
-    const p = `${pathOf(String(row.id_cha), visiting)}/${id}`;
-    pathCache.set(id, p);
-    return p;
-  }
-
-  return rows.map((row) => {
-    const id = String(row.id);
-    return mapDepartmentFromDb(row, { cap_do: levelOf(id), duong_dan: pathOf(id) });
-  });
-}
-
-export interface DbChucVu {
-  id: number | string;
-  id_phong_ban: number | string | null;
-  ma_chuc_vu: string;
-  ten_chuc_vu: string;
-  cap_bac: number;
-  mo_ta?: string | null;
-  thu_tu?: number | null;
-  trang_thai?: string | null;
-  nguoi_tao?: number | string | null;
-  tg_tao?: Date | string | null;
-  tg_cap_nhat?: Date | string | null;
-  ten_phong_ban?: string | null;
-  ten_nguoi_tao?: string | null;
-}
-
-export interface AppPosition {
-  id: string;
-  ma_chuc_vu: string;
-  ten_chuc_vu: string;
-  cap_bac: number | null;
-  phong_ban_id: string | null;
-  ten_phong_ban?: string;
-  mo_ta: string | null;
-  thu_tu: number;
-  trang_thai: 'Đang hoạt động' | 'Ngừng hoạt động';
-  tg_tao: string;
-  tg_cap_nhat: string;
-  nguoi_tao?: string | null;
-  ten_nguoi_tao?: string | null;
-}
-
-export function mapPositionFromDb(row: DbChucVu): AppPosition {
-  const id = String(row.id);
-  const fallbackTs = nowIso();
-  const phongBanId = row.id_phong_ban == null ? null : String(row.id_phong_ban);
-  return {
-    id,
-    ma_chuc_vu: row.ma_chuc_vu,
-    ten_chuc_vu: row.ten_chuc_vu,
-    cap_bac: row.cap_bac ?? null,
-    phong_ban_id: phongBanId,
-    ten_phong_ban: phongBanId == null ? 'Chưa phân bổ' : (row.ten_phong_ban ?? undefined),
-    mo_ta: row.mo_ta ?? null,
-    thu_tu: row.thu_tu ?? (Number(id) || 0),
-    trang_thai: mapPhongBanTrangThaiToApp(row.trang_thai),
-    tg_tao: toIso(row.tg_tao) ?? fallbackTs,
-    tg_cap_nhat: toIso(row.tg_cap_nhat) ?? fallbackTs,
-    nguoi_tao: row.nguoi_tao == null ? null : String(row.nguoi_tao),
-    ten_nguoi_tao: row.ten_nguoi_tao ?? null,
-  };
-}
-
 export interface DbNhanVien {
   id: number | string;
   ho_va_ten: string;
   hinh_anh: string | null;
-  email?: string | null;
-  email_ca_nhan?: string | null;
-  so_dien_thoai?: string | null;
-  gioi_tinh?: string | null;
-  ngay_sinh?: Date | string | null;
-  so_cccd?: string | null;
-  ngay_cap_cccd?: Date | string | null;
-  noi_cap_cccd?: string | null;
-  dia_chi_thuong_tru?: string | null;
-  dia_chi_hien_tai?: string | null;
-  que_quan?: string | null;
-  dan_toc?: string | null;
-  ton_giao?: string | null;
-  tinh_trang_hon_nhan?: string | null;
-  quoc_tich?: string | null;
-  ngay_vao_lam?: Date | string | null;
-  ngay_chinh_thuc?: Date | string | null;
-  ngay_nghi_viec?: Date | string | null;
-  ly_do_nghi?: string | null;
-  so_tai_khoan?: string | null;
-  ten_chu_tai_khoan?: string | null;
-  ngan_hang?: string | null;
-  chi_nhanh?: string | null;
-  nguoi_lien_he_khan?: string | null;
-  sdt_khan?: string | null;
-  moi_quan_he?: string | null;
-  so_so_bhxh?: string | null;
-  so_bhyt?: string | null;
-  ma_so_thue_ca_nhan?: string | null;
-  trinh_do?: string | null;
-  chuyen_nganh?: string | null;
-  truong?: string | null;
   trang_thai: string;
-  id_chuc_vu: number | string | null;
-  id_phong_ban: number | string | null;
-  cap_bac: number | null;
-  tai_khoan: string;
   must_change_password?: boolean | null;
-  nguoi_tao?: number | string | null;
-  tg_tao?: Date | string | null;
-  tg_cap_nhat?: Date | string | null;
-  ten_chuc_vu?: string | null;
-  ten_phong_ban?: string | null;
-  ten_nguoi_tao?: string | null;
 }
 
 export interface AppEmployee {
   id: string;
   ho_ten: string;
-  email: string;
-  email_ca_nhan?: string | null;
-  so_dien_thoai: string;
-  ten_dang_nhap: string | null;
   must_change_password: boolean;
   tai_khoan_dang_hoat_dong: boolean;
-  phong_ban_id: string | null;
-  chuc_vu_id: string | null;
-  ten_phong_ban?: string;
-  ten_chuc_vu?: string;
-  cap_bac?: number | null;
-  gioi_tinh: 'Nam' | 'Nữ' | 'Khác';
-  ngay_sinh?: string | null;
-  so_cccd?: string | null;
-  ngay_cap_cccd?: string | null;
-  noi_cap_cccd?: string | null;
-  dia_chi_thuong_tru?: string | null;
-  dia_chi_hien_tai?: string | null;
-  que_quan?: string | null;
-  dan_toc?: string | null;
-  ton_giao?: string | null;
-  tinh_trang_hon_nhan?: string | null;
-  quoc_tich?: string | null;
-  ngay_vao_lam?: string | null;
-  ngay_chinh_thuc?: string | null;
-  ngay_nghi_viec?: string | null;
-  ly_do_nghi?: string | null;
-  so_tai_khoan?: string | null;
-  ten_chu_tai_khoan?: string | null;
-  ngan_hang?: string | null;
-  chi_nhanh?: string | null;
-  nguoi_lien_he_khan?: string | null;
-  sdt_khan?: string | null;
-  moi_quan_he?: string | null;
-  so_so_bhxh?: string | null;
-  so_bhyt?: string | null;
-  ma_so_thue_ca_nhan?: string | null;
-  trinh_do?: string | null;
-  chuyen_nganh?: string | null;
-  truong?: string | null;
   trang_thai: string;
   anh_dai_dien?: string;
-  tg_tao?: string;
-  tg_cap_nhat?: string;
-  nguoi_tao?: string | null;
-  ten_nguoi_tao?: string | null;
-}
-
-function mapGioiTinh(raw: string | null | undefined): 'Nam' | 'Nữ' | 'Khác' {
-  const v = String(raw ?? '').trim();
-  if (v === 'Nữ' || v === 'Nu' || v.toLowerCase() === 'female') return 'Nữ';
-  if (v === 'Khác' || v.toLowerCase() === 'other') return 'Khác';
-  return 'Nam';
 }
 
 export function mapEmployeeFromDb(row: DbNhanVien): AppEmployee {
@@ -298,52 +46,10 @@ export function mapEmployeeFromDb(row: DbNhanVien): AppEmployee {
   return {
     id: String(row.id),
     ho_ten: row.ho_va_ten,
-    email: row.email ?? '',
-    email_ca_nhan: row.email_ca_nhan ?? null,
-    so_dien_thoai: row.so_dien_thoai ?? '',
-    ten_dang_nhap: row.tai_khoan,
     must_change_password: Boolean(row.must_change_password),
     tai_khoan_dang_hoat_dong: trangThai !== 'Nghỉ việc',
-    phong_ban_id: row.id_phong_ban == null ? null : String(row.id_phong_ban),
-    chuc_vu_id: row.id_chuc_vu == null ? null : String(row.id_chuc_vu),
-    ten_phong_ban: row.ten_phong_ban ?? undefined,
-    ten_chuc_vu: row.ten_chuc_vu ?? undefined,
-    cap_bac: row.cap_bac ?? null,
-    gioi_tinh: mapGioiTinh(row.gioi_tinh),
-    ngay_sinh: toDateOnlyIso(row.ngay_sinh),
-    so_cccd: row.so_cccd ?? null,
-    ngay_cap_cccd: toDateOnlyIso(row.ngay_cap_cccd),
-    noi_cap_cccd: row.noi_cap_cccd ?? null,
-    dia_chi_thuong_tru: row.dia_chi_thuong_tru ?? null,
-    dia_chi_hien_tai: row.dia_chi_hien_tai ?? null,
-    que_quan: row.que_quan ?? null,
-    dan_toc: row.dan_toc ?? null,
-    ton_giao: row.ton_giao ?? null,
-    tinh_trang_hon_nhan: row.tinh_trang_hon_nhan ?? null,
-    quoc_tich: row.quoc_tich ?? null,
-    ngay_vao_lam: toDateOnlyIso(row.ngay_vao_lam),
-    ngay_chinh_thuc: toDateOnlyIso(row.ngay_chinh_thuc),
-    ngay_nghi_viec: toDateOnlyIso(row.ngay_nghi_viec),
-    ly_do_nghi: row.ly_do_nghi ?? null,
-    so_tai_khoan: row.so_tai_khoan ?? null,
-    ten_chu_tai_khoan: row.ten_chu_tai_khoan ?? null,
-    ngan_hang: row.ngan_hang ?? null,
-    chi_nhanh: row.chi_nhanh ?? null,
-    nguoi_lien_he_khan: row.nguoi_lien_he_khan ?? null,
-    sdt_khan: row.sdt_khan ?? null,
-    moi_quan_he: row.moi_quan_he ?? null,
-    so_so_bhxh: row.so_so_bhxh ?? null,
-    so_bhyt: row.so_bhyt ?? null,
-    ma_so_thue_ca_nhan: row.ma_so_thue_ca_nhan ?? null,
-    trinh_do: row.trinh_do ?? null,
-    chuyen_nganh: row.chuyen_nganh ?? null,
-    truong: row.truong ?? null,
     trang_thai: trangThai,
     anh_dai_dien: row.hinh_anh ?? undefined,
-    tg_tao: toIso(row.tg_tao),
-    tg_cap_nhat: toIso(row.tg_cap_nhat),
-    nguoi_tao: row.nguoi_tao == null ? null : String(row.nguoi_tao),
-    ten_nguoi_tao: row.ten_nguoi_tao ?? null,
   };
 }
 

@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+Superseded — xem ADR mới cho migrate sang Google Sheets API (data layer) + Vercel (deploy target).
+Giữ lại làm hồ sơ quyết định lịch sử.
 
 ## Context
 

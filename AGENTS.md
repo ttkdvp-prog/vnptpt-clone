@@ -5,11 +5,11 @@
 ## Stack
 
 React 19 · Next.js 16 (App Router) · TypeScript (strict) · Tailwind CSS v4  
-PostgreSQL + Prisma · Auth.js (Credentials) · TanStack Query v5 · Zustand · React Hook Form + Zod  
-Framer Motion · Recharts · Lucide · Sonner · Sentry · Docker Compose
+Google Sheets API (data) + Google Drive API (ảnh upload) · Auth.js (Credentials) · TanStack Query v5 · Zustand · React Hook Form + Zod  
+Framer Motion · Recharts · Lucide · Sonner · Sentry · Vercel
 
-Dev: `npm run dev` (port 3000) · Mock: `NEXT_PUBLIC_DATA_SOURCE=mock` · API/Postgres: `NEXT_PUBLIC_DATA_SOURCE=api`  
-Deploy: see `docs/deploy-vps.md`
+Dev: `npm run dev` (port 3000) · Mock: `NEXT_PUBLIC_DATA_SOURCE=mock` · API/Sheets: `NEXT_PUBLIC_DATA_SOURCE=api`  
+Deploy: see `docs/deploy-vercel.md`
 
 ## Architecture
 
@@ -20,7 +20,7 @@ Deploy: see `docs/deploy-vps.md`
 - **Config barrel:** `@/config` → re-exports env / data-source / nav
 - **Server state:** TanStack Query in `features/*/hooks/` + keys in `lib/query-keys.ts`
 - **Client UI state:** Zustand in `features/*/store/`
-- **Data access:** Prisma via embedded Hono Route Handlers (`server/`) + feature services (`mock` | `api`)
+- **Data access:** Google Sheets API (`lib/sheets/`) via embedded Hono Route Handlers (`server/`) + feature services (`mock` | `api`)
 - **Auth:** Auth.js (`auth.ts`) + Zustand hydrate via `AuthSessionSynchronizer`
 - **Forms:** Zod in `features/*/core/schema.ts` + RHF + `zodResolver`
 - **Navigation:** config-driven — `docs/navigation.md`

@@ -1,10 +1,5 @@
 import type { Context } from 'hono';
 import type { JwtPayload } from '@/server/auth';
-import { parseQuyenCsv } from '@/lib/permission-db-keys';
-import { findEmployeeChucVuId } from '@/server/repositories/nhan-vien';
-import { findQuyenCsvByChucVuAndModule } from '@/server/repositories/phan-quyen';
-
-const MODULE_NHAN_VIEN = 'nhan_vien';
 
 export type ModuleAction = 'xem' | 'them' | 'sua' | 'xoa';
 
@@ -21,30 +16,16 @@ interface Grant {
  */
 const grantCache = new WeakMap<Context, Grant | null>();
 
-function isModuleAdmin(tokens: string[]): boolean {
-  return tokens.includes('admin') || tokens.includes('tat_ca') || tokens.includes('all');
-}
-
-/** `null` = không có phiên, hoặc không tra được chức vụ ⇒ không có quyền gì. */
+/**
+ * Chức vụ/cấp bậc không còn tồn tại trên nhân viên (schema sheet đã bỏ), nên
+ * không còn cách tra "quyền theo vị trí" ở server nữa — mọi phiên hợp lệ được
+ * coi là admin của module nhân viên.
+ */
 async function loadGrant(c: Context): Promise<Grant | null> {
   if (grantCache.has(c)) return grantCache.get(c) ?? null;
 
   const session = c.get('session') as JwtPayload | undefined;
-  let grant: Grant | null = null;
-
-  if (session) {
-    if (session.cap_bac === 1) {
-      grant = { session, tokens: ['admin'], isAdmin: true };
-    } else {
-      const chucVuId = await findEmployeeChucVuId(Number(session.employee_id));
-      if (chucVuId != null) {
-        const tokens = parseQuyenCsv(
-          await findQuyenCsvByChucVuAndModule(chucVuId, MODULE_NHAN_VIEN),
-        );
-        grant = { session, tokens, isAdmin: isModuleAdmin(tokens) };
-      }
-    }
-  }
+  const grant: Grant | null = session ? { session, tokens: ['admin'], isAdmin: true } : null;
 
   grantCache.set(c, grant);
   return grant;

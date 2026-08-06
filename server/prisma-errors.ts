@@ -1,31 +1,22 @@
-import { Prisma } from '@prisma/client';
+/** Lỗi ghi Sheets dạng chung — không còn Prisma error code, chỉ phân loại theo message. */
 
-/** Lỗi vi phạm unique constraint (P2002). Giữ fallback check chuỗi cho lỗi đã wrap. */
+/** Lỗi trùng dữ liệu (unique). Sheets không có ràng buộc thật — repository tự kiểm tra và throw Error với message chứa từ khóa này. */
 export function isUniqueViolation(err: unknown): boolean {
-  if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-    return true;
-  }
   const message = err instanceof Error ? err.message : '';
-  return message.includes('Unique constraint') || message.includes('unique');
+  return message.includes('Unique constraint') || message.toLowerCase().includes('unique') || message.includes('trùng');
 }
 
 /**
  * Dịch lỗi khi tạo/sửa bản ghi sang tiếng Việt dễ hiểu cho người dùng.
- * Lỗi Prisma thô được log phía server, không bao giờ trả nguyên văn về client.
+ * Lỗi thô được log phía server, không bao giờ trả nguyên văn về client.
  */
 export function translateCreateError(err: unknown, uniqueMessage?: string): string {
   if (isUniqueViolation(err)) {
     return uniqueMessage ?? 'Dữ liệu bị trùng với bản ghi đã có';
   }
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    console.error('[prisma]', err.code, err.message);
-    if (err.code === 'P2003') return 'Dữ liệu tham chiếu không tồn tại';
-    return 'Không thể lưu dữ liệu. Vui lòng kiểm tra lại thông tin.';
+  if (err instanceof Error) {
+    console.error('[sheets]', err.message);
+    return err.message;
   }
-  if (err instanceof Prisma.PrismaClientValidationError) {
-    console.error('[prisma]', err.message);
-    return 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.';
-  }
-  if (err instanceof Error) return err.message;
   return 'Đã xảy ra lỗi không xác định';
 }

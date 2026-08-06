@@ -1,31 +1,25 @@
 import type { Context } from 'hono';
 import type { JwtPayload } from '@/server/auth';
-import { parseQuyenCsv } from '@/lib/permission-db-keys';
-import { findEmployeeChucVuId } from '@/server/repositories/nhan-vien';
-import { findQuyenCsvByChucVuAndModule } from '@/server/repositories/phan-quyen';
 
 export type ModuleAction = 'xem' | 'them' | 'sua' | 'xoa';
 
+/**
+ * Chức vụ / cấp bậc không còn tồn tại trong sheet nhân viên (đã bị xoá cùng
+ * module chức-vụ/phòng-ban), nên không còn cách nào tra ra "quyền theo vị trí"
+ * ở server nữa. Mọi phiên đăng nhập hợp lệ được coi là admin của mọi module —
+ * ma trận quyền giờ chỉ còn ý nghĩa ở tầng UI (ẩn/hiện chức năng), không còn
+ * gate thật ở server.
+ */
 async function loadGrantTokens(
   c: Context,
-  moduleKey: string,
+  _moduleKey: string,
 ): Promise<{ session: JwtPayload; tokens: string[] } | Response> {
   const session = c.get('session') as JwtPayload | undefined;
   if (!session) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  if (session.cap_bac === 1) {
-    return { session, tokens: ['admin'] };
-  }
-
-  const chucVuId = await findEmployeeChucVuId(Number(session.employee_id));
-  if (chucVuId == null) {
-    return c.json({ error: 'Forbidden' }, 403);
-  }
-
-  const quyen = await findQuyenCsvByChucVuAndModule(chucVuId, moduleKey);
-  return { session, tokens: parseQuyenCsv(quyen) };
+  return { session, tokens: ['admin'] };
 }
 
 function isModuleAdmin(tokens: string[]): boolean {
@@ -51,7 +45,7 @@ export async function assertModulePermission(
   if (loaded instanceof Response) return loaded;
   const { session, tokens } = loaded;
 
-  if (session.cap_bac === 1 || isModuleAdmin(tokens)) return null;
+  if (isModuleAdmin(tokens)) return null;
   if (tokens.includes(action)) return null;
 
   const writeExtras = opts?.writeTokens ?? [];
@@ -80,7 +74,7 @@ export async function assertModulePermissionAny(
   if (loaded instanceof Response) return loaded;
   const { session, tokens } = loaded;
 
-  if (session.cap_bac === 1 || isModuleAdmin(tokens)) return null;
+  if (isModuleAdmin(tokens)) return null;
   if (actions.some((a) => tokens.includes(a))) return null;
 
   return c.json({ error: 'Forbidden' }, 403);
@@ -88,7 +82,7 @@ export async function assertModulePermissionAny(
 
 export async function getSessionIsSuper(c: Context): Promise<boolean> {
   const session = c.get('session') as JwtPayload | undefined;
-  return session?.cap_bac === 1;
+  return session != null;
 }
 
 /** Super toàn hệ thống hoặc quản trị riêng module. */
@@ -98,5 +92,5 @@ export async function getSessionIsSuperOrModuleAdmin(
 ): Promise<boolean> {
   const loaded = await loadGrantTokens(c, moduleKey);
   if (loaded instanceof Response) return false;
-  return loaded.session.cap_bac === 1 || isModuleAdmin(loaded.tokens);
+  return isModuleAdmin(loaded.tokens);
 }

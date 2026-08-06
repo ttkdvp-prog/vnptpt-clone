@@ -1,5 +1,8 @@
-import { prisma } from '@/server/db';
+import { insertRow, nextId, readTable, deleteRowById } from '@/lib/sheets/generic-repository';
+import { SHEET_TABS } from '@/lib/sheets/config';
 import { formatQuyenCsv, parseQuyenCsv } from '@/lib/permission-db-keys';
+
+const TAB = SHEET_TABS.var_phan_quyen;
 
 export type PhanQuyenRow = {
   id: number;
@@ -9,6 +12,17 @@ export type PhanQuyenRow = {
   tg_tao: Date;
   tg_cap_nhat: Date;
 };
+
+function fromSheetRow(row: Record<string, string>): PhanQuyenRow {
+  return {
+    id: Number(row.id),
+    module_key: row.module_key ?? '',
+    chuc_vu_id: Number(row.chuc_vu_id),
+    quyen: row.quyen ?? '',
+    tg_tao: row.tg_tao ? new Date(row.tg_tao) : new Date(0),
+    tg_cap_nhat: row.tg_cap_nhat ? new Date(row.tg_cap_nhat) : new Date(0),
+  };
+}
 
 export function mapPhanQuyenRow(row: PhanQuyenRow) {
   return {
@@ -25,18 +39,17 @@ export async function findPhanQuyenByModule(params: {
   moduleKey: string;
   chucVuIds?: number[];
 }): Promise<PhanQuyenRow[]> {
-  return prisma.var_phan_quyen.findMany({
-    where: {
-      module_key: params.moduleKey,
-      ...(params.chucVuIds && params.chucVuIds.length > 0
-        ? { chuc_vu_id: { in: params.chucVuIds } }
-        : {}),
-    },
-    orderBy: [{ chuc_vu_id: 'asc' }, { module_key: 'asc' }],
-  });
+  const { rows } = await readTable(TAB);
+  let items = rows.filter((r) => r.module_key === params.moduleKey);
+  if (params.chucVuIds && params.chucVuIds.length > 0) {
+    const idSet = new Set(params.chucVuIds);
+    items = items.filter((r) => idSet.has(Number(r.chuc_vu_id)));
+  }
+  return items
+    .map(fromSheetRow)
+    .sort((a, b) => a.chuc_vu_id - b.chuc_vu_id || a.module_key.localeCompare(b.module_key));
 }
 
-/** Sanitize CSV to known tokens; strip admin/tat_ca/all when not super writing phan_quyen. */
 export function sanitizeQuyenCsv(raw: string, opts?: { stripAdmin?: boolean }): string {
   let tokens = parseQuyenCsv(raw);
   if (opts?.stripAdmin) {
@@ -45,6 +58,7 @@ export function sanitizeQuyenCsv(raw: string, opts?: { stripAdmin?: boolean }): 
   return formatQuyenCsv(tokens);
 }
 
+/** Không có transaction thật trên Sheets — xoá rồi ghi lại tuần tự cho từng chức vụ trong module. */
 export async function replacePhanQuyenForModule(params: {
   moduleKey: string;
   rows: Array<{ chuc_vu_id: number; quyen: string }>;
@@ -53,58 +67,47 @@ export async function replacePhanQuyenForModule(params: {
   const { moduleKey, rows } = params;
   const stripAdmin = params.stripAdminOnPhanQuyen === true && moduleKey === 'phan_quyen';
   const chucVuIds = [...new Set(rows.map((r) => r.chuc_vu_id))];
-  const now = new Date();
+  const now = new Date().toISOString();
 
-  await prisma.$transaction(async (tx) => {
-    if (chucVuIds.length > 0) {
-      await tx.var_phan_quyen.deleteMany({
-        where: { module_key: moduleKey, chuc_vu_id: { in: chucVuIds } },
-      });
+  if (chucVuIds.length > 0) {
+    const { rows: existing } = await readTable(TAB);
+    const toDelete = existing.filter(
+      (r) => r.module_key === moduleKey && chucVuIds.includes(Number(r.chuc_vu_id)),
+    );
+    for (const row of toDelete) {
+      await deleteRowById(TAB, row.id);
     }
+  }
 
-    const toCreate = rows
-      .map((r) => ({
-        chuc_vu_id: r.chuc_vu_id,
-        quyen: sanitizeQuyenCsv(r.quyen, { stripAdmin }),
-      }))
-      .filter((r) => r.quyen.trim().length > 0);
+  const toCreate = rows
+    .map((r) => ({ chuc_vu_id: r.chuc_vu_id, quyen: sanitizeQuyenCsv(r.quyen, { stripAdmin }) }))
+    .filter((r) => r.quyen.trim().length > 0);
 
-    if (toCreate.length > 0) {
-      await tx.var_phan_quyen.createMany({
-        data: toCreate.map((r) => ({
-          module_key: moduleKey,
-          chuc_vu_id: r.chuc_vu_id,
-          quyen: r.quyen,
-          tg_tao: now,
-          tg_cap_nhat: now,
-        })),
-      });
-    }
-  });
+  for (const r of toCreate) {
+    const id = await nextId(TAB);
+    await insertRow(TAB, {
+      id: String(id),
+      module_key: moduleKey,
+      chuc_vu_id: String(r.chuc_vu_id),
+      quyen: r.quyen,
+      tg_tao: now,
+      tg_cap_nhat: now,
+    });
+  }
 
   return findPhanQuyenByModule({ moduleKey, chucVuIds });
 }
 
-export async function assertChucVuIdsExist(ids: number[]): Promise<number[]> {
-  if (ids.length === 0) return [];
-  const rows = await prisma.var_chuc_vu.findMany({
-    where: { id: { in: ids } },
-    select: { id: true },
-  });
-  const found = new Set(rows.map((r) => r.id));
-  return ids.filter((id) => !found.has(id));
+/**
+ * Chức vụ table no longer exists in the sheet — position ids can't be validated
+ * server-side anymore, so nothing is reported missing.
+ */
+export async function assertChucVuIdsExist(_ids: number[]): Promise<number[]> {
+  return [];
 }
 
-/** Raw `quyen` CSV for a position + module (empty string when no grant row). */
-export async function findQuyenCsvByChucVuAndModule(
-  chucVuId: number,
-  moduleKey: string,
-): Promise<string> {
-  const grant = await prisma.var_phan_quyen.findUnique({
-    where: {
-      chuc_vu_id_module_key: { chuc_vu_id: chucVuId, module_key: moduleKey },
-    },
-    select: { quyen: true },
-  });
-  return grant?.quyen ?? '';
+export async function findQuyenCsvByChucVuAndModule(chucVuId: number, moduleKey: string): Promise<string> {
+  const { rows } = await readTable(TAB);
+  const row = rows.find((r) => Number(r.chuc_vu_id) === chucVuId && r.module_key === moduleKey);
+  return row?.quyen ?? '';
 }
