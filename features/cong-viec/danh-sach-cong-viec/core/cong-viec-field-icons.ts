@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { FileText, Tag, Building2, Users, CalendarDays, CircleDot, FileType, Paperclip } from 'lucide-react';
+import { FileText, Tag, Building2, Users, CalendarDays, CircleDot, FileType, Paperclip, Target, TrendingUp } from 'lucide-react';
 
 export const CONG_VIEC_FIELD_ICONS = {
   cap: Tag,
@@ -16,4 +16,6 @@ export const CONG_VIEC_FIELD_ICONS = {
   ngay_ht: CalendarDays,
   ghi_chu: FileType,
   tep_dinh_kem: Paperclip,
+  ke_hoach: Target,
+  thuc_hien: TrendingUp,
 } as const satisfies Record<string, LucideIcon>;

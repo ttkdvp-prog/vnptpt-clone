@@ -58,6 +58,8 @@ function toFormValues(item?: CongViec | null): CongViecFormValues {
     ghi_chu: item?.ghi_chu ?? '',
     ngay_ht: item?.ngay_ht ?? '',
     tep_dinh_kem: item?.tep_dinh_kem ?? '',
+    ke_hoach: item?.ke_hoach ?? null,
+    thuc_hien: item?.thuc_hien ?? null,
   };
 }
 
@@ -392,6 +394,20 @@ const CongViecForm: React.FC<Props> = ({ initialData, mode, onClose }) => {
               dataType="date"
               label={txt('congViec.field.ngayHt')}
               icon={fieldIcon(CONG_VIEC_FIELD_ICONS.ngay_ht)}
+            />
+            <RhfDataField
+              control={control}
+              name="ke_hoach"
+              dataType="number"
+              label={txt('congViec.field.keHoach')}
+              icon={fieldIcon(CONG_VIEC_FIELD_ICONS.ke_hoach)}
+            />
+            <RhfDataField
+              control={control}
+              name="thuc_hien"
+              dataType="number"
+              label={txt('congViec.field.thucHien')}
+              icon={fieldIcon(CONG_VIEC_FIELD_ICONS.thuc_hien)}
             />
           </FormGrid>
         </FormSection>

@@ -33,7 +33,9 @@ export const congViec = {
     "ghiChu": "Ghi chú",
     "ngayHt": "Ngày hoàn thành",
     "tepDinhKem": "Tệp đính kèm",
-    "trangThai": "Trạng thái"
+    "trangThai": "Trạng thái",
+    "keHoach": "Kế hoạch",
+    "thucHien": "Thực hiện"
   },
   "store": {
     "tieuDeCol": "Tiêu đề",
@@ -56,9 +58,11 @@ export const congViec = {
     "cap": "Cấp",
     "uuTien": "Ưu tiên",
     "toAr": "Tổ chính",
+    "toR": "Tổ hỗ trợ",
     "mnvA": "Người AR",
     "mnvR": "Người R",
     "mnvC": "Người C",
+    "trangThai": "Trạng thái",
     "importData": "Nhập dữ liệu từ Excel",
     "exportData": "Xuất dữ liệu ra Excel"
   },
