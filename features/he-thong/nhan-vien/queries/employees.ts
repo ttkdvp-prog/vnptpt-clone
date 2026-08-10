@@ -18,9 +18,6 @@ function listFilterKey(
   return {
     search: params.search,
     trang_thai: params.trang_thai,
-    phong_ban_id: params.phong_ban_id,
-    chuc_vu_id: params.chuc_vu_id,
-    gioi_tinh: params.gioi_tinh,
     columnSearch: params.columnSearch,
     asAt: params.asAt,
     dateFrom: params.dateFrom,

@@ -3,10 +3,7 @@ import {
   Home as HomeIcon,
   Copyright,
   Layers,
-  ClipboardList,
-  Handshake,
-  Factory,
-  MonitorPlay,
+  ListTodo,
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -27,32 +24,11 @@ export const SIDEBAR_MENU: MenuItem[] = [
     gradient: 'bg-gradient-to-br from-primary/90 to-primary',
   },
   {
-    path: '/tong-quan',
-    nameKey: 'nav.overview',
-    descriptionKey: 'page.home.overviewModuleDesc',
-    icon: MonitorPlay,
-    gradient: 'bg-gradient-to-br from-zinc-700 to-zinc-900',
-  },
-  {
-    path: '/hanh-chinh',
-    nameKey: 'nav.adminOps',
-    descriptionKey: 'page.home.adminOpsModuleDesc',
-    icon: ClipboardList,
-    gradient: 'bg-gradient-to-br from-amber-600 to-amber-800',
-  },
-  {
-    path: '/san-xuat',
-    nameKey: 'nav.production',
-    descriptionKey: 'page.home.productionModuleDesc',
-    icon: Factory,
-    gradient: 'bg-gradient-to-br from-orange-600 to-orange-800',
-  },
-  {
-    path: '/kinh-doanh',
-    nameKey: 'nav.business',
-    descriptionKey: 'page.home.businessModuleDesc',
-    icon: Handshake,
-    gradient: 'bg-gradient-to-br from-emerald-600 to-emerald-800',
+    path: '/cong-viec',
+    nameKey: 'nav.workItems',
+    descriptionKey: 'page.home.workItemsModuleDesc',
+    icon: ListTodo,
+    gradient: 'bg-gradient-to-br from-blue-600 to-blue-800',
   },
   {
     path: '/he-thong',

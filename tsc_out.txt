@@ -1,0 +1,255 @@
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(15,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/hooks/use-phong-ban' or its corresponding type declarations.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(148,46): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(204,35): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(245,39): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(301,34): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(309,34): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(323,34): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(338,61): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(340,61): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(346,18): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-stats.tsx(346,42): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(12,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/hooks/use-phong-ban' or its corresponding type declarations.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(13,30): error TS2307: Cannot find module '@/features/he-thong/chuc-vu/hooks/use-chuc-vu' or its corresponding type declarations.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(21,5): error TS2305: Module '"../core/constants"' has no exported member 'GENDER_BADGE_CONFIG'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(86,30): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(90,28): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(128,32): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(129,44): error TS2345: Argument of type '"phong_ban_id"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(140,32): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(141,44): error TS2345: Argument of type '"position"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(186,29): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(189,76): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(195,47): error TS2339: Property 'gioi_tinh' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(198,45): error TS2339: Property 'email' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(200,58): error TS2339: Property 'email' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(207,58): error TS2339: Property 'so_dien_thoai' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(214,70): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(221,58): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(228,58): error TS2339: Property 'ten_bo_phan' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(234,29): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(235,106): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(238,29): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(239,106): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(296,27): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-table.tsx(297,81): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(26,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/hooks/use-phong-ban' or its corresponding type declarations.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(27,30): error TS2307: Cannot find module '@/features/he-thong/chuc-vu/hooks/use-chuc-vu' or its corresponding type declarations.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(28,10): error TS2305: Module '"../core/constants"' has no exported member 'GENDER_OPTIONS'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(53,41): error TS2339: Property 'cap_bac' does not exist on type 'User'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(102,27): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(106,25): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(114,30): error TS7006: Parameter 'g' implicitly has an 'any' type.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(122,18): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(123,18): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(125,18): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(131,15): error TS2345: Argument of type '"phong_ban_id"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(132,15): error TS2345: Argument of type '"position"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(134,15): error TS2345: Argument of type '"gender"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(143,22): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(144,46): error TS2345: Argument of type '"phong_ban_id"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(151,22): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(152,46): error TS2345: Argument of type '"position"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(167,22): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(168,46): error TS2345: Argument of type '"gender"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(251,25): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(255,28): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(256,42): error TS2345: Argument of type '"phong_ban_id"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(265,25): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(269,28): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(270,42): error TS2345: Argument of type '"position"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(293,25): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(297,28): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(298,42): error TS2345: Argument of type '"gender"' is not assignable to parameter of type 'keyof EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(311,15): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(312,15): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/components/nhan-vien-toolbar.tsx(314,15): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(122,20): error TS2339: Property 'byDept' does not exist on type 'NoInfer<ApiEmployeeStatsAggregates>'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(122,39): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(151,28): error TS2339: Property 'hiresByMonth' does not exist on type 'NoInfer<ApiEmployeeStatsAggregates>'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(151,47): error TS7006: Parameter 'h' implicitly has an 'any' type.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(158,33): error TS2339: Property 'byGender' does not exist on type 'NoInfer<ApiEmployeeStatsAggregates>'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(173,20): error TS2339: Property 'deptSummary' does not exist on type 'NoInfer<ApiEmployeeStatsAggregates>'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(173,44): error TS7006: Parameter 's' implicitly has an 'any' type.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(186,35): error TS2339: Property 'byGender' does not exist on type 'NoInfer<ApiEmployeeStatsAggregates>'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(186,50): error TS7006: Parameter 'g' implicitly has an 'any' type.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(187,37): error TS2339: Property 'byGender' does not exist on type 'NoInfer<ApiEmployeeStatsAggregates>'.
+features/he-thong/nhan-vien/hooks/use-employee-stats.ts(187,52): error TS7006: Parameter 'g' implicitly has an 'any' type.
+features/he-thong/nhan-vien/hooks/use-employees-list.ts(52,27): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-employees-list.ts(52,57): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-employees-list.ts(53,25): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-employees-list.ts(53,51): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-employees-list.ts(54,24): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-employees-list.ts(54,48): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(26,29): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(26,59): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(27,27): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(27,53): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(28,26): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(28,50): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-filter-counts.ts(40,3): error TS2322: Type 'NoInfer<EmployeeFilterCountsResult> | { deptCounts: {}; posCounts: {}; statusCounts: {}; genderCounts: {}; }' is not assignable to type 'EmployeeFilterCounts'.
+  Type 'EmployeeFilterCountsResult' is missing the following properties from type 'EmployeeFilterCounts': deptCounts, posCounts, genderCounts
+features/he-thong/nhan-vien/hooks/use-nhan-vien.ts(52,13): error TS2339: Property 'phong_ban_id' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-nhan-vien.ts(53,13): error TS2339: Property 'position' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/hooks/use-nhan-vien.ts(54,13): error TS2339: Property 'gender' does not exist on type 'EmployeeFilters'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(15,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/hooks/use-phong-ban' or its corresponding type declarations.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(16,36): error TS2307: Cannot find module '@/features/he-thong/chuc-vu/hooks/use-chuc-vu' or its corresponding type declarations.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(58,32): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(71,30): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(235,24): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(236,20): error TS2339: Property 'gioi_tinh' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(237,16): error TS2339: Property 'email' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(238,24): error TS2339: Property 'so_dien_thoai' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(239,22): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(240,24): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(241,22): error TS2339: Property 'ten_bo_phan' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(243,22): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/nhan-vien.module.tsx(243,46): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/queries/employees.ts(21,5): error TS2353: Object literal may only specify known properties, and 'phong_ban_id' does not exist in type 'Omit<ApiEmployeeListParams, "limit" | "offset" | "orderBy" | "ascending">'.
+features/he-thong/nhan-vien/queries/employees.ts(21,26): error TS2339: Property 'phong_ban_id' does not exist on type 'ApiEmployeeListParams'.
+features/he-thong/nhan-vien/queries/employees.ts(22,24): error TS2339: Property 'chuc_vu_id' does not exist on type 'ApiEmployeeListParams'.
+features/he-thong/nhan-vien/queries/employees.ts(23,23): error TS2339: Property 'gioi_tinh' does not exist on type 'ApiEmployeeListParams'.
+features/he-thong/nhan-vien/services/nhan-vien-service.ts(299,5): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+features/he-thong/nhan-vien/services/nhan-vien-service.ts(344,5): error TS2353: Object literal may only specify known properties, and 'tg_cap_nhat' does not exist in type 'Partial<Employee>'.
+features/he-thong/nhan-vien/services/nhan-vien-service.ts(386,9): error TS2353: Object literal may only specify known properties, and 'tg_cap_nhat' does not exist in type 'Partial<Employee>'.
+features/he-thong/nhan-vien/services/nhan-vien-service.ts(406,7): error TS2353: Object literal may only specify known properties, and 'tg_cap_nhat' does not exist in type 'Partial<Employee>'.
+features/he-thong/nhan-vien/store/useEmployeeStore.ts(26,3): error TS2353: Object literal may only specify known properties, and 'phong_ban_id' does not exist in type 'EmployeeFilters'.
+features/he-thong/nhan-vien/utils/column-search.ts(16,28): error TS2322: Type '"so_dien_thoai"' is not assignable to type 'keyof Employee'.
+features/he-thong/nhan-vien/utils/get-employee-cell-text.ts(7,32): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/utils/get-employee-cell-text.ts(7,57): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/utils/get-employee-cell-text.ts(8,37): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.
+features/he-thong/nhan-vien/utils/get-employee-cell-text.ts(8,67): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.
+features/he-thong/phan-quyen/components/permission-matrix.tsx(29,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/hooks/use-phong-ban' or its corresponding type declarations.
+features/he-thong/phan-quyen/core/map-matrix.ts(10,31): error TS2307: Cannot find module '@/features/he-thong/chuc-vu/core/types' or its corresponding type declarations.
+features/he-thong/phan-quyen/hooks/use-permission-dept-filter.ts(2,33): error TS2307: Cannot find module '@/features/he-thong/phong-ban/core/types' or its corresponding type declarations.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(4,36): error TS2307: Cannot find module '@/features/he-thong/chuc-vu/services/chuc-vu-service' or its corresponding type declarations.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(58,5): error TS2353: Object literal may only specify known properties, and 'chucVuIds' does not exist in type '{ moduleKey?: string | undefined; }'.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(108,25): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(114,36): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(116,25): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(122,36): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/phan-quyen/services/phan-quyen-service.ts(124,25): error TS7006: Parameter 'p' implicitly has an 'any' type.
+features/he-thong/phan-quyen/utils/build-dept-filter-groups.ts(1,33): error TS2307: Cannot find module '@/features/he-thong/phong-ban/core/types' or its corresponding type declarations.
+features/he-thong/queries/master-data.ts(4,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/services/phong-ban-service' or its corresponding type declarations.
+features/he-thong/queries/master-data.ts(8,8): error TS2307: Cannot find module '@/features/he-thong/chuc-vu/services/chuc-vu-service' or its corresponding type declarations.
+features/tong-quan/components/tong-quan-dashboard.tsx(26,32): error TS2307: Cannot find module '@/features/he-thong/phong-ban/hooks/use-phong-ban' or its corresponding type declarations.
+features/tong-quan/components/tong-quan-dashboard.tsx(157,16): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/tong-quan/components/tong-quan-dashboard.tsx(158,13): error TS7006: Parameter 'd' implicitly has an 'any' type.
+features/tong-quan/components/tong-quan-dashboard.tsx(500,35): error TS7006: Parameter 'o' implicitly has an 'any' type.
+features/tong-quan/services/tong-quan-service.ts(4,44): error TS2307: Cannot find module '@/features/hanh-chinh/thong-ke-phieu-hanh-chinh/services/admin-form-stats-service' or its corresponding type declarations.
+features/tong-quan/services/tong-quan-service.ts(5,41): error TS2307: Cannot find module '@/features/hanh-chinh/phieu-hanh-chinh/core/types' or its corresponding type declarations.
+features/tong-quan/services/tong-quan-service.ts(6,37): error TS2307: Cannot find module '@/features/hanh-chinh/phieu-hanh-chinh/core/types' or its corresponding type declarations.
+features/tong-quan/services/tong-quan-service.ts(7,33): error TS2307: Cannot find module '@/features/hanh-chinh/thong-bao/services/thong-bao-service' or its corresponding type declarations.
+features/tong-quan/services/tong-quan-service.ts(8,31): error TS2307: Cannot find module '@/features/hanh-chinh/thong-bao/core/types' or its corresponding type declarations.
+features/tong-quan/services/tong-quan-service.ts(9,33): error TS2307: Cannot find module '@/features/hanh-chinh/phieu-hanh-chinh/core/loai-phieu' or its corresponding type declarations.
+features/tong-quan/services/tong-quan-service.ts(67,21): error TS2339: Property 'phong_ban_id' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(68,22): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(72,17): error TS2339: Property 'phong_ban_id' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(104,26): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(105,28): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(115,26): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(116,28): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(125,24): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(126,26): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+features/tong-quan/services/tong-quan-service.ts(175,39): error TS7006: Parameter 'e' implicitly has an 'any' type.
+features/tong-quan/services/tong-quan-service.ts(176,42): error TS7006: Parameter 'e' implicitly has an 'any' type.
+features/tong-quan/services/tong-quan-service.ts(179,14): error TS7006: Parameter 'e' implicitly has an 'any' type.
+features/tong-quan/services/tong-quan-service.ts(180,11): error TS7006: Parameter 'e' implicitly has an 'any' type.
+lib/auth-email.ts(5,36): error TS2307: Cannot find module '@/lib/validation/login-name' or its corresponding type declarations.
+lib/employee-auth/change-password.ts(5,36): error TS2307: Cannot find module '@/lib/validation/login-name' or its corresponding type declarations.
+lib/employee-auth/employee-auth-service.ts(9,36): error TS2307: Cannot find module '@/lib/validation/login-name' or its corresponding type declarations.
+lib/employee-auth/employee-auth-service.ts(70,20): error TS2339: Property 'ten_dang_nhap' does not exist on type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(73,31): error TS2339: Property 'ten_dang_nhap' does not exist on type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(81,20): error TS2339: Property 'ten_dang_nhap' does not exist on type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(84,51): error TS2339: Property 'ten_dang_nhap' does not exist on type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(90,9): error TS2353: Object literal may only specify known properties, and 'ten_dang_nhap' does not exist in type 'EmployeeAuthResult'.
+lib/employee-auth/employee-auth-service.ts(94,20): error TS2339: Property 'ten_dang_nhap' does not exist on type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(97,31): error TS2339: Property 'ten_dang_nhap' does not exist on type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(119,5): error TS2353: Object literal may only specify known properties, and 'ten_dang_nhap' does not exist in type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(122,28): error TS2339: Property 'phong_ban_id' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(123,26): error TS2339: Property 'chuc_vu_id' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(132,17): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(138,5): error TS2353: Object literal may only specify known properties, and 'ten_dang_nhap' does not exist in type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(138,29): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(148,17): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(152,35): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(158,5): error TS2353: Object literal may only specify known properties, and 'ten_dang_nhap' does not exist in type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(161,28): error TS2339: Property 'phong_ban_id' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(162,26): error TS2339: Property 'chuc_vu_id' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(168,17): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(173,5): error TS2353: Object literal may only specify known properties, and 'phong_ban_id' does not exist in type 'EmployeeAuthPayload'.
+lib/employee-auth/employee-auth-service.ts(173,28): error TS2339: Property 'phong_ban_id' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(174,26): error TS2339: Property 'chuc_vu_id' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(183,17): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/employee-auth-service.ts(203,17): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+lib/employee-auth/login-errors.test.ts(14,3): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(6,28): error TS2307: Cannot find module '@/features/he-thong/phong-ban/core/types' or its corresponding type declarations.
+mocks/he-thong.ts(236,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(259,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(279,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(300,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(313,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(326,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(339,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(352,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(366,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(379,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(393,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(406,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(420,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(433,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(446,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(460,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(473,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(487,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(500,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(514,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(527,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(541,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(554,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(567,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(580,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(593,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(606,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(619,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(632,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(645,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(658,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(671,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(684,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(697,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(710,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+mocks/he-thong.ts(723,5): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'Employee'.
+server/permissions/nhan-vien-fields.test.ts(62,29): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+server/permissions/nhan-vien-fields.test.ts(64,24): error TS2339: Property 'phong_ban_id' does not exist on type '{ ho_ten: string; trang_thai: "Nghỉ việc" | "Đang làm việc" | "Thử việc" | "Nghỉ phép"; anh_dai_dien?: string | null | undefined; }'.
+server/permissions/nhan-vien-fields.test.ts(65,22): error TS2339: Property 'chuc_vu_id' does not exist on type '{ ho_ten: string; trang_thai: "Nghỉ việc" | "Đang làm việc" | "Thử việc" | "Nghỉ phép"; anh_dai_dien?: string | null | undefined; }'.
+server/permissions/nhan-vien-fields.test.ts(66,23): error TS2339: Property 'cap_bac' does not exist on type 'Employee'.
+views/Login.tsx(19,36): error TS2307: Cannot find module '@/lib/validation/login-name' or its corresponding type declarations.
+views/Login.tsx(89,7): error TS2353: Object literal may only specify known properties, and 'username' does not exist in type 'LoginWithUsernameInput'.
+views/Profile.tsx(25,3): error TS2305: Module '"@/features/he-thong/nhan-vien/core/constants"' has no exported member 'GENDER_BADGE_CONFIG'.
+views/Profile.tsx(28,43): error TS2307: Cannot find module '@/features/he-thong/nhan-vien/utils/build-employee-position-options' or its corresponding type declarations.
+views/Profile.tsx(51,38): error TS2339: Property 'email' does not exist on type 'Employee'.
+views/Profile.tsx(136,41): error TS2339: Property 'email' does not exist on type 'Employee'.
+views/Profile.tsx(138,44): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+views/Profile.tsx(160,37): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+views/Profile.tsx(279,30): error TS2339: Property 'so_dien_thoai' does not exist on type 'Employee'.
+views/Profile.tsx(282,61): error TS2339: Property 'so_dien_thoai' does not exist on type 'Employee'.
+views/Profile.tsx(285,30): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+views/Profile.tsx(288,61): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+views/Profile.tsx(291,30): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+views/Profile.tsx(294,61): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+views/Profile.tsx(331,78): error TS2339: Property 'gioi_tinh' does not exist on type 'Employee'.
+views/Profile.tsx(331,113): error TS2339: Property 'gioi_tinh' does not exist on type 'Employee'.
+views/Profile.tsx(338,80): error TS2339: Property 'ten_chuc_vu' does not exist on type 'Employee'.
+views/Profile.tsx(339,82): error TS2339: Property 'ten_phong_ban' does not exist on type 'Employee'.
+views/Profile.tsx(340,103): error TS2339: Property 'cap_bac' does not exist on type 'Employee'.
+views/Profile.tsx(347,81): error TS2339: Property 'email' does not exist on type 'Employee'.
+views/Profile.tsx(348,77): error TS2339: Property 'so_dien_thoai' does not exist on type 'Employee'.
+views/Profile.tsx(349,81): error TS2339: Property 'ten_dang_nhap' does not exist on type 'Employee'.
+views/Profile.tsx(353,18): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+views/Profile.tsx(353,33): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.
+views/Profile.tsx(356,83): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+views/Profile.tsx(356,108): error TS2339: Property 'tg_tao' does not exist on type 'Employee'.
+views/Profile.tsx(357,59): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.
+views/Profile.tsx(357,89): error TS2339: Property 'tg_cap_nhat' does not exist on type 'Employee'.

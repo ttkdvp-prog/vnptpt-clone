@@ -22,7 +22,7 @@ export interface PermissionFunction {
 export const PERMISSION_ACTIONS = ['view', 'create', 'update', 'delete', 'admin', 'all'] as const;
 export type PermissionActionType = (typeof PERMISSION_ACTIONS)[number];
 
-/** Nhóm Hệ thống + Kinh doanh — khớp dashboard và route thực tế */
+/** Nhóm Hệ thống — khớp dashboard và route thực tế */
 export const PERMISSION_FUNCTIONS: PermissionFunction[] = [
   {
     id: 'he-thong',
@@ -33,8 +33,6 @@ export const PERMISSION_FUNCTIONS: PermissionFunction[] = [
         groupTitleKey: 'permission.matrix.systemGroup',
         modules: [
           { id: 'he-thong/nhan-vien', nameKey: 'permission.module.employeeList' },
-          { id: 'he-thong/phong-ban', nameKey: 'permission.module.departmentChart' },
-          { id: 'he-thong/chuc-vu', nameKey: 'permission.module.positionRole' },
           { id: 'he-thong/thong-tin-cong-ty', nameKey: 'permission.module.companyInfo' },
           { id: 'he-thong/phan-quyen', nameKey: 'permission.module.permission' },
         ],
@@ -42,92 +40,15 @@ export const PERMISSION_FUNCTIONS: PermissionFunction[] = [
     ],
   },
   {
-    id: 'kinh-doanh',
-    nameKey: 'nav.business',
-    color: 'emerald',
+    id: 'cong-viec',
+    nameKey: 'nav.workItems',
+    color: 'violet',
     groups: [
       {
-        groupTitleKey: 'page.businessDashboard.customerGroup',
+        groupTitleKey: 'permission.matrix.workGroup',
         modules: [
-          {
-            id: 'kinh-doanh/khach-hang',
-            nameKey: 'permission.module.customers',
-          },
-          {
-            id: 'kinh-doanh/nguoi-lien-he',
-            nameKey: 'permission.module.contacts',
-          },
-          {
-            id: 'kinh-doanh/thiet-lap-khach-hang',
-            nameKey: 'permission.module.customerSettings',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'san-xuat',
-    nameKey: 'nav.production',
-    color: 'cyan',
-    groups: [
-      {
-        groupTitleKey: 'page.productionDashboard.productionInfoGroup',
-        modules: [
-          {
-            id: 'san-xuat/danh-sach-market-in',
-            nameKey: 'permission.module.printMarkets',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'hanh-chinh',
-    nameKey: 'nav.adminOps',
-    color: 'amber',
-    groups: [
-      {
-        groupTitleKey: 'page.adminOpsDashboard.payrollGroup',
-        modules: [
-          {
-            id: 'hanh-chinh/phieu-hanh-chinh',
-            nameKey: 'permission.module.adminForms',
-          },
-          {
-            id: 'hanh-chinh/thiet-lap-cong-luong',
-            nameKey: 'permission.module.payrollSettings',
-          },
-        ],
-      },
-      {
-        groupTitleKey: 'page.adminOpsDashboard.documentGroup',
-        modules: [
-          {
-            id: 'hanh-chinh/danh-sach-tai-lieu',
-            nameKey: 'permission.module.documentList',
-          },
-          {
-            id: 'hanh-chinh/thiet-lap-tai-lieu',
-            nameKey: 'permission.module.documentSettings',
-          },
-        ],
-      },
-      {
-        groupTitleKey: 'page.adminOpsDashboard.contractDecisionGroup',
-        modules: [
-          {
-            id: 'hanh-chinh/hop-dong',
-            nameKey: 'permission.module.contract',
-          },
-        ],
-      },
-      {
-        groupTitleKey: 'page.adminOpsDashboard.otherGroup',
-        modules: [
-          {
-            id: 'hanh-chinh/thong-bao',
-            nameKey: 'permission.module.announcement',
-          },
+          { id: 'cong-viec/tai-lieu', nameKey: 'permission.module.taiLieu' },
+          { id: 'cong-viec/danh-sach-cong-viec', nameKey: 'permission.module.congViec' },
         ],
       },
     ],

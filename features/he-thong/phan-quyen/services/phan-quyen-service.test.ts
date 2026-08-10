@@ -27,7 +27,7 @@ describe('getPhanQuyenByModule', () => {
   it('returns distinct modules for same vai_tro', async () => {
     const { getPhanQuyenByModule } = await import('./phan-quyen-service');
     const employeeRows = await getPhanQuyenByModule('he-thong/nhan-vien', ['pos-1']);
-    const deptRows = await getPhanQuyenByModule('he-thong/phong-ban', ['pos-1']);
+    const deptRows = await getPhanQuyenByModule('he-thong/thong-tin-cong-ty', ['pos-1']);
     expect(employeeRows.length).toBeGreaterThan(0);
     expect(deptRows.length).toBeGreaterThan(0);
     expect(employeeRows[0]?.module_key).not.toBe(deptRows[0]?.module_key);

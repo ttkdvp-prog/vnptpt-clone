@@ -29,7 +29,13 @@ export interface DbNhanVien {
   ho_va_ten: string;
   hinh_anh: string | null;
   trang_thai: string;
+  /** Text tự do (chức danh) — không phải khóa ngoại, không có bảng tra. */
+  id_chuc_vu?: string | null;
+  /** Text tự do (tên tổ/phòng) — không phải khóa ngoại, không có bảng tra. */
+  id_phong_ban?: string | null;
   must_change_password?: boolean | null;
+  /** Cấp nhân viên — 'Trung tâm' | 'Tổ', cột tự do trong sheet. */
+  cap?: string | null;
 }
 
 export interface AppEmployee {
@@ -39,6 +45,9 @@ export interface AppEmployee {
   tai_khoan_dang_hoat_dong: boolean;
   trang_thai: string;
   anh_dai_dien?: string;
+  chuc_danh?: string | null;
+  to_phong?: string | null;
+  cap?: string | null;
 }
 
 export function mapEmployeeFromDb(row: DbNhanVien): AppEmployee {
@@ -50,6 +59,9 @@ export function mapEmployeeFromDb(row: DbNhanVien): AppEmployee {
     tai_khoan_dang_hoat_dong: trangThai !== 'Nghỉ việc',
     trang_thai: trangThai,
     anh_dai_dien: row.hinh_anh ?? undefined,
+    chuc_danh: row.id_chuc_vu ?? null,
+    to_phong: row.id_phong_ban ?? null,
+    cap: row.cap || null,
   };
 }
 

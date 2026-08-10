@@ -8,7 +8,7 @@ import { useNavigate, Link } from '@/lib/navigation';
 import * as m from 'framer-motion/m';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowRight, X, Eye, EyeOff } from 'lucide-react';
-import { isAuthRemembered, setAuthRemember, useAuthStore, useUIStore } from '@/store/useStore';
+import { isAuthRemembered, setAuthRemember, useAuthStore } from '@/store/useStore';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { toast } from 'sonner';
@@ -16,37 +16,34 @@ import { DIALOG_SIZE } from '@/lib/dialog-sizes';
 import { cn } from '@/lib/utils';
 import { loginWithUsername } from '@/lib/employee-auth/login-session';
 import { FORCE_CHANGE_PATH } from '@/components/auth/ProtectedRoute';
-import { normalizeLoginName } from '@/lib/validation/login-name';
 
 type LoginValues = {
-  username: string;
+  employeeId: string;
   password: string;
 };
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  const { companyInfo } = useUIStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const loginSchema = useMemo(() => z.object({
-    username: z
+    employeeId: z
       .string()
-      .min(1, txt('page.login.usernameRequired'))
-      .min(2, txt('page.login.usernameMin')),
+      .min(1, txt('page.login.usernameRequired')),
     password: z.string().min(6, txt('page.login.passwordMin')),
   }), []);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      employeeId: '',
       password: '',
     }
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library -- react-hook-form watch()
-  const formUsername = watch('username');
+  const formUsername = watch('employeeId');
 
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotAccount, setForgotAccount] = useState('');
@@ -86,7 +83,7 @@ const Login: React.FC = () => {
     setAuthRemember(rememberMe);
 
     const result = await loginWithUsername({
-      username: normalizeLoginName(data.username),
+      employeeId: data.employeeId.trim(),
       password: data.password,
       remember: rememberMe,
     });
@@ -128,8 +125,8 @@ const Login: React.FC = () => {
                 type="text"
                 autoComplete="username"
                 required
-                {...register('username')}
-                error={errors.username?.message}
+                {...register('employeeId')}
+                error={errors.employeeId?.message}
                 className="h-11 text-sm placeholder:text-sm placeholder:not-italic"
               />
             </div>
@@ -245,7 +242,7 @@ const Login: React.FC = () => {
       </m.div>
 
       <div className="absolute bottom-6 text-center text-xs text-muted-foreground w-full left-0 px-4">
-        {txt('page.login.copyright')} {companyInfo.companyName || txt('page.login.companyFallback')}. {txt('page.login.legal')}
+        {txt('page.login.copyright')} {txt('page.login.companyFallback')}. {txt('page.login.legal')}
       </div>
     </div>
   );

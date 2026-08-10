@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   const sidebarMenu = useFilteredSidebarMenu();
 
   const modules = sidebarMenu
-    .filter((entry) => entry.path !== '/' && entry.path !== '/tong-quan')
+    .filter((entry) => entry.path !== '/')
     .map((entry) => ({
     title: txt(entry.nameKey),
     description: entry.descriptionKey ? txt(entry.descriptionKey) : '',

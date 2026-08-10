@@ -11,13 +11,7 @@ import type { Employee } from '@/features/he-thong/nhan-vien/core/types';
 const baseEmployee: Employee = {
   id: '1',
   ho_ten: 'Test User',
-  email: 'test@company.com',
-  so_dien_thoai: '',
-  phong_ban_id: null,
-  chuc_vu_id: null,
-  gioi_tinh: 'Nam',
   trang_thai: 'Đang làm việc',
-  ten_dang_nhap: 'testuser',
   tai_khoan_dang_hoat_dong: true,
 };
 

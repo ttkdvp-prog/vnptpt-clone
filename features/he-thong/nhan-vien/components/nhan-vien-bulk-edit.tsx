@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { txt } from '@/lib/text';
 import { ICON_SIZE } from '@/lib/icon-sizes';
 import { fieldIcon } from '@/lib/field-icon';
@@ -8,24 +8,16 @@ import GenericDrawer from '@/components/shared/GenericDrawer';
 import FormDrawerFooter from '@/components/shared/FormDrawerFooter';
 import FormSection from '@/components/shared/FormSection';
 import Combobox from '@/components/ui/Combobox';
-import { useDepartments } from '@/features/he-thong/phong-ban/hooks/use-phong-ban';
-import { useActivePositions } from '@/features/he-thong/chuc-vu/hooks/use-chuc-vu';
 import { getAvatarUrl } from '@/lib/utils';
 import { STATUS_OPTIONS } from '../core/constants';
 import { EMPLOYEE_FIELD_ICONS } from '../core/employee-field-icons';
 import { useBulkUpdateEmployees } from '../hooks/use-nhan-vien';
 import { useConfirmStore } from '@/store/useConfirmStore';
 import { Employee } from '../core/types';
-import {
-  buildEmployeePositionComboboxOptions,
-  getDepartmentIdForPosition,
-} from '../utils/build-employee-position-options';
 
 const BULK_EDIT_FORM_ID = 'employee-bulk-edit-form';
 
 export interface BulkEditFields {
-  phong_ban_id?: string;
-  chuc_vu_id?: string;
   trang_thai?: string;
 }
 
@@ -39,17 +31,11 @@ const BulkEditSheet: React.FC<Props> = ({ selectedEmployees, onClose, onSuccess 
   const [fields, setFields] = useState<BulkEditFields>({});
   const [enabledFields, setEnabledFields] = useState<Set<keyof BulkEditFields>>(new Set());
 
-  const { data: departments = [] } = useDepartments();
-  const { data: positions = [] } = useActivePositions();
   const bulkMutation = useBulkUpdateEmployees(() => {
     onSuccess();
     onClose();
   });
 
-  const positionOptions = useMemo(
-    () => buildEmployeePositionComboboxOptions(departments, positions),
-    [departments, positions],
-  );
   const statusOptions = STATUS_OPTIONS.map(s => ({ value: String(s.value), label: s.label }));
 
   const toggleField = (field: keyof BulkEditFields) => {
@@ -58,9 +44,6 @@ const BulkEditSheet: React.FC<Props> = ({ selectedEmployees, onClose, onSuccess 
       next.delete(field);
       const nextFields = { ...fields };
       delete nextFields[field];
-      if (field === 'chuc_vu_id') {
-        delete nextFields.phong_ban_id;
-      }
       setFields(nextFields);
     } else {
       next.add(field);
@@ -73,15 +56,10 @@ const BulkEditSheet: React.FC<Props> = ({ selectedEmployees, onClose, onSuccess 
     const ids = selectedEmployees.map(emp => emp.id);
     const payload: Partial<BulkEditFields> = {};
     enabledFields.forEach(key => {
-      if (key === 'phong_ban_id') return;
       if (fields[key] !== undefined && fields[key] !== '') {
         payload[key] = fields[key] as BulkEditFields[typeof key];
       }
     });
-    if (payload.chuc_vu_id) {
-      const deptId = getDepartmentIdForPosition(positions, payload.chuc_vu_id);
-      if (deptId) payload.phong_ban_id = deptId;
-    }
     if (Object.keys(payload).length === 0) return;
     useConfirmStore.getState().confirm({
       title: txt('employee.bulk.confirmTitle'),
@@ -92,7 +70,6 @@ const BulkEditSheet: React.FC<Props> = ({ selectedEmployees, onClose, onSuccess 
   };
 
   const hasChanges = enabledFields.size > 0 && Array.from(enabledFields).some(k => {
-    if (k === 'phong_ban_id') return false;
     return fields[k] !== undefined && fields[k] !== '';
   });
 
@@ -151,30 +128,6 @@ const BulkEditSheet: React.FC<Props> = ({ selectedEmployees, onClose, onSuccess 
 
         <FormSection title={txt('employee.bulk.workSection')} icon={<Briefcase size={ICON_SIZE.compact} />}>
           <div className="space-y-4">
-            <div className="space-y-2">
-              {renderFieldToggle('chuc_vu_id', txt('employee.bulk.changePosition'))}
-              {enabledFields.has('chuc_vu_id') && (
-                <Combobox
-                  label={txt('employee.position')}
-                  options={positionOptions}
-                  value={fields.chuc_vu_id || ''}
-                  onChange={(val) => {
-                    const deptId = getDepartmentIdForPosition(positions, val);
-                    setFields((prev) => ({
-                      ...prev,
-                      chuc_vu_id: String(val),
-                      ...(deptId ? { phong_ban_id: deptId } : {}),
-                    }));
-                  }}
-                  placeholder={txt('employee.form.positionPlaceholder')}
-                  icon={fieldIcon(EMPLOYEE_FIELD_ICONS.chuc_vu_id)}
-                  dropdownInPortal
-                />
-              )}
-              {enabledFields.has('chuc_vu_id') && (
-                <p className="text-xs text-muted-foreground">{txt('employee.form.departmentAutoHint')}</p>
-              )}
-            </div>
             <div className="space-y-2">
               {renderFieldToggle('trang_thai', txt('employee.bulk.changeStatus'))}
               {enabledFields.has('trang_thai') && (

@@ -3,22 +3,14 @@ export interface User {
   /** he_thong_nhan_vien.id — business entity id */
   employee_id?: string;
   email: string;
-  /** Login username (local part), separate from work email */
-  ten_dang_nhap?: string;
   full_name?: string;
   avatar_url?: string;
   role: 'admin' | 'user';
   created_at: string;
-  /** Id phòng ban (để tự chọn phòng trong Chức năng nhiệm vụ, v.v.) */
-  id_phong_ban?: string | null;
-  /** Id chức vụ (để lọc khóa mở đăng ký theo phân quyền đào tạo) */
-  id_chuc_vu?: string[] | null;
   /** HR tạo MK tạm — bắt đổi lần đầu đăng nhập */
   must_change_password?: boolean;
   /** false khi nghỉ việc / admin vô hiệu hóa */
   tai_khoan_dang_hoat_dong?: boolean;
-  /** Cấp bậc từ Postgres (API mode) — cap_bac=1 → super */
-  cap_bac?: number | null;
 }
 
 export interface AuthState {

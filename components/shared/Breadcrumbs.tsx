@@ -11,89 +11,17 @@ interface RouteConfig {
 
 const getRouteConfig = (t: TFunction): Record<string, RouteConfig> => ({
   '/': { label: t('breadcrumb.home') },
-  '/tong-quan': { label: t('breadcrumb.overview'), parentPath: '/' },
-  '/tong-quan/tv': { label: t('breadcrumb.liveTv'), parentPath: '/tong-quan' },
   '/thong-tin-ban-quyen': { label: t('breadcrumb.licenseInfo'), parentPath: '/' },
-  '/hanh-chinh': { label: t('breadcrumb.adminOps'), parentPath: '/' },
-  '/hanh-chinh/phieu-hanh-chinh': {
-    label: t('breadcrumb.adminForm'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/thong-ke-phieu-hanh-chinh': {
-    label: t('breadcrumb.adminFormStats'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/cham-diem-kpi': {
-    label: t('breadcrumb.kpiScoring'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/bang-cong': {
-    label: t('breadcrumb.timesheet'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/bang-luong': {
-    label: t('breadcrumb.payroll'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/thiet-lap-cong-luong': {
-    label: t('breadcrumb.payrollSettings'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/danh-sach-tai-lieu': {
-    label: t('breadcrumb.documentList'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/thong-ke-tai-lieu': {
-    label: t('breadcrumb.documentStats'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/thiet-lap-tai-lieu': {
-    label: t('breadcrumb.documentSettings'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/hop-dong': {
-    label: t('breadcrumb.contract'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/quyet-dinh': {
-    label: t('breadcrumb.decision'),
-    parentPath: '/hanh-chinh',
-  },
-  '/hanh-chinh/thong-bao': {
-    label: t('breadcrumb.announcement'),
-    parentPath: '/hanh-chinh',
-  },
-  '/san-xuat': { label: t('breadcrumb.production'), parentPath: '/' },
-
-  '/san-xuat/danh-sach-market-in': {
-    label: t('breadcrumb.printMarketList'),
-    parentPath: '/san-xuat',
-  },
-  '/san-xuat/thong-so-van-hanh-may-thoi': {
-    label: t('breadcrumb.blowingMachineParams'),
-    parentPath: '/san-xuat',
-  },
-  '/san-xuat/thong-so-van-hanh-may-cat': {
-    label: t('breadcrumb.cuttingMachineParams'),
-    parentPath: '/san-xuat',
-  },
-  '/san-xuat/cong-thuc-tron-hat': {
-    label: t('breadcrumb.pelletMixingFormula'),
-    parentPath: '/san-xuat',
-  },
-  '/kinh-doanh': { label: t('breadcrumb.business'), parentPath: '/' },
-  '/kinh-doanh/khach-hang': { label: t('breadcrumb.customerList'), parentPath: '/kinh-doanh' },
-  '/kinh-doanh/nguoi-lien-he': { label: t('breadcrumb.contact'), parentPath: '/kinh-doanh' },
-  '/kinh-doanh/thiet-lap-khach-hang': {
-    label: t('breadcrumb.customerSettings'),
-    parentPath: '/kinh-doanh',
-  },
   '/he-thong': { label: t('breadcrumb.systemAdmin'), parentPath: '/' },
   '/he-thong/nhan-vien': { label: t('breadcrumb.employee'), parentPath: '/he-thong' },
-  '/he-thong/phong-ban': { label: t('breadcrumb.department'), parentPath: '/he-thong' },
-  '/he-thong/chuc-vu': { label: t('breadcrumb.position'), parentPath: '/he-thong' },
   '/he-thong/thong-tin-cong-ty': { label: t('breadcrumb.companyInfo'), parentPath: '/he-thong' },
   '/he-thong/phan-quyen': { label: t('breadcrumb.permission'), parentPath: '/he-thong' },
+  '/cong-viec': { label: t('breadcrumb.workItems'), parentPath: '/' },
+  '/cong-viec/danh-sach-cong-viec': { label: t('breadcrumb.task'), parentPath: '/cong-viec' },
+  '/cong-viec/nhiem-vu': { label: t('breadcrumb.assignment'), parentPath: '/cong-viec' },
+  '/cong-viec/thong-ke-cong-viec': { label: t('breadcrumb.taskStats'), parentPath: '/cong-viec' },
+  '/cong-viec/danh-sach-tai-lieu': { label: t('breadcrumb.documentList'), parentPath: '/cong-viec' },
+  '/cong-viec/thong-ke-tai-lieu': { label: t('breadcrumb.documentStats'), parentPath: '/cong-viec' },
   '/ho-so': { label: t('breadcrumb.profile'), parentPath: '/' },
   '/thong-bao': { label: t('notification.title'), parentPath: '/' },
 });

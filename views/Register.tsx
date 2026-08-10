@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from '@/lib/navigation';
 import * as m from 'framer-motion/m';
 import { ArrowRight } from 'lucide-react';
-import { useUIStore } from '@/store/useStore';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { toast } from 'sonner';
@@ -20,7 +19,6 @@ type RegisterValues = {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { companyInfo } = useUIStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const registerSchema = useMemo(
@@ -137,7 +135,7 @@ const Register: React.FC = () => {
       </m.div>
 
       <div className="absolute bottom-6 text-center text-xs text-muted-foreground w-full left-0 px-4">
-        {txt('page.login.copyright')} {companyInfo.companyName || txt('page.login.companyFallback')}. {txt('page.login.legal')}
+        {txt('page.login.copyright')} {txt('page.login.companyFallback')}. {txt('page.login.legal')}
       </div>
     </div>
   );

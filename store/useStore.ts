@@ -94,7 +94,6 @@ export const useAuthStore = create<AuthState>()(
               full_name: 'Lê Minh Công',
               role: 'admin',
               created_at: new Date().toISOString(),
-              id_phong_ban: 'dep-7',
             };
             state.isAuthenticated = true;
           }
@@ -103,7 +102,6 @@ export const useAuthStore = create<AuthState>()(
           state.user = {
             ...state.user,
             id: 'emp-000',
-            id_phong_ban: 'dep-7',
             role: 'admin',
           };
         }
@@ -198,8 +196,16 @@ export const useUIStore = create<UIState>()(
       setSkipRedirectConfirmation: (skip) => set({ skipRedirectConfirmation: skip }),
     }),
     {
-      name: 'ui-storage', // Persist UI settings including branding
+      name: 'ui-storage',
       version: 3,
+      // companyInfo KHÔNG persist: phải luôn lấy trực tiếp từ Thông tin công ty
+      // (CompanyBrandingSynchronizer) mỗi lần tải trang — nếu cache localStorage,
+      // rehydrate của zustand chạy async có thể hoàn tất SAU khi đã fetch xong tên
+      // mới, ghi đè state và làm tên app "nhảy" về giá trị cache cũ/mặc định.
+      partialize: (state) => {
+        const { companyInfo: _companyInfo, ...rest } = state;
+        return rest;
+      },
       migrate: (persisted: unknown, version: number) => {
         if (!persisted || typeof persisted !== 'object') return persisted as UIState;
         const state = persisted as Record<string, unknown> & Partial<ThemeState> & {

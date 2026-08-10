@@ -15,27 +15,18 @@ import { toast } from 'sonner';
 import * as m from 'framer-motion/m';
 import { AnimatePresence } from 'framer-motion';
 import {
-  User as UserIcon, Mail, Shield, Calendar,
+  User as UserIcon, Shield, Calendar,
   Key, X, Eye, EyeOff,
-  Phone, Briefcase, Building2, AtSign,
 } from 'lucide-react';
-import { cn, formatDate, getAvatarUrl } from '@/lib/utils';
+import { cn, getAvatarUrl } from '@/lib/utils';
 import { FORM_CONTROL_BASE, FORM_CONTROL_PLACEHOLDER } from '@/lib/constants/form-control';
-import {
-  GENDER_BADGE_CONFIG,
-  STATUS_BADGE_CONFIG,
-} from '@/features/he-thong/nhan-vien/core/constants';
-import { formatEmployeeCapBacLabel } from '@/features/he-thong/nhan-vien/utils/build-employee-position-options';
+import { STATUS_BADGE_CONFIG } from '@/features/he-thong/nhan-vien/core/constants';
 import { canEditProfile } from '@/lib/profile-permissions';
 import type { Employee } from '@/features/he-thong/nhan-vien/core/types';
 import { useEmployees } from '@/features/he-thong/nhan-vien/hooks/use-nhan-vien';
 import { useUpdateEmployee } from '@/features/he-thong/nhan-vien/hooks/use-nhan-vien';
 import { employeeToFormValues } from '@/features/he-thong/nhan-vien/utils/employee-to-form';
-import {
-  changePassword,
-  resolveUserAuthEmail,
-  resolveUserLoginName,
-} from '@/lib/employee-auth/change-password';
+import { changePassword } from '@/lib/employee-auth/change-password';
 
 const Profile: React.FC = () => {
   const { user, login, patchUser } = useAuthStore();
@@ -47,9 +38,6 @@ const Profile: React.FC = () => {
     if (user.employee_id) {
       return employees.find((e) => e.id === user.employee_id) ?? null;
     }
-    if (user.email) {
-      return employees.find((e) => e.email === user.email) ?? null;
-    }
     return null;
   }, [employees, user]);
 
@@ -58,14 +46,9 @@ const Profile: React.FC = () => {
     return {
       id: '',
       ho_ten: user?.full_name ?? '',
-      email: user?.email ?? '',
-      so_dien_thoai: '',
-      phong_ban_id: null,
-      chuc_vu_id: null,
-      gioi_tinh: 'Khác',
       trang_thai: 'Đang làm việc',
     };
-  }, [currentEmployee, user?.full_name, user?.email]);
+  }, [currentEmployee, user?.full_name]);
 
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
@@ -105,15 +88,14 @@ const Profile: React.FC = () => {
       return;
     }
     if (!user) return;
-    const loginName = resolveUserLoginName(user);
-    if (!loginName) {
-      setPasswordError('Chưa có tên đăng nhập');
+    const employeeId = user.employee_id ?? '';
+    if (!employeeId) {
+      setPasswordError('Chưa có mã nhân viên');
       return;
     }
     setPasswordSubmitting(true);
     const result = await changePassword({
-      loginName,
-      authEmail: resolveUserAuthEmail(user),
+      employeeId,
       currentPassword: current,
       newPassword: newPw,
     });
@@ -133,9 +115,7 @@ const Profile: React.FC = () => {
   const editable = canEditProfile(user);
 
   const displayName = currentEmployee?.ho_ten ?? user?.full_name ?? '';
-  const displayEmail = currentEmployee?.email ?? user?.email ?? '';
   const displayAvatar = currentEmployee?.anh_dai_dien ?? user?.avatar_url ?? null;
-  const displayJoinedAt = currentEmployee?.tg_tao ?? user?.created_at;
 
   const handleAvatarChange = async (value: string | null) => {
     if (!user || !editable) return;
@@ -157,7 +137,6 @@ const Profile: React.FC = () => {
     toast.success(txt('page.profile.avatarUpdateSuccess'));
   };
 
-  const positionLabel = displayData.ten_chuc_vu?.trim() || null;
   const avatarAlt = displayName
     ? txt('page.profile.avatarAlt', { name: displayName })
     : txt('page.profile.avatarAltFallback');
@@ -260,11 +239,6 @@ const Profile: React.FC = () => {
                 </div>
                 <div className="pb-1 sm:pb-0 sm:mt-3 min-w-0">
                   <h3 className="font-bold text-base sm:text-lg text-foreground leading-tight truncate">{displayName}</h3>
-                  {positionLabel ? (
-                    <span className="inline-block mt-1 sm:mt-1.5 bg-primary/10 text-primary px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-semibold">
-                      {positionLabel}
-                    </span>
-                  ) : null}
                 </div>
               </div>
             </div>
@@ -272,32 +246,6 @@ const Profile: React.FC = () => {
             {/* Quick info – 2-col grid on mobile, stacked on desktop */}
             <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-5">
               <div className="grid grid-cols-2 sm:grid-cols-1 gap-2.5 sm:gap-3 text-xs sm:text-sm">
-                <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground min-w-0">
-                  <Mail size={14} className="shrink-0" />
-                  <span className="truncate">{displayEmail}</span>
-                </div>
-                {displayData.so_dien_thoai && (
-                  <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
-                    <Phone size={14} className="shrink-0" />
-                    <span className="truncate">{displayData.so_dien_thoai}</span>
-                  </div>
-                )}
-                {displayData.ten_phong_ban && (
-                  <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
-                    <Building2 size={14} className="shrink-0" />
-                    <span className="truncate">{displayData.ten_phong_ban}</span>
-                  </div>
-                )}
-                {displayData.ten_chuc_vu && (
-                  <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
-                    <Briefcase size={14} className="shrink-0" />
-                    <span className="truncate">{displayData.ten_chuc_vu}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
-                  <Calendar size={14} className="shrink-0" />
-                  <span className="truncate">{txt('page.profile.joinedAt')} {formatDate(displayJoinedAt)}</span>
-                </div>
                 <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
                   <Shield size={14} className="shrink-0" />
                   <span>{txt('page.profile.verified')}</span>
@@ -328,36 +276,10 @@ const Profile: React.FC = () => {
           <DetailSection title={txt('employee.detail.personalInfo')} icon={<UserIcon size={14} />} variant="primary">
             <DetailFieldGrid cols={3}>
               <DetailField label={txt('employee.detail.fullName')} value={data.ho_ten} icon={<UserIcon size={12} />} emptyText={emptyText} />
-              <DetailField label={txt('employee.detail.gender')} value={data.gioi_tinh ? <EnumBadge value={data.gioi_tinh} config={GENDER_BADGE_CONFIG} /> : undefined} icon={<UserIcon size={12} />} emptyText={emptyText} />
               <DetailField label="ID" value={data.id || undefined} emptyText={emptyText} />
-            </DetailFieldGrid>
-          </DetailSection>
-
-          <DetailSection title={txt('employee.detail.workInfo')} icon={<Briefcase size={14} />} variant="primary">
-            <DetailFieldGrid cols={3}>
-              <DetailField label={txt('employee.detail.position')} value={data.ten_chuc_vu} icon={<Briefcase size={12} />} emptyText={emptyText} />
-              <DetailField label={txt('employee.detail.department')} value={data.ten_phong_ban} icon={<Building2 size={12} />} emptyText={emptyText} />
-              <DetailField label={txt('employee.detail.level')} value={formatEmployeeCapBacLabel(data.cap_bac) || undefined} emptyText={emptyText} />
               <DetailField label={txt('employee.status')} value={data.trang_thai ? <EnumBadge value={data.trang_thai} config={STATUS_BADGE_CONFIG} /> : undefined} emptyText={emptyText} />
             </DetailFieldGrid>
           </DetailSection>
-
-          <DetailSection title={txt('employee.detail.contactInfo')} icon={<Phone size={14} />} variant="primary">
-            <DetailFieldGrid cols={3}>
-              <DetailField label={txt('employee.detail.workEmail')} value={data.email} icon={<Mail size={12} />} emptyText={emptyText} />
-              <DetailField label={txt('employee.detail.phone')} value={data.so_dien_thoai} icon={<Phone size={12} />} emptyText={emptyText} />
-              <DetailField label={txt('employee.detail.loginName')} value={data.ten_dang_nhap ?? undefined} icon={<AtSign size={12} />} emptyText={emptyText} />
-            </DetailFieldGrid>
-          </DetailSection>
-
-          {(data.tg_tao || data.tg_cap_nhat) && (
-            <DetailSection title={txt('employee.detail.systemInfo')} icon={<Calendar size={14} />} variant="primary">
-              <DetailFieldGrid cols={3}>
-                <DetailField label={txt('employee.store.createdCol')} value={data.tg_tao ? formatDate(data.tg_tao) : undefined} icon={<Calendar size={12} />} emptyText={emptyText} />
-                <DetailField label="Cập nhật" value={data.tg_cap_nhat ? formatDate(data.tg_cap_nhat) : undefined} icon={<Calendar size={12} />} emptyText={emptyText} />
-              </DetailFieldGrid>
-            </DetailSection>
-          )}
         </m.div>
       </div>
       </div>

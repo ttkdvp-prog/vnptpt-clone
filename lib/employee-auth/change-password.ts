@@ -1,8 +1,6 @@
-import { loginNameToAuthEmail } from '@/lib/auth-email';
 import { isApi, isMock } from '@/lib/data/config';
 import { ApiError } from '@/lib/api/client';
 import { apiChangePassword, apiSetPassword } from '@/lib/api/he-thong';
-import { normalizeLoginName } from '@/lib/validation/login-name';
 import {
   setMockPassword,
   verifyMockPassword,
@@ -10,11 +8,9 @@ import {
 import { txt } from '@/lib/text';
 
 export type ChangePasswordInput = {
-  loginName: string;
+  employeeId: string;
   currentPassword: string;
   newPassword: string;
-  /** Auth email; defaults to loginNameToAuthEmail(loginName). */
-  authEmail?: string;
 };
 
 export type ChangePasswordResult =
@@ -36,16 +32,11 @@ function mapApiPasswordError(err: unknown): string {
 export async function changePassword(
   input: ChangePasswordInput,
 ): Promise<ChangePasswordResult> {
-  const loginName = normalizeLoginName(input.loginName);
-  if (!loginName) {
-    return { ok: false, error: txt('page.profile.noLoginName') };
-  }
-
   if (isMock()) {
-    if (!verifyMockPassword(loginName, input.currentPassword)) {
+    if (!verifyMockPassword(input.employeeId, input.currentPassword)) {
       return { ok: false, error: txt('page.profile.wrongCurrentPassword') };
     }
-    setMockPassword(loginName, input.newPassword);
+    setMockPassword(input.employeeId, input.newPassword);
     return { ok: true };
   }
 
@@ -64,11 +55,10 @@ export async function changePassword(
 /** First-login / HR reset: set new password without verifying the old one. */
 export async function setNewPasswordWithoutCurrent(
   newPassword: string,
-  loginName?: string,
+  employeeId?: string,
 ): Promise<ChangePasswordResult> {
   if (isMock()) {
-    const name = loginName ? normalizeLoginName(loginName) : '';
-    if (name) setMockPassword(name, newPassword);
+    if (employeeId) setMockPassword(employeeId, newPassword);
     return { ok: true };
   }
 
@@ -82,27 +72,4 @@ export async function setNewPasswordWithoutCurrent(
   }
 
   return { ok: false, error: txt('page.profile.dataSourceUnsupported') };
-}
-
-/** Resolve auth email from session user fields. */
-export function resolveUserAuthEmail(user: {
-  email?: string | null;
-  ten_dang_nhap?: string | null;
-}): string {
-  if (user.ten_dang_nhap?.trim()) {
-    return loginNameToAuthEmail(user.ten_dang_nhap);
-  }
-  return user.email?.trim() ?? '';
-}
-
-export function resolveUserLoginName(user: {
-  email?: string | null;
-  ten_dang_nhap?: string | null;
-}): string {
-  if (user.ten_dang_nhap?.trim()) {
-    return normalizeLoginName(user.ten_dang_nhap);
-  }
-  const email = user.email?.trim() ?? '';
-  if (!email) return '';
-  return normalizeLoginName(email.split('@')[0] ?? '');
 }

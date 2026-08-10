@@ -20,8 +20,9 @@ import { rowToTsv } from '@/lib/table-clipboard';
 const VIRTUAL_THRESHOLD = 50;
 /** Chiều rộng cột checkbox (px) */
 const TABLE_CHECKBOX_WIDTH = 44;
-/** Chiều rộng cột Thao tác (px) — Sửa + menu ⋮ */
-const TABLE_ACTION_COLUMN_WIDTH = 92;
+/** Chiều rộng cột Thao tác (px) — Sửa + menu ⋮. Cố định tuyệt đối (min=max=width) để
+ *  không bị table-layout: fixed giãn ra khi tổng độ rộng cột dữ liệu nhỏ hơn bề rộng bảng. */
+const TABLE_ACTION_COLUMN_WIDTH = 76;
 
 interface GenericTableProps<T> {
   data: T[];
@@ -406,7 +407,7 @@ function GenericTable<T>({
               {dataColumns.map((col, index) => (
                 <col key={col.id} style={{ width: columnWidths[index] }} />
               ))}
-              <col style={{ width: TABLE_ACTION_COLUMN_WIDTH }} />
+              <col style={{ width: TABLE_ACTION_COLUMN_WIDTH, minWidth: TABLE_ACTION_COLUMN_WIDTH, maxWidth: TABLE_ACTION_COLUMN_WIDTH }} />
             </colgroup>
             <thead className="sticky top-0 z-[2]">
               {renderSummaryRow && (
@@ -448,7 +449,7 @@ function GenericTable<T>({
                   })}
                   <th
                     className="sticky right-0 z-[3] px-3 py-1.5 bg-muted border-b border-l border-border/80 text-center"
-                    style={{ width: TABLE_ACTION_COLUMN_WIDTH }}
+                    style={{ width: TABLE_ACTION_COLUMN_WIDTH, minWidth: TABLE_ACTION_COLUMN_WIDTH, maxWidth: TABLE_ACTION_COLUMN_WIDTH }}
                   >
                     {renderSummaryRow ? renderSummaryRow('actions', data) : null}
                   </th>
@@ -557,7 +558,7 @@ function GenericTable<T>({
                     'sticky right-0 z-[3] px-3 bg-muted border-b border-l border-border text-center font-semibold text-foreground/80 text-xs',
                     headerPy,
                   )}
-                  style={{ width: TABLE_ACTION_COLUMN_WIDTH }}
+                  style={{ width: TABLE_ACTION_COLUMN_WIDTH, minWidth: TABLE_ACTION_COLUMN_WIDTH, maxWidth: TABLE_ACTION_COLUMN_WIDTH }}
                 >
                   Thao tác
                 </th>
@@ -657,6 +658,7 @@ function GenericTable<T>({
 
                             <td
                               className={`sticky right-0 z-[1] px-2 ${cellPy} border-l border-border/50 text-center ${stickyCellClass}`}
+                              style={{ width: TABLE_ACTION_COLUMN_WIDTH, minWidth: TABLE_ACTION_COLUMN_WIDTH, maxWidth: TABLE_ACTION_COLUMN_WIDTH }}
                               onClick={(e) => e.stopPropagation()}
                             >
                               {renderCell('actions', item)}

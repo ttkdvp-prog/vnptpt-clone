@@ -11,7 +11,6 @@ import {
 import { mapEmployeeFromDb, type DbNhanVien } from '../mappers';
 import {
   findEmployeeAuthById,
-  findEmployeeAuthByLogin,
   findEmployeePasswordHash,
   updateEmployeePassword,
   type EmployeeAuthCredential,
@@ -25,43 +24,29 @@ function toDbNhanVien(row: EmployeeAuthCredential): DbNhanVien {
     id: row.id,
     ho_va_ten: row.ho_va_ten,
     hinh_anh: row.hinh_anh,
-    email: row.email,
-    so_dien_thoai: row.so_dien_thoai,
-    gioi_tinh: row.gioi_tinh,
     trang_thai: row.trang_thai,
-    id_chuc_vu: row.id_chuc_vu,
-    id_phong_ban: row.id_phong_ban,
-    cap_bac: row.cap_bac,
-    tai_khoan: row.tai_khoan,
     must_change_password: row.must_change_password,
-    nguoi_tao: row.nguoi_tao,
-    tg_tao: row.tg_tao,
-    tg_cap_nhat: row.tg_cap_nhat,
-    ten_chuc_vu: row.chuc_vu?.ten_chuc_vu ?? null,
-    ten_phong_ban: row.phong_ban?.ten_phong_ban ?? null,
   };
 }
 
 authRoutes.post('/login', async (c) => {
   const body = await c.req.json().catch(() => ({}));
-  const taiKhoan = String(body.tai_khoan ?? body.username ?? '')
-    .trim()
-    .toLowerCase();
+  const employeeId = String(body.id ?? body.employee_id ?? '').trim();
   const password = String(body.password ?? '');
 
-  if (!taiKhoan || !password) {
-    return c.json({ error: 'Vui lòng nhập tài khoản và mật khẩu' }, 400);
+  if (!employeeId || !password) {
+    return c.json({ error: 'Vui lòng nhập mã nhân viên và mật khẩu' }, 400);
   }
 
-  const row = await findEmployeeAuthByLogin(taiKhoan);
+  const row = await findEmployeeAuthById(employeeId);
 
   if (!row) {
-    return c.json({ error: 'Tài khoản hoặc mật khẩu không đúng' }, 401);
+    return c.json({ error: 'Mã nhân viên hoặc mật khẩu không đúng' }, 401);
   }
 
   const ok = await bcrypt.compare(password, row.mat_khau);
   if (!ok) {
-    return c.json({ error: 'Tài khoản hoặc mật khẩu không đúng' }, 401);
+    return c.json({ error: 'Mã nhân viên hoặc mật khẩu không đúng' }, 401);
   }
 
   if (String(row.trang_thai).toUpperCase() === 'INACTIVE') {
@@ -69,11 +54,7 @@ authRoutes.post('/login', async (c) => {
   }
 
   const employee = mapEmployeeFromDb(toDbNhanVien(row));
-  const token = await signSessionToken({
-    employee_id: employee.id,
-    tai_khoan: employee.ten_dang_nhap ?? taiKhoan,
-    cap_bac: employee.cap_bac ?? null,
-  });
+  const token = await signSessionToken({ employee_id: employee.id });
   setSessionCookie(c, token);
 
   return c.json({
@@ -81,17 +62,13 @@ authRoutes.post('/login', async (c) => {
     user: {
       id: `api-${employee.id}`,
       employee_id: employee.id,
-      email: employee.email || `${employee.ten_dang_nhap}@local`,
-      ten_dang_nhap: employee.ten_dang_nhap,
+      email: `${employee.id}@local`,
       full_name: employee.ho_ten,
       avatar_url: employee.anh_dai_dien,
       role: 'user',
-      created_at: employee.tg_tao ?? new Date().toISOString(),
-      id_phong_ban: employee.phong_ban_id ?? undefined,
-      id_chuc_vu: employee.chuc_vu_id ? [employee.chuc_vu_id] : undefined,
+      created_at: new Date().toISOString(),
       must_change_password: employee.must_change_password,
       tai_khoan_dang_hoat_dong: employee.tai_khoan_dang_hoat_dong,
-      cap_bac: employee.cap_bac ?? null,
     },
     employee,
     mustChangePassword: employee.must_change_password,
@@ -109,7 +86,7 @@ authRoutes.get('/me', async (c) => {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  const row = await findEmployeeAuthById(Number(session.employee_id));
+  const row = await findEmployeeAuthById(session.employee_id);
 
   if (!row) {
     clearSessionCookie(c);
@@ -121,17 +98,13 @@ authRoutes.get('/me', async (c) => {
     user: {
       id: `api-${employee.id}`,
       employee_id: employee.id,
-      email: employee.email || `${employee.ten_dang_nhap}@local`,
-      ten_dang_nhap: employee.ten_dang_nhap,
+      email: `${employee.id}@local`,
       full_name: employee.ho_ten,
       avatar_url: employee.anh_dai_dien,
       role: 'user',
-      created_at: employee.tg_tao ?? new Date().toISOString(),
-      id_phong_ban: employee.phong_ban_id ?? undefined,
-      id_chuc_vu: employee.chuc_vu_id ? [employee.chuc_vu_id] : undefined,
+      created_at: new Date().toISOString(),
       must_change_password: employee.must_change_password,
       tai_khoan_dang_hoat_dong: employee.tai_khoan_dang_hoat_dong,
-      cap_bac: employee.cap_bac ?? null,
     },
     employee,
   });
@@ -153,8 +126,8 @@ authRoutes.post('/change-password', requireAuth, async (c) => {
     return c.json({ error: 'Mật khẩu mới phải khác mật khẩu hiện tại' }, 400);
   }
 
-  const employeeId = Number(session.employee_id);
-  if (!Number.isFinite(employeeId)) {
+  const employeeId = String(session.employee_id ?? '');
+  if (!employeeId) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
@@ -191,8 +164,8 @@ authRoutes.post('/set-password', requireAuth, async (c) => {
     return c.json({ error: `Mật khẩu mới phải có ít nhất ${MIN_PASSWORD_LENGTH} ký tự` }, 400);
   }
 
-  const employeeId = Number(session.employee_id);
-  if (!Number.isFinite(employeeId)) {
+  const employeeId = String(session.employee_id ?? '');
+  if (!employeeId) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 

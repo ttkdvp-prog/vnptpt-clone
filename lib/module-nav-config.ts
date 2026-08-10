@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
-import { Building, Briefcase, Shield, Users } from 'lucide-react';
+import { Building, Shield, Users } from 'lucide-react';
 import type { AppResource } from '@/lib/permissions';
+import { CONG_VIEC_MODULE_NAV_GROUPS } from '@/lib/cong-viec-nav-config';
 
 export interface SystemModuleNavItem {
   resource: AppResource;
@@ -21,22 +22,6 @@ export const SYSTEM_MODULE_NAV_GROUPS: SystemModuleNavGroup[] = [
   {
     groupTitleKey: 'page.systemDashboard.orgChartGroup',
     items: [
-      {
-        resource: 'departments',
-        path: '/he-thong/phong-ban',
-        titleKey: 'page.systemDashboard.department',
-        descriptionKey: 'page.systemDashboard.departmentDesc',
-        icon: Building,
-        color: 'bg-indigo-500',
-      },
-      {
-        resource: 'positions',
-        path: '/he-thong/chuc-vu',
-        titleKey: 'page.systemDashboard.position',
-        descriptionKey: 'page.systemDashboard.positionDesc',
-        icon: Briefcase,
-        color: 'bg-blue-500',
-      },
       {
         resource: 'employees',
         path: '/he-thong/nhan-vien',
@@ -74,18 +59,11 @@ const PATH_TO_RESOURCE = new Map<string, AppResource>([
   ...SYSTEM_MODULE_NAV_GROUPS.flatMap((g) =>
     g.items.map((item) => [item.path, item.resource] as const),
   ),
-  ['/kinh-doanh/thiet-lap-khach-hang', 'customerSettings'],
-  ['/kinh-doanh/khach-hang', 'customers'],
-  ['/kinh-doanh/nguoi-lien-he', 'contacts'],
-  ['/hanh-chinh/thiet-lap-tai-lieu', 'documentSettings'],
-  ['/hanh-chinh/thiet-lap-cong-luong', 'payrollSettings'],
-  ['/hanh-chinh/phieu-hanh-chinh', 'adminForms'],
-  ['/hanh-chinh/thong-ke-phieu-hanh-chinh', 'adminForms'],
-  ['/hanh-chinh/danh-sach-tai-lieu', 'documentList'],
-  ['/hanh-chinh/thong-ke-tai-lieu', 'documentList'],
-  ['/hanh-chinh/hop-dong', 'contracts'],
-  ['/hanh-chinh/thong-bao', 'announcements'],
-  ['/san-xuat/danh-sach-market-in', 'printMarkets'],
+  ...CONG_VIEC_MODULE_NAV_GROUPS.flatMap((g) =>
+    g.items
+      .filter((item) => item.resource)
+      .map((item) => [item.path, item.resource as AppResource] as const),
+  ),
 ]);
 
 export function getAppResourceForPath(path: string): AppResource | undefined {

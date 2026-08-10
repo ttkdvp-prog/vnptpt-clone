@@ -1,25 +1,18 @@
-import React, { memo, useMemo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { txt } from '@/lib/text';
-import { Phone, Briefcase, Building2, Mail, AtSign } from 'lucide-react';
 import { Employee } from '../core/types';
 import { useEmployeeStore } from '../store/useEmployeeStore';
 import { useShallow } from 'zustand/react/shallow';
 import type { ColumnConfig } from '@/store/createGenericStore';
-import { cn, formatDate, getAvatarUrl } from '@/lib/utils';
+import { cn, getAvatarUrl } from '@/lib/utils';
 import GenericTable from '@/components/shared/GenericTable';
 import { MobileListCard } from '@/components/shared/MobileListCard';
 import EnumBadge from '@/components/ui/EnumBadge';
-import { useDepartments } from '@/features/he-thong/phong-ban/hooks/use-phong-ban';
-import { usePositions } from '@/features/he-thong/chuc-vu/hooks/use-chuc-vu';
 import { useFilterCounts } from '../hooks/use-filter-counts';
-import { STATUS_OPTIONS } from '../core/constants';
+import { STATUS_OPTIONS, STATUS_BADGE_CONFIG } from '../core/constants';
 import { ColumnHeaderFilter } from '@/components/shared/column-header/ColumnHeaderFilter';
 import { ColumnHeaderSortMenu } from '@/components/shared/column-header/ColumnHeaderSortMenu';
 import { ColumnHeaderSearch } from '@/components/shared/column-header/ColumnHeaderSearch';
-import {
-    STATUS_BADGE_CONFIG,
-    GENDER_BADGE_CONFIG,
-} from '../core/constants';
 import { EmployeeTableRowActions } from './employee-table-row-actions';
 import { getEmployeeCellText } from '../utils/get-employee-cell-text';
 
@@ -74,22 +67,12 @@ const EmployeeTable = memo(function EmployeeTable({
       })),
     );
 
-    const { data: departments = [] } = useDepartments();
-    const { data: positions = [] } = usePositions();
-    const { deptCounts, posCounts, statusCounts } = useFilterCounts(
+    const { statusCounts } = useFilterCounts(
       employeesForFilterCounts,
       searchTerm,
       filters,
     );
 
-    const departmentOptions = useMemo(
-      () => departments.map((d) => ({ label: d.ten_phong_ban, value: d.id, count: deptCounts[d.id] || 0 })),
-      [departments, deptCounts],
-    );
-    const positionOptions = useMemo(
-      () => positions.map((p) => ({ label: p.ten_chuc_vu, value: p.id, count: posCounts[p.id] || 0 })),
-      [positions, posCounts],
-    );
     const statusOptions = useMemo(
       () => STATUS_OPTIONS.map((s) => ({
         label: s.label,
@@ -99,9 +82,6 @@ const EmployeeTable = memo(function EmployeeTable({
       [statusCounts],
     );
 
-    /**
-     * Phòng ban / Chức vụ / Trạng thái: một ô tìm (MultiSelect) + tick. Cột khác: sort + một ô tìm lọc theo text (`ColumnHeaderSortMenu`).
-     */
     const renderColumnHeaderAccessory = useCallback(
       (col: ColumnConfig) => {
         const cs = filters.columnSearch;
@@ -121,30 +101,6 @@ const EmployeeTable = memo(function EmployeeTable({
         );
 
         switch (col.id) {
-          case 'ten_phong_ban':
-            return (
-              <ColumnHeaderFilter
-                options={departmentOptions}
-                value={filters.phong_ban_id}
-                onChange={(v) => setFilter('phong_ban_id', v)}
-                ariaLabel={txt('employee.toolbar.department')}
-                sortColumnId="ten_phong_ban"
-                sort={sort}
-                setSort={setSort}
-              />
-            );
-          case 'ten_chuc_vu':
-            return (
-              <ColumnHeaderFilter
-                options={positionOptions}
-                value={filters.position}
-                onChange={(v) => setFilter('position', v)}
-                ariaLabel={txt('employee.toolbar.position')}
-                sortColumnId="ten_chuc_vu"
-                sort={sort}
-                setSort={setSort}
-              />
-            );
           case 'trang_thai':
             return (
               <ColumnHeaderFilter
@@ -170,7 +126,7 @@ const EmployeeTable = memo(function EmployeeTable({
             );
         }
       },
-      [departmentOptions, positionOptions, statusOptions, filters, setFilter, sort, setSort],
+      [statusOptions, filters, setFilter, sort, setSort],
     );
 
     const renderCell = useCallback((colId: string, item: Employee) => {
@@ -182,62 +138,12 @@ const EmployeeTable = memo(function EmployeeTable({
                         <span className="font-semibold text-foreground text-body-sm truncate">{item.ho_ten}</span>
                     </div>
                 );
-            case 'ten_dang_nhap':
-                return item.ten_dang_nhap ? (
-                    <div className="flex items-center gap-1.5 text-body-sm text-foreground min-w-0">
-                        <AtSign size={12} className="text-primary/60 shrink-0" />
-                        <span className="truncate font-mono text-xs">{item.ten_dang_nhap}</span>
-                    </div>
-                ) : (
-                    <span className="text-xs text-muted-foreground italic">--</span>
-                );
-            case 'gioi_tinh':
-                return <EnumBadge value={item.gioi_tinh} config={GENDER_BADGE_CONFIG} truncate />;
-            case 'email':
-                return (
-                    <a href={`mailto:${item.email}`} className="flex items-center gap-1.5 text-body-sm text-foreground hover:text-primary transition-colors truncate" onClick={e => e.stopPropagation()}>
-                        <Mail size={12} className="text-primary/60 shrink-0" />
-                        <span className="truncate">{item.email}</span>
-                    </a>
-                );
-            case 'so_dien_thoai':
-                return (
-                    <div className="flex items-center gap-1.5 text-body-sm text-foreground tabular-nums">
-                        <Phone size={12} className="text-primary/60 shrink-0" />
-                        <span className="truncate">{item.so_dien_thoai || '—'}</span>
-                    </div>
-                );
-            case 'ten_chuc_vu':
-                return (
-                    <div className="flex items-center gap-1.5 text-body-sm text-foreground min-w-0">
-                        <Briefcase size={12} className="text-primary/60 shrink-0" />
-                        <span className="truncate font-medium">{item.ten_chuc_vu || txt('employee.unassigned')}</span>
-                    </div>
-                );
-            case 'ten_phong_ban':
-                return (
-                    <div className="flex items-center gap-1.5 text-body-sm text-foreground">
-                        <Building2 size={12} className="text-primary/60 shrink-0" />
-                        <span className="truncate">{item.ten_phong_ban || '--'}</span>
-                    </div>
-                );
-            case 'ten_bo_phan':
-                return (
-                    <div className="flex items-center gap-1.5 text-body-sm text-foreground">
-                        <Building2 size={12} className="text-primary/60 shrink-0" />
-                        <span className="truncate">{item.ten_bo_phan || '—'}</span>
-                    </div>
-                );
             case 'trang_thai':
                 return <EnumBadge value={item.trang_thai} config={STATUS_BADGE_CONFIG} truncate />;
-            case 'tg_tao':
-                return item.tg_tao
-                    ? <span className="text-body-sm text-muted-foreground tabular-nums">{formatDate(item.tg_tao)}</span>
-                    : <span className="text-xs text-muted-foreground italic">--</span>;
-            case 'tg_cap_nhat':
-                return item.tg_cap_nhat
-                    ? <span className="text-body-sm text-muted-foreground tabular-nums">{formatDate(item.tg_cap_nhat)}</span>
-                    : <span className="text-xs text-muted-foreground italic">--</span>;
+            case 'chuc_danh':
+                return <span className="truncate text-body-sm">{item.chuc_danh || '—'}</span>;
+            case 'to_phong':
+                return <span className="truncate text-body-sm">{item.to_phong || '—'}</span>;
             case 'actions':
                 return (
                     <EmployeeTableRowActions
@@ -293,9 +199,6 @@ const EmployeeTable = memo(function EmployeeTable({
               </div>
             </div>
           )}
-          subheader={item.ten_chuc_vu ? (
-            <p className="truncate text-body-sm font-medium text-primary">{item.ten_chuc_vu}</p>
-          ) : null}
           footerStart={(
             <label className="inline-flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-lg">
               <input

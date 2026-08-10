@@ -82,8 +82,6 @@ describe('giả mạo header x-aht-* (không đăng nhập)', () => {
   it('cookie phiên có chữ ký hợp lệ vẫn được nhận — không vỡ đường Bearer/cookie', async () => {
     const token = await signSessionToken({
       employee_id: '1',
-      tai_khoan: 'admin',
-      cap_bac: 1,
     });
     const res = await request('/nhan-vien', { Cookie: `aht_session=${token}` });
     expect(res.status).toBe(200);

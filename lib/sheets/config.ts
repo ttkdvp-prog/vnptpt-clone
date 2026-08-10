@@ -8,6 +8,8 @@ export const SHEET_TABS = {
   var_nhan_vien: 'var_nhan_vien',
   var_cong_ty: 'var_cong_ty',
   var_phan_quyen: 'var_phan_quyen',
+  tai_lieu: 'tai_lieu',
+  cong_viec: 'cong_viec',
 } as const;
 
 export type SheetTab = (typeof SHEET_TABS)[keyof typeof SHEET_TABS];

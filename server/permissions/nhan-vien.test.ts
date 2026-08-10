@@ -1,23 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { parseQuyenCsv } from '@/lib/permission-db-keys';
-
-vi.mock('@/server/repositories/nhan-vien', () => ({
-  findEmployeeChucVuId: vi.fn(),
-}));
-
-vi.mock('@/server/repositories/phan-quyen', () => ({
-  findQuyenCsvByChucVuAndModule: vi.fn(),
-}));
-
-import { findEmployeeChucVuId } from '@/server/repositories/nhan-vien';
-import { findQuyenCsvByChucVuAndModule } from '@/server/repositories/phan-quyen';
+import { describe, expect, it } from 'vitest';
 import { assertNhanVienPermission } from '@/server/permissions/nhan-vien';
 
-function mockContext(session: {
-  employee_id: string;
-  tai_khoan: string;
-  cap_bac: number | null;
-}) {
+function mockContext(session: { employee_id: string } | undefined) {
   return {
     get: (key: string) => (key === 'session' ? session : undefined),
     json: (body: unknown, status?: number) => ({ body, status: status ?? 200 }),
@@ -25,45 +9,17 @@ function mockContext(session: {
 }
 
 describe('assertNhanVienPermission', () => {
-  beforeEach(() => {
-    vi.mocked(findEmployeeChucVuId).mockReset();
-    vi.mocked(findQuyenCsvByChucVuAndModule).mockReset();
-  });
-
-  it('allows super user (cap_bac === 1)', async () => {
-    const c = mockContext({ employee_id: '1', tai_khoan: 'admin', cap_bac: 1 });
-    const result = await assertNhanVienPermission(c, 'xoa');
-    expect(result).toBeNull();
-  });
-
-  it('allows when matrix has them', async () => {
-    vi.mocked(findEmployeeChucVuId).mockResolvedValue(10);
-    vi.mocked(findQuyenCsvByChucVuAndModule).mockResolvedValue('xem,them,sua');
-
-    const c = mockContext({ employee_id: '2', tai_khoan: 'nv', cap_bac: 4 });
+  it('allows any authenticated session (không còn chức vụ/cấp bậc để tra quyền)', async () => {
+    const c = mockContext({ employee_id: '1' });
+    expect(await assertNhanVienPermission(c, 'xoa')).toBeNull();
     expect(await assertNhanVienPermission(c, 'them')).toBeNull();
-    expect(parseQuyenCsv('xem,them,sua')).toContain('them');
+    expect(await assertNhanVienPermission(c, 'sua')).toBeNull();
   });
 
-  it('denies delete without xoa even for creator', async () => {
-    vi.mocked(findEmployeeChucVuId).mockResolvedValue(10);
-    vi.mocked(findQuyenCsvByChucVuAndModule).mockResolvedValue('xem,sua');
-
-    const c = mockContext({ employee_id: '2', tai_khoan: 'nv', cap_bac: 4 });
-    const denied = await assertNhanVienPermission(c, 'xoa', {
-      recordNguoiTao: '2',
-    });
+  it('denies when unauthenticated', async () => {
+    const c = mockContext(undefined);
+    const denied = await assertNhanVienPermission(c, 'xem');
     expect(denied).toBeTruthy();
-    expect((denied as { status: number }).status).toBe(403);
-  });
-
-  it('allows sua for creator without sua token', async () => {
-    vi.mocked(findEmployeeChucVuId).mockResolvedValue(10);
-    vi.mocked(findQuyenCsvByChucVuAndModule).mockResolvedValue('xem');
-
-    const c = mockContext({ employee_id: '2', tai_khoan: 'nv', cap_bac: 4 });
-    expect(
-      await assertNhanVienPermission(c, 'sua', { recordNguoiTao: '2' }),
-    ).toBeNull();
+    expect((denied as { status: number }).status).toBe(401);
   });
 });

@@ -36,7 +36,7 @@ export async function syncAuthStoreFromApiSession(): Promise<boolean> {
       }
       return false;
     }
-    usePermissionGrantStore.getState().setMatrixGrants({}, user.cap_bac ?? null);
+    usePermissionGrantStore.getState().setMatrixGrants({}, user.role === 'admin' ? 1 : null);
 
     // `must_change_password` được copy vào JWT lúc đăng nhập và không tự refresh
     // (next-auth không gọi lại authorize() mỗi request). Nếu admin đổi mật khẩu

@@ -10,10 +10,7 @@ import { txt } from '@/lib/text';
 import { useAuthStore } from '@/store/useStore';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import {
-  resolveUserLoginName,
-  setNewPasswordWithoutCurrent,
-} from '@/lib/employee-auth/change-password';
+import { setNewPasswordWithoutCurrent } from '@/lib/employee-auth/change-password';
 import { getErrorMessage } from '@/lib/utils';
 
 type ForceChangeValues = {
@@ -50,8 +47,7 @@ export default function ForceChangePasswordPage() {
 
   const onSubmit = async (data: ForceChangeValues) => {
     try {
-      const loginName = user ? resolveUserLoginName(user) : '';
-      const result = await setNewPasswordWithoutCurrent(data.password, loginName || undefined);
+      const result = await setNewPasswordWithoutCurrent(data.password, user?.employee_id);
       if (!result.ok) {
         toast.error(result.error);
         return;

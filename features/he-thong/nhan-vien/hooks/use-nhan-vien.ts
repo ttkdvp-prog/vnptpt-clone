@@ -49,9 +49,6 @@ export const useEmployees = () => {
   }, [
     searchTerm,
     filters.trang_thai,
-    filters.phong_ban_id,
-    filters.position,
-    filters.gender,
     filters.columnSearch,
     setPage,
   ]);

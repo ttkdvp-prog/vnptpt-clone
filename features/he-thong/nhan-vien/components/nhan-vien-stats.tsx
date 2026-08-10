@@ -1,19 +1,15 @@
 import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { txt } from '@/lib/text';
-import { Building2, Tag, Inbox, Users, Calendar } from 'lucide-react';
+import { Tag, Inbox, Users, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import DateRangePicker from '@/components/ui/DateRangePicker';
 import DashboardToolbar from '@/components/shared/DashboardToolbar';
 import FilterChipMultiSelect from '@/components/shared/FilterChipMultiSelect';
 import LoadingSpinnerWithText from '@/components/shared/LoadingSpinnerWithText';
 import StatsKpiGrid from '@/components/shared/stats/StatsKpiGrid';
-import StatsDataGrid from '@/components/shared/stats/StatsDataGrid';
 import StatsDrillDownDialog from '@/components/shared/stats/StatsDrillDownDialog';
 import type { StatsDataGridColumn } from '@/components/shared/stats/types';
 import EnumBadge from '@/components/ui/EnumBadge';
-import type { DeptSummaryRow } from '../core/stats-types';
-import { useDepartments } from '@/features/he-thong/phong-ban/hooks/use-phong-ban';
-import { useAuthStore } from '@/store/useStore';
 import { useCan } from '@/hooks/use-can';
 import { Employee } from '../core/types';
 import { STATUS_OPTIONS, STATUS_BADGE_CONFIG } from '../core/constants';
@@ -24,30 +20,27 @@ import {
   STATS_KPI_STORAGE_KEY,
   STATS_CHART_HEIGHT,
   STATS_CHART_HEIGHT_MOBILE,
-  GENDER_LABELS,
   type DateRangePresetId,
 } from '../core/stats-constants';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { getDateRangeFromPreset } from '../utils/stats-date-range';
 import { isAllStatsDateRange } from '@/lib/stats-date-range';
 import { clampDateRangeForRole, canExportStats } from '../utils/stats-permissions';
+import { useAuthStore } from '@/store/useStore';
 import { useEmployeeStats } from '../hooks/use-employee-stats';
 import { exportStatsToExcel, exportStatsToPdf } from '../utils/export-stats-report';
-import { formatDateTime, formatDate } from '@/lib/utils';
-import { usePrimaryColor } from '@/lib/theme-utils';
+import { formatDateTime } from '@/lib/utils';
 import StatsExportDropdown from './StatsExportDropdown';
 import StatsKpiConfigPopover from './StatsKpiConfigPopover';
 
 const EmployeeStatsCharts = lazy(() => import('./EmployeeStatsCharts'));
 
 const ChartsFallback = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-    {[1, 2].map((i) => (
-      <div key={i} className="bg-card rounded-xl border border-border p-3.5 h-[250px] animate-pulse">
-        <div className="h-4 w-32 bg-muted rounded mb-3" />
-        <div className="h-[200px] bg-muted/30 rounded-lg" />
-      </div>
-    ))}
+  <div className="grid grid-cols-1 gap-3">
+    <div className="bg-card rounded-xl border border-border p-3.5 h-[250px] animate-pulse">
+      <div className="h-4 w-32 bg-muted rounded mb-3" />
+      <div className="h-[200px] bg-muted/30 rounded-lg" />
+    </div>
   </div>
 );
 
@@ -58,11 +51,7 @@ interface EmployeeStatsProps {
   onViewItem?: (item: Employee) => void;
 }
 
-type DrillDownState =
-  | { kind: 'dept'; deptId: string; label: string }
-  | { kind: 'status'; status: string; label: string }
-  | { kind: 'gender'; gender: string; label: string }
-  | { kind: 'month'; monthKey: string; label: string };
+type DrillDownState = { kind: 'status'; status: string; label: string };
 
 function loadVisibleKpiIds(): string[] {
   try {
@@ -79,14 +68,11 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
   isLoading: _listLoading,
   onViewItem,
 }) => {
-  const { data: departments = [] } = useDepartments();
   const userRole = useAuthStore((s) => s.user?.role);
   const canExport = useCan('export', 'employees');
-  const { hex: primaryHex } = usePrimaryColor();
   const isMdUp = useMediaQuery('(min-width: 768px)');
   const chartHeight = isMdUp ? STATS_CHART_HEIGHT : STATS_CHART_HEIGHT_MOBILE;
 
-  const [filterDept, setFilterDept] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState<string[]>([]);
   const [dateRangePreset, setDateRangePreset] = useState<DateRangePresetId>(DEFAULT_STATS_DATE_PRESET_ID);
   const [customStart, setCustomStart] = useState<string>('');
@@ -106,16 +92,7 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
 
   const hookDrillDown = useMemo(() => {
     if (!drillDown) return null;
-    switch (drillDown.kind) {
-      case 'dept':
-        return { kind: 'dept' as const, deptId: drillDown.deptId };
-      case 'status':
-        return { kind: 'status' as const, status: drillDown.status };
-      case 'gender':
-        return { kind: 'gender' as const, gender: drillDown.gender };
-      case 'month':
-        return { kind: 'month' as const, monthKey: drillDown.monthKey };
-    }
+    return { kind: 'status' as const, status: drillDown.status };
   }, [drillDown]);
 
   const {
@@ -123,17 +100,11 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
     isLoading,
     isDrillLoading,
     drillTotal,
-    deptData,
     statusData,
-    hiringData,
-    genderData,
-    deptSummary,
     kpis,
     allKpis,
-    DEPT_COLORS,
     total,
   } = useEmployeeStats({
-    filterDept,
     filterStatus,
     dateRange,
     visibleKpiIds,
@@ -145,14 +116,10 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  const departmentOptions = departments.map((d) => ({ label: d.ten_phong_ban, value: d.id }));
   const statusOptions = STATUS_OPTIONS.map((s) => ({ label: s.label, value: String(s.value) }));
   const statsActiveFilterCount =
-    (filterDept.length > 0 ? 1 : 0) +
-    (filterStatus.length > 0 ? 1 : 0) +
-    (!isAllStatsDateRange(dateRangePreset) ? 1 : 0);
+    (filterStatus.length > 0 ? 1 : 0) + (!isAllStatsDateRange(dateRangePreset) ? 1 : 0);
   const handleClearStatsFilters = () => {
-    setFilterDept([]);
     setFilterStatus([]);
     setDateRangePreset(DEFAULT_STATS_DATE_PRESET_ID);
     setCustomStart('');
@@ -177,14 +144,6 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
         },
       },
       {
-        key: 'dept',
-        label: txt('employee.stats.department'),
-        icon: Building2,
-        options: departmentOptions,
-        value: filterDept,
-        onChange: (val: string[]) => setFilterDept(val),
-      },
-      {
         key: 'status',
         label: txt('employee.stats.status'),
         icon: Tag,
@@ -193,31 +152,26 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
         onChange: (val: string[]) => setFilterStatus(val),
       },
     ],
-    [departmentOptions, statusOptions, filterDept, filterStatus, dateRangePreset]
+    [statusOptions, filterStatus, dateRangePreset]
   );
 
   const handleExportReport = useCallback(
     async (format: 'excel' | 'pdf') => {
       if (!canExportStats(canExport)) return;
       const exportedAt = formatDateTime(new Date());
-      const filterDeptLabels = filterDept.map(
-        (id) => departments.find((d) => d.id === id)?.ten_phong_ban ?? id
-      );
       const filterStatusLabels = filterStatus.map(
         (v) => STATUS_OPTIONS.find((s) => String(s.value) === v)?.label ?? v
       );
       const meta = {
         dateRangeLabel: dateRange.label,
-        filterDeptLabels,
         filterStatusLabels,
         exportedAt,
       };
       try {
-        // Xuất toàn bộ KPI (allKpis) — cấu hình ẩn/hiện KPI chỉ là tùy chọn hiển thị.
         if (format === 'excel') {
-          await exportStatsToExcel(meta, allKpis, deptSummary);
+          await exportStatsToExcel(meta, allKpis);
         } else {
-          await exportStatsToPdf(meta, allKpis, deptSummary);
+          await exportStatsToPdf(meta, allKpis);
         }
         toast.success(
           txt(format === 'excel' ? 'employee.stats.exportSuccessExcel' : 'employee.stats.exportSuccessPdf'),
@@ -228,7 +182,7 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
         toast.error(txt('employee.stats.exportError'));
       }
     },
-    [canExport, filterDept, filterStatus, dateRange.label, departments, allKpis, deptSummary]
+    [canExport, filterStatus, dateRange.label, allKpis]
   );
 
   const handleToggleKpi = (id: string) => {
@@ -240,26 +194,9 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
     localStorage.setItem(STATS_KPI_STORAGE_KEY, JSON.stringify(next));
   };
 
-  const openDeptDrillDown = useCallback(
-    (deptId: string) => {
-      const label = departments.find((d) => d.id === deptId)?.ten_phong_ban ?? deptId;
-      setDrillDown({ kind: 'dept', deptId, label });
-    },
-    [departments],
-  );
-
   const openStatusDrillDown = useCallback((status: string) => {
     const label = STATUS_OPTIONS.find((s) => s.value === status)?.label ?? status;
     setDrillDown({ kind: 'status', status, label });
-  }, []);
-
-  const openGenderDrillDown = useCallback((gender: string) => {
-    const label = GENDER_LABELS[gender] ?? gender;
-    setDrillDown({ kind: 'gender', gender, label });
-  }, []);
-
-  const openMonthDrillDown = useCallback((monthKey: string, label: string) => {
-    setDrillDown({ kind: 'month', monthKey, label });
   }, []);
 
   const drillDownRows = filtered;
@@ -267,7 +204,6 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
   const drillDownSubtitle = useMemo(() => {
     if (!drillDown) return undefined;
     const base = txt('stats.drillDown.subtitle', { count: drillTotal, label: drillDown.label });
-    // Drill-down chỉ tải tối đa 100 dòng đầu — ghi chú khi tổng vượt quá.
     if (drillTotal > drillDownRows.length && drillDownRows.length > 0) {
       return `${base} · ${txt('stats.drillDown.showingFirst', { count: drillDownRows.length })}`;
     }
@@ -293,34 +229,11 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
       getSortValue: (row) => row.ho_ten,
     },
     {
-      id: 'ten_phong_ban',
-      label: txt('employee.department'),
-      align: 'left',
-      minWidth: 128,
-      sortable: true,
-      getSortValue: (row) => row.ten_phong_ban ?? '',
-    },
-    {
-      id: 'ten_chuc_vu',
-      label: txt('employee.position'),
-      align: 'left',
-      minWidth: 128,
-      sortable: true,
-      getSortValue: (row) => row.ten_chuc_vu ?? '',
-    },
-    {
       id: 'trang_thai',
       label: txt('employee.status'),
       align: 'center',
       sortable: true,
       getSortValue: (row) => row.trang_thai,
-    },
-    {
-      id: 'tg_tao',
-      label: txt('employee.store.createdCol'),
-      align: 'center',
-      sortable: true,
-      getSortValue: (row) => row.tg_tao ?? '',
     },
   ], []);
 
@@ -334,18 +247,8 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
             {row.ho_ten}
           </span>
         );
-      case 'ten_phong_ban':
-        return <span className="text-muted-foreground">{row.ten_phong_ban ?? '—'}</span>;
-      case 'ten_chuc_vu':
-        return <span className="text-muted-foreground">{row.ten_chuc_vu ?? '—'}</span>;
       case 'trang_thai':
         return <EnumBadge value={row.trang_thai} config={STATUS_BADGE_CONFIG} truncate />;
-      case 'tg_tao':
-        return (
-          <span className="text-muted-foreground tabular-nums">
-            {row.tg_tao ? formatDate(row.tg_tao) : '—'}
-          </span>
-        );
       default:
         return null;
     }
@@ -356,121 +259,6 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
       if (onViewItem) onViewItem(row);
     },
     [onViewItem],
-  );
-
-  const deptStatsColumns = useMemo((): StatsDataGridColumn<DeptSummaryRow>[] => [
-    {
-      id: 'name',
-      label: txt('employee.stats.department'),
-      align: 'left',
-      minWidth: 144,
-      sticky: true,
-      sortable: true,
-      getSortValue: (row) => row.name,
-    },
-    {
-      id: 'total',
-      label: txt('employee.stats.total'),
-      align: 'center',
-      sortable: true,
-      getSortValue: (row) => row.total,
-    },
-    {
-      id: 'active',
-      label: txt('employee.stats.workingShort'),
-      align: 'center',
-      sortable: true,
-      getSortValue: (row) => row.active,
-    },
-    {
-      id: 'probation',
-      label: txt('employee.stats.probation'),
-      align: 'center',
-      sortable: true,
-      getSortValue: (row) => row.probation,
-    },
-    {
-      id: 'inactive',
-      label: txt('employee.stats.leave'),
-      align: 'center',
-      sortable: true,
-      getSortValue: (row) => row.inactive,
-    },
-    {
-      id: 'rate',
-      label: txt('employee.stats.activeRate'),
-      align: 'center',
-      sortable: true,
-      getSortValue: (row) => parseFloat(row.rate) || 0,
-    },
-  ], []);
-
-  const renderDeptStatsCell = useCallback((colId: string, row: DeptSummaryRow) => {
-    switch (colId) {
-      case 'name':
-        return (
-          <span className="font-medium max-w-[14rem] truncate sm:max-w-none sm:whitespace-normal" title={row.name}>
-            {row.name}
-          </span>
-        );
-      case 'total':
-        return <span className="font-semibold tabular-nums">{row.total}</span>;
-      case 'active':
-        return (
-          <span className="font-medium text-emerald-600 dark:text-emerald-400 tabular-nums">{row.active}</span>
-        );
-      case 'probation':
-        return (
-          <span className="font-medium text-blue-600 dark:text-blue-400 tabular-nums">{row.probation}</span>
-        );
-      case 'inactive':
-        return <span className="text-muted-foreground tabular-nums">{row.inactive}</span>;
-      case 'rate':
-        return (
-          <div className="flex items-center justify-center gap-1.5">
-            <div className="w-14 h-1.5 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full" style={{ width: `${row.rate}%` }} />
-            </div>
-            <span className="text-muted-foreground tabular-nums font-medium">{row.rate}%</span>
-          </div>
-        );
-      default:
-        return null;
-    }
-  }, []);
-
-  const handleDeptRowClick = useCallback(
-    (row: DeptSummaryRow) => {
-      // id null = "Chưa phân bổ" — không drill-down được.
-      if (row.id) openDeptDrillDown(row.id);
-    },
-    [openDeptDrillDown],
-  );
-
-  const renderDeptSummaryRow = useCallback(
-    (colId: string, rows: DeptSummaryRow[]) => {
-      const sum = (get: (r: DeptSummaryRow) => number) => rows.reduce((acc, r) => acc + get(r), 0);
-      switch (colId) {
-        case 'name':
-          return txt('employee.stats.grandTotal');
-        case 'total':
-          return sum((r) => r.total);
-        case 'active':
-          return sum((r) => r.active);
-        case 'probation':
-          return sum((r) => r.probation);
-        case 'inactive':
-          return sum((r) => r.inactive);
-        case 'rate': {
-          const total = sum((r) => r.total);
-          const active = sum((r) => r.active);
-          return total > 0 ? `${((active / total) * 100).toFixed(0)}%` : '0%';
-        }
-        default:
-          return null;
-      }
-    },
-    [],
   );
 
   const dateRangePickerPresets = DATE_RANGE_PRESETS.map((p) => ({ id: p.id, label: p.label }));
@@ -487,14 +275,6 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
         }}
         displayLabel={isAllStatsDateRange(dateRangePreset) ? undefined : dateRange.label}
         placeholder={txt('employee.stats.dateRangePlaceholder')}
-      />
-      <FilterChipMultiSelect
-        options={departmentOptions}
-        value={filterDept}
-        onChange={setFilterDept}
-        icon={Building2}
-        placeholder={txt('employee.stats.department')}
-        className="w-[150px]"
       />
       <FilterChipMultiSelect
         options={statusOptions}
@@ -535,13 +315,11 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {[1, 2].map((i) => (
-              <div key={i} className="bg-card rounded-xl border border-border p-3.5 h-[250px] animate-pulse">
-                <div className="h-4 w-32 bg-muted rounded mb-3" />
-                <div className="h-[200px] bg-muted/30 rounded-lg" />
-              </div>
-            ))}
+          <div className="grid grid-cols-1 gap-3">
+            <div className="bg-card rounded-xl border border-border p-3.5 h-[250px] animate-pulse">
+              <div className="h-4 w-32 bg-muted rounded mb-3" />
+              <div className="h-[200px] bg-muted/30 rounded-lg" />
+            </div>
           </div>
         </div>
       </div>
@@ -597,32 +375,10 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
                     chartsVisible={chartsVisible}
                     chartHeight={chartHeight}
                     isMdUp={isMdUp}
-                    primaryHex={primaryHex}
-                    deptData={deptData}
                     statusData={statusData}
-                    hiringData={hiringData}
-                    genderData={genderData}
-                    DEPT_COLORS={DEPT_COLORS}
-                    onDeptDrillDown={openDeptDrillDown}
                     onStatusDrillDown={openStatusDrillDown}
-                    onGenderDrillDown={openGenderDrillDown}
-                    onMonthDrillDown={openMonthDrillDown}
                   />
                 </Suspense>
-              )}
-
-              {deptSummary.length > 0 && (
-                <StatsDataGrid
-                  title={txt('employee.stats.departmentTable')}
-                  icon={Building2}
-                  rows={deptSummary}
-                  columns={deptStatsColumns}
-                  getRowKey={(row) => row.id ?? row.name}
-                  renderCell={renderDeptStatsCell}
-                  onRowClick={handleDeptRowClick}
-                  renderSummaryRow={renderDeptSummaryRow}
-                  recordsLabel={txt('stats.footerRecords')}
-                />
               )}
             </>
           )}
@@ -641,7 +397,7 @@ const EmployeeStats: React.FC<EmployeeStatsProps> = ({
         renderCell={renderDrillDownCell}
         onRowClick={onViewItem ? handleDrillDownRowClick : undefined}
         isLoading={isDrillLoading}
-        tableMinWidth="min-w-[48rem]"
+        tableMinWidth="min-w-[32rem]"
       />
     </div>
   );

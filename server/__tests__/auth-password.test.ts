@@ -26,7 +26,7 @@ vi.mock('@/server/repositories/nhan-vien', async (importOriginal) => ({
 }));
 
 const TEST_SECRET = 'test-secret-for-auth-password';
-const EMPLOYEE_ID = 5;
+const EMPLOYEE_ID = '5';
 
 let createHonoApp: typeof import('@/server/hono-app').createHonoApp;
 let signSessionToken: typeof import('@/server/auth').signSessionToken;
@@ -42,8 +42,6 @@ beforeAll(async () => {
 async function request(method: string, path: string, body?: unknown) {
   const token = await signSessionToken({
     employee_id: String(EMPLOYEE_ID),
-    tai_khoan: 'nguyenvana',
-    cap_bac: 4,
   });
   const app = createHonoApp();
   return app.fetch(

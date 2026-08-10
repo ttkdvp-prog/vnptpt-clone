@@ -2,7 +2,7 @@ import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { encode as defaultJwtEncode } from 'next-auth/jwt';
 import bcrypt from 'bcryptjs';
-import { findEmployeeAuthByLogin } from '@/server/repositories/nhan-vien';
+import { findEmployeeAuthById, findEmployeeAuthByEmail } from '@/server/repositories/nhan-vien';
 import {
   REMEMBER_SESSION_MAX_AGE,
   parseRememberFlag,
@@ -53,20 +53,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       name: 'credentials',
       credentials: {
-        tai_khoan: { label: 'Tài khoản', type: 'text' },
+        id: { label: 'Mã nhân viên', type: 'text' },
         password: { label: 'Mật khẩu', type: 'password' },
         remember: { label: 'Ghi nhớ đăng nhập', type: 'text' },
       },
       async authorize(credentials) {
-        const taiKhoan = String(credentials?.tai_khoan ?? '')
-          .trim()
-          .toLowerCase();
+        const employeeId = String(credentials?.id ?? '').trim();
         const password = String(credentials?.password ?? '');
         const remember = parseRememberFlag(credentials?.remember);
-        if (!taiKhoan || !password) return null;
+        if (!employeeId || !password) return null;
 
         try {
-          const row = await findEmployeeAuthByLogin(taiKhoan);
+          const row = employeeId.includes('@')
+            ? await findEmployeeAuthByEmail(employeeId)
+            : (await findEmployeeAuthById(employeeId)) ?? (await findEmployeeAuthByEmail(employeeId));
           if (!row) return null;
 
           if (String(row.trang_thai).toUpperCase() === 'INACTIVE') {
@@ -88,20 +88,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return {
             id: `api-${row.id}`,
             employee_id: String(row.id),
-            email: `${row.tai_khoan}@local`,
-            ten_dang_nhap: row.tai_khoan,
+            email: `${row.id}@local`,
             full_name: row.ho_va_ten,
             avatar_url: row.hinh_anh ?? undefined,
-            role: 'user',
+            role: row.role,
             created_at: new Date().toISOString(),
-            id_phong_ban: row.id_phong_ban != null ? String(row.id_phong_ban) : undefined,
-            id_chuc_vu: row.id_chuc_vu != null ? [String(row.id_chuc_vu)] : undefined,
             // Đọc từ DB, KHÔNG hardcode. Trước đây cố định `false` nên toàn bộ
             // luồng buộc đổi mật khẩu (trang /doi-mat-khau-bat-buoc, guard ở
             // ProtectedRoute, allowlist proxy.ts) là code chết ở chế độ API.
             must_change_password: row.must_change_password ?? false,
             tai_khoan_dang_hoat_dong: true,
-            cap_bac: row.cap_bac,
             remember,
           };
         } catch (err) {
@@ -117,14 +113,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.employee_id = user.employee_id;
-        token.ten_dang_nhap = user.ten_dang_nhap;
         token.full_name = user.full_name;
         token.avatar_url = user.avatar_url;
-        token.id_phong_ban = user.id_phong_ban;
-        token.id_chuc_vu = user.id_chuc_vu;
+        token.role = user.role;
         token.must_change_password = user.must_change_password;
         token.tai_khoan_dang_hoat_dong = user.tai_khoan_dang_hoat_dong;
-        token.cap_bac = user.cap_bac;
         token.remember = user.remember !== false;
       }
       return token;
@@ -132,30 +125,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       const t = token as typeof token & {
         employee_id?: string;
-        ten_dang_nhap?: string | null;
         full_name?: string;
         avatar_url?: string;
-        id_phong_ban?: string;
-        id_chuc_vu?: string[];
+        role?: 'admin' | 'user';
         must_change_password?: boolean;
         tai_khoan_dang_hoat_dong?: boolean;
-        cap_bac?: number | null;
       };
       // Credentials JWT session — AdapterUser fields unused
       const appUser: AppUser = {
         id: `api-${t.employee_id}`,
         employee_id: String(t.employee_id ?? ''),
-        email: `${t.ten_dang_nhap ?? 'user'}@local`,
-        ten_dang_nhap: t.ten_dang_nhap ?? undefined,
+        email: `${t.employee_id ?? 'user'}@local`,
         full_name: t.full_name ?? '',
         avatar_url: t.avatar_url,
-        role: 'user',
+        role: t.role ?? 'user',
         created_at: new Date().toISOString(),
-        id_phong_ban: t.id_phong_ban,
-        id_chuc_vu: t.id_chuc_vu,
         must_change_password: t.must_change_password,
         tai_khoan_dang_hoat_dong: t.tai_khoan_dang_hoat_dong,
-        cap_bac: t.cap_bac ?? null,
       };
       session.user = appUser as typeof session.user;
       return session;

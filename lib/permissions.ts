@@ -13,22 +13,12 @@ export type AppAction = 'view' | 'create' | 'edit' | 'delete' | 'export' | 'impo
  */
 export type AppResource =
   | 'employees'
-  | 'departments'
-  | 'positions'
   | 'company'
   | 'permissions'
-  | 'customerSettings'
-  | 'customers'
-  | 'contacts'
-  | 'printMarkets'
-  | 'documentSettings'
-  | 'documentList'
-  | 'payrollSettings'
-  | 'adminForms'
-  | 'contracts'
-  | 'announcements'
   | 'profile'
   | 'notifications'
+  | 'tai-lieu'
+  | 'cong-viec'
   | '*';
 
 export interface RecordPermissionContext {
@@ -41,20 +31,10 @@ export interface RecordPermissionContext {
  */
 export const APP_RESOURCE_TO_MODULE: Partial<Record<AppResource, string>> = {
   employees: 'he-thong/nhan-vien',
-  departments: 'he-thong/phong-ban',
-  positions: 'he-thong/chuc-vu',
   company: 'he-thong/thong-tin-cong-ty',
   permissions: 'he-thong/phan-quyen',
-  customerSettings: 'kinh-doanh/thiet-lap-khach-hang',
-  customers: 'kinh-doanh/khach-hang',
-  contacts: 'kinh-doanh/nguoi-lien-he',
-  printMarkets: 'san-xuat/danh-sach-market-in',
-  documentSettings: 'hanh-chinh/thiet-lap-tai-lieu',
-  documentList: 'hanh-chinh/danh-sach-tai-lieu',
-  payrollSettings: 'hanh-chinh/thiet-lap-cong-luong',
-  adminForms: 'hanh-chinh/phieu-hanh-chinh',
-  contracts: 'hanh-chinh/hop-dong',
-  announcements: 'hanh-chinh/thong-bao',
+  'tai-lieu': 'cong-viec/tai-lieu',
+  'cong-viec': 'cong-viec/danh-sach-cong-viec',
 };
 
 /** UI dùng `edit`; ma trận phân quyền dùng `update`. */

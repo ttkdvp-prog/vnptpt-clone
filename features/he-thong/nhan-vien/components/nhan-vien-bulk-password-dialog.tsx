@@ -51,10 +51,6 @@ const NhanVienBulkPasswordDialog: React.FC<Props> = ({
       ? txt('employee.bulkPassword.minLength', { count: MIN_PASSWORD_LENGTH })
       : undefined;
 
-  // Chỉ nhân viên có tài khoản đăng nhập mới đặt lại được mật khẩu. Tính trên các
-  // dòng đã tải; server vẫn là chốt cuối và trả về danh sách bị bỏ qua.
-  const withoutLogin = selectedEmployees.filter((emp) => !emp.ten_dang_nhap);
-
   const handleSubmit = () => {
     if (password.length < MIN_PASSWORD_LENGTH) return;
     useConfirmStore.getState().confirm({
@@ -96,12 +92,6 @@ const NhanVienBulkPasswordDialog: React.FC<Props> = ({
             {txt('employee.bulkPassword.warning', { count: selectedIds.length })}
           </p>
         </div>
-
-        {withoutLogin.length > 0 && (
-          <p className="text-xs text-muted-foreground">
-            {txt('employee.bulkPassword.noLoginHint', { count: withoutLogin.length })}
-          </p>
-        )}
 
         <Input
           type="password"

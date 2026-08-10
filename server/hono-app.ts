@@ -5,6 +5,8 @@ import { nhanVienRoutes } from './routes/nhan-vien';
 import { congTyRoutes } from './routes/cong-ty';
 import { phanQuyenRoutes } from './routes/phan-quyen';
 import { uploadsRoutes } from './routes/uploads';
+import { taiLieuRoutes } from './routes/tai-lieu';
+import { congViecRoutes } from './routes/cong-viec';
 import { getSheetsClient } from '@/lib/sheets/client';
 import { SHEETS_SPREADSHEET_ID } from '@/lib/sheets/config';
 
@@ -35,6 +37,12 @@ export function createHonoApp() {
     }),
   );
 
+  app.onError((err, c) => {
+    console.error('[hono]', c.req.method, c.req.path, err);
+    const message = err instanceof Error ? err.message : 'Internal Server Error';
+    return c.json({ error: message }, 500);
+  });
+
   app.get('/health', async (c) => {
     try {
       await getSheetsClient().spreadsheets.get({ spreadsheetId: SHEETS_SPREADSHEET_ID });
@@ -50,6 +58,8 @@ export function createHonoApp() {
   app.route('/cong-ty', congTyRoutes);
   app.route('/phan-quyen', phanQuyenRoutes);
   app.route('/uploads', uploadsRoutes);
+  app.route('/tai-lieu', taiLieuRoutes);
+  app.route('/danh-sach-cong-viec', congViecRoutes);
 
   return app;
 }

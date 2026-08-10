@@ -3,7 +3,6 @@
  * Includes metadata: date range, filters, exported at.
  */
 import type { StatsExportMeta } from '../core/stats-types';
-import type { DeptSummaryRow } from '../core/stats-types';
 import type { KpiItem } from '../core/stats-types';
 import { getTodayISODate } from '@/lib/utils';
 import { txt } from '@/lib/text';
@@ -15,21 +14,14 @@ function buildMetaRows(meta: StatsExportMeta): string[][] {
   return [
     [txt('employee.report.title'), ''],
     [txt('employee.report.period'), meta.dateRangeLabel],
-    [txt('employee.report.departmentFilter'), meta.filterDeptLabels.length ? meta.filterDeptLabels.join(', ') : txt('employee.report.allFilter')],
     [txt('employee.report.statusFilter'), meta.filterStatusLabels.length ? meta.filterStatusLabels.join(', ') : txt('employee.report.allFilter')],
     [txt('employee.report.exportDate'), meta.exportedAt],
     ['', ''],
   ];
 }
 
-/**
- * Export stats to Excel: sheet "Tổng quan" (meta + KPIs) and "Theo phòng ban" (dept table).
- */
-export async function exportStatsToExcel(
-  meta: StatsExportMeta,
-  kpis: KpiItem[],
-  deptSummary: DeptSummaryRow[]
-): Promise<void> {
+/** Export stats to Excel: sheet "Tổng quan" (meta + KPIs). */
+export async function exportStatsToExcel(meta: StatsExportMeta, kpis: KpiItem[]): Promise<void> {
   const XLSX = await import('xlsx');
 
   // Cell số để dạng number (không String hóa) để Excel tính toán được.
@@ -42,37 +34,15 @@ export async function exportStatsToExcel(
   const wsOverview = XLSX.utils.aoa_to_sheet(overviewRows);
   wsOverview['!cols'] = [{ wch: 22 }, { wch: 12 }, { wch: 10 }];
 
-  const deptRows: (string | number)[][] = [
-    [txt('employee.stats.department'), txt('employee.stats.total'), txt('employee.stats.workingShort'), txt('employee.stats.probation'), txt('employee.stats.leave'), txt('employee.report.activeRatePercent')],
-    ...deptSummary.map((r) => [
-      r.name,
-      r.total,
-      r.active,
-      r.probation,
-      r.inactive,
-      Number(r.rate),
-    ]),
-  ];
-
-  const wsDept = XLSX.utils.aoa_to_sheet(deptRows);
-  wsDept['!cols'] = [{ wch: 24 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 8 }, { wch: 12 }];
-
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, wsOverview, txt('employee.report.overviewSheet'));
-  XLSX.utils.book_append_sheet(wb, wsDept, txt('employee.report.byDepartmentSheet'));
 
   const dateStr = getTodayISODate();
   XLSX.writeFile(wb, `Bao_cao_Thong_ke_Nhan_su_${dateStr}.xlsx`);
 }
 
-/**
- * Export stats to PDF: title, meta, KPI table, dept table.
- */
-export async function exportStatsToPdf(
-  meta: StatsExportMeta,
-  kpis: KpiItem[],
-  deptSummary: DeptSummaryRow[]
-): Promise<void> {
+/** Export stats to PDF: title, meta, KPI table. */
+export async function exportStatsToPdf(meta: StatsExportMeta, kpis: KpiItem[]): Promise<void> {
   const [{ jsPDF }, autoTableModule] = await Promise.all([
     import('jspdf'),
     import('jspdf-autotable'),
@@ -97,13 +67,10 @@ export async function exportStatsToPdf(
   doc.setTextColor(0);
   y += 6;
 
-  if (meta.filterDeptLabels.length || meta.filterStatusLabels.length) {
-    const filterParts = [];
-    if (meta.filterDeptLabels.length) filterParts.push(`${txt('employee.report.pdfDepartment')} ${meta.filterDeptLabels.join(', ')}`);
-    if (meta.filterStatusLabels.length) filterParts.push(`${txt('employee.report.pdfStatus')} ${meta.filterStatusLabels.join(', ')}`);
+  if (meta.filterStatusLabels.length) {
     doc.setFontSize(8);
     doc.setTextColor(120);
-    doc.text(filterParts.join('  •  '), marginX, y);
+    doc.text(`${txt('employee.report.pdfStatus')} ${meta.filterStatusLabels.join(', ')}`, marginX, y);
     doc.setTextColor(0);
     y += 5;
   }
@@ -120,30 +87,6 @@ export async function exportStatsToPdf(
     headStyles: { font: VIETNAMESE_PDF_FONT, fillColor: PRIMARY_COLOR, fontSize: 8, fontStyle: 'bold', textColor: 255 },
     margin: { left: marginX, right: marginX },
   });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  y = (doc as any).lastAutoTable.finalY + 8;
-
-  if (deptSummary.length > 0) {
-    if (y > 220) {
-      doc.addPage();
-      y = 14;
-    }
-    doc.setFontSize(10);
-    doc.setFont(VIETNAMESE_PDF_FONT, 'bold');
-    doc.text(txt('employee.report.pdfByDepartment'), marginX, y);
-    y += 6;
-
-    autoTable(doc, {
-      startY: y,
-      head: [[txt('employee.stats.department'), txt('employee.stats.total'), txt('employee.stats.workingShort'), txt('employee.stats.probation'), txt('employee.stats.leave'), txt('employee.report.activeRatePercent')]],
-      body: deptSummary.map((r) => [r.name, String(r.total), String(r.active), String(r.probation), String(r.inactive), r.rate]),
-      theme: 'grid',
-      styles: { font: VIETNAMESE_PDF_FONT, fontSize: 7, cellPadding: 2 },
-      headStyles: { font: VIETNAMESE_PDF_FONT, fillColor: PRIMARY_COLOR, fontSize: 7, fontStyle: 'bold', textColor: 255 },
-      margin: { left: marginX, right: marginX },
-    });
-  }
 
   // Tải trực tiếp (không window.open — tránh popup blocker, không leak object URL).
   doc.save(`Bao_cao_Thong_ke_Nhan_su_${getTodayISODate()}.pdf`);

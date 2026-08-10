@@ -3,46 +3,21 @@ import { useQuery } from '@tanstack/react-query';
 import { Users, UserCheck, Clock, UserX } from 'lucide-react';
 import { txt } from '@/lib/text';
 import type { Employee } from '../core/types';
-import {
-  DEPT_COLORS,
-  STATUS_COLORS,
-  STATUS_LABELS,
-  GENDER_COLORS,
-  GENDER_LABELS,
-  DEFAULT_KPI_IDS,
-} from '../core/stats-constants';
-import type { StatsDateRange, KpiItem, StatsTrends, StatsMiniSummary } from '../core/stats-types';
-import { shouldApplyStatsAsAtFilter, getMonthKeysEndingAt } from '../utils/stats-date-range';
+import { STATUS_COLORS, STATUS_LABELS, DEFAULT_KPI_IDS } from '../core/stats-constants';
+import type { StatsDateRange, KpiItem, StatsTrends } from '../core/stats-types';
+import { shouldApplyStatsAsAtFilter } from '../utils/stats-date-range';
 import { employeeStatsAggregatesQueryOptions } from '../queries/employees';
 import { getEmployeesPage } from '../services/nhan-vien-service';
 
 interface UseEmployeeStatsParams {
-  filterDept: string[];
   filterStatus: string[];
   dateRange: StatsDateRange;
   visibleKpiIds?: string[];
   /** When set, fetch matching rows for drill-down (not used for KPIs). */
-  drillDown?:
-    | { kind: 'dept'; deptId: string }
-    | { kind: 'status'; status: string }
-    | { kind: 'gender'; gender: string }
-    | { kind: 'month'; monthKey: string }
-    | null;
-}
-
-/** First/last day (ISO date) of a YYYY-MM month key, for tg_tao range filters. */
-function monthKeyToRange(monthKey: string): { dateFrom: string; dateTo: string } {
-  const [y, m] = monthKey.split('-').map(Number);
-  const lastDay = new Date(y!, m!, 0).getDate();
-  const mm = String(m).padStart(2, '0');
-  return {
-    dateFrom: `${y}-${mm}-01`,
-    dateTo: `${y}-${mm}-${String(lastDay).padStart(2, '0')}`,
-  };
+  drillDown?: { kind: 'status'; status: string } | null;
 }
 
 export function useEmployeeStats({
-  filterDept,
   filterStatus,
   dateRange,
   visibleKpiIds = [...DEFAULT_KPI_IDS],
@@ -51,11 +26,10 @@ export function useEmployeeStats({
   const applyAsAt = shouldApplyStatsAsAtFilter(dateRange.preset);
   const aggregateParams = useMemo(
     () => ({
-      phong_ban_id: filterDept.length ? filterDept : undefined,
       trang_thai: filterStatus.length ? filterStatus : undefined,
       asAt: applyAsAt ? dateRange.end.toISOString() : undefined,
     }),
-    [filterDept, filterStatus, applyAsAt, dateRange.end],
+    [filterStatus, applyAsAt, dateRange.end],
   );
 
   const { data: aggregates, isLoading } = useQuery(
@@ -64,29 +38,13 @@ export function useEmployeeStats({
 
   const drillParams = useMemo(() => {
     if (!drillDown) return null;
-    const monthRange = drillDown.kind === 'month' ? monthKeyToRange(drillDown.monthKey) : null;
     return {
       limit: 100,
       offset: 0,
-      phong_ban_id:
-        drillDown.kind === 'dept'
-          ? [drillDown.deptId]
-          : filterDept.length
-            ? filterDept
-            : undefined,
-      trang_thai:
-        drillDown.kind === 'status'
-          ? [drillDown.status]
-          : filterStatus.length
-            ? filterStatus
-            : undefined,
-      gioi_tinh: drillDown.kind === 'gender' ? [drillDown.gender] : undefined,
-      dateFrom: monthRange?.dateFrom,
-      dateTo: monthRange?.dateTo,
-      // dateFrom/dateTo already bound the range for month drill-downs.
-      asAt: applyAsAt && !monthRange ? dateRange.end.toISOString() : undefined,
+      trang_thai: [drillDown.status],
+      asAt: applyAsAt ? dateRange.end.toISOString() : undefined,
     };
-  }, [drillDown, filterDept, filterStatus, applyAsAt, dateRange.end]);
+  }, [drillDown, applyAsAt, dateRange.end]);
 
   const { data: drillPage, isLoading: isDrillLoading } = useQuery({
     queryKey: ['employees', 'stats-drilldown', drillParams],
@@ -117,16 +75,6 @@ export function useEmployeeStats({
     };
   }, [aggregates]);
 
-  const deptData = useMemo(
-    () =>
-      (aggregates?.byDept ?? []).map((d) => ({
-        name: d.name,
-        value: d.count,
-        id: d.id,
-      })),
-    [aggregates],
-  );
-
   const statusData = useMemo(
     () =>
       (Object.entries(STATUS_LABELS) as [string, string][]).map(([key, name]) => ({
@@ -137,62 +85,6 @@ export function useEmployeeStats({
       })),
     [aggregates],
   );
-
-  const monthKeys = useMemo(
-    () => getMonthKeysEndingAt(dateRange.end, 12),
-    [dateRange.end],
-  );
-
-  const hiringData = useMemo(
-    () =>
-      monthKeys.map(({ key, label }) => ({
-        key,
-        label,
-        count: aggregates?.hiresByMonth.find((h) => h.month === key)?.count ?? 0,
-      })),
-    [aggregates, monthKeys],
-  );
-
-  const genderData = useMemo(() => {
-    const map: Record<string, number> = { Nam: 0, Nữ: 0, Khác: 0 };
-    for (const g of aggregates?.byGender ?? []) {
-      map[g.key] = (map[g.key] || 0) + g.count;
-    }
-    return Object.entries(map)
-      .filter(([, v]) => v > 0)
-      .map(([key, value]) => ({
-        key,
-        name: GENDER_LABELS[key] ?? key,
-        value,
-        fill: GENDER_COLORS[key] ?? '#94a3b8',
-      }));
-  }, [aggregates]);
-
-  const deptSummary = useMemo(
-    () =>
-      (aggregates?.deptSummary ?? []).map((s) => ({
-        id: s.id ?? null,
-        name: s.name,
-        total: s.total,
-        active: s.active,
-        probation: s.probation,
-        inactive: s.inactive,
-        rate: s.total > 0 ? ((s.active / s.total) * 100).toFixed(0) : '0',
-      })),
-    [aggregates],
-  );
-
-  const miniSummary = useMemo((): StatsMiniSummary => {
-    const maleCount = aggregates?.byGender.find((g) => g.key === 'Nam')?.count ?? 0;
-    const femaleCount = aggregates?.byGender.find((g) => g.key === 'Nữ')?.count ?? 0;
-    const topDept = deptData[0] ? { name: deptData[0].name, value: deptData[0].value } : null;
-    return {
-      hiredThisMonth: trends.hiredThisMonth,
-      maleCount,
-      femaleCount,
-      topDept,
-    };
-  }, [aggregates, deptData, trends.hiredThisMonth]);
 
   const allKpis: KpiItem[] = useMemo(
     () => [
@@ -256,14 +148,8 @@ export function useEmployeeStats({
     inactive,
     pct,
     trends,
-    deptData,
     statusData,
-    hiringData,
-    genderData,
-    deptSummary,
-    miniSummary,
     kpis,
     allKpis,
-    DEPT_COLORS,
   };
 }

@@ -6,14 +6,11 @@ import { createColumnSearchMatcher } from '@/lib/factories/createColumnSearchMat
  * (một ô giao diện thống nhất).
  */
 export const COLUMN_IDS_WITH_MULTISELECT_SEARCH = [
-  'ten_phong_ban',
-  'ten_chuc_vu',
   'trang_thai',
 ] as const;
 
-/** Map id cột UI → field trên Employee (cột cũ `lien_he` = SĐT). */
+/** Map id cột UI → field trên Employee. */
 export function columnIdToEmployeeKey(colId: string): keyof Employee {
-  if (colId === 'lien_he') return 'so_dien_thoai';
   return colId as keyof Employee;
 }
 

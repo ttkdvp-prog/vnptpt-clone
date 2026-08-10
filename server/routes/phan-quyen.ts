@@ -17,13 +17,13 @@ const putBodySchema = z.object({
   module_key: z.string().min(1),
   rows: z.array(
     z.object({
-      chuc_vu_id: z.union([z.string(), z.number()]),
+      chuc_vu_id: z.union([z.string(), z.number()]).transform(String),
       quyen: z.string().optional().default(''),
     }),
   ),
 });
 
-/** GET /phan-quyen?module_key=…&chuc_vu_ids=1,2,3 — module_key bắt buộc */
+/** GET /phan-quyen?module_key=…&chuc_vu_ids=Trưởng phòng,Nhân viên — module_key bắt buộc */
 phanQuyenRoutes.get('/', async (c) => {
   const denied = await assertPhanQuyenPermission(c, 'xem');
   if (denied) return denied;
@@ -37,8 +37,8 @@ phanQuyenRoutes.get('/', async (c) => {
   const chucVuIds = chucVuIdsRaw
     ? chucVuIdsRaw
         .split(',')
-        .map((s) => Number(s.trim()))
-        .filter((n) => Number.isFinite(n))
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0)
     : undefined;
 
   const rows = await findPhanQuyenByModule({ moduleKey, chucVuIds });
@@ -62,10 +62,10 @@ phanQuyenRoutes.put('/', async (c) => {
   const moduleKey = parsed.data.module_key.trim();
   const normalized = parsed.data.rows
     .map((r) => ({
-      chuc_vu_id: Number(r.chuc_vu_id),
+      chuc_vu_id: r.chuc_vu_id.trim(),
       quyen: String(r.quyen ?? ''),
     }))
-    .filter((r) => Number.isFinite(r.chuc_vu_id));
+    .filter((r) => r.chuc_vu_id.length > 0);
 
   const missing = await assertChucVuIdsExist([...new Set(normalized.map((r) => r.chuc_vu_id))]);
   if (missing.length > 0) {

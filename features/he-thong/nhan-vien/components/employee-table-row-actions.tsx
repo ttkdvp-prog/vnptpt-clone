@@ -1,16 +1,13 @@
 import React from 'react';
-import { toast } from 'sonner';
-import { Copy, Edit, RefreshCw, Printer, Mail, Phone, Trash2 } from 'lucide-react';
+import { Copy, Edit, RefreshCw, Trash2 } from 'lucide-react';
 import { txt } from '@/lib/text';
 import {
   DataTableRowActions,
   TableRowIconButton,
   type RowOverflowMenuItem,
 } from '@/components/shared/row-actions';
-import { openEmployeeProfilePreviewTab } from '../utils/open-employee-profile-preview';
 import type { Employee } from '../core/types';
 import { useCan } from '@/hooks/use-can';
-import { useCanOnRecord } from '@/hooks/use-can-on-record';
 
 export interface EmployeeTableRowActionsProps {
   item: Employee;
@@ -36,10 +33,8 @@ export function EmployeeTableRowActions({
 }: EmployeeTableRowActionsProps) {
   const close = () => onMenuOpenChange(null);
 
-  const recordCtx = { nguoi_tao: item.nguoi_tao };
-  const canEdit = useCanOnRecord('edit', 'employees', recordCtx);
-  const canDelete = useCanOnRecord('delete', 'employees', recordCtx);
-  const canViewRow = useCanOnRecord('view', 'employees', recordCtx);
+  const canEdit = useCan('edit', 'employees');
+  const canDelete = useCan('delete', 'employees');
   const canCreate = useCan('create', 'employees');
 
   const overflowItems: RowOverflowMenuItem[] = [
@@ -64,41 +59,6 @@ export function EmployeeTableRowActions({
             icon: <RefreshCw size={14} />,
             onClick: () => {
               onStatusChange(item);
-              close();
-            },
-          },
-        ]
-      : []),
-    ...(canViewRow
-      ? [
-          {
-            key: 'print',
-            label: txt('employee.detail.print'),
-            icon: <Printer size={14} />,
-            onClick: () => {
-              openEmployeeProfilePreviewTab(item.id);
-              close();
-            },
-          },
-          {
-            key: 'email',
-            label: txt('employee.detail.sendEmail'),
-            icon: <Mail size={14} />,
-            onClick: () => {
-              window.location.href = `mailto:${item.email}`;
-              close();
-            },
-          },
-          {
-            key: 'phone',
-            label: txt('employee.detail.callPhone'),
-            icon: <Phone size={14} />,
-            onClick: () => {
-              if (item.so_dien_thoai) {
-                window.location.href = `tel:${item.so_dien_thoai}`;
-              } else {
-                toast.warning(txt('employee.rowActions.noPhone'));
-              }
               close();
             },
           },

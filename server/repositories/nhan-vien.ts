@@ -1,6 +1,5 @@
 import {
   insertRow,
-  nextId,
   readTable,
   updateRowById,
   deleteRowById,
@@ -20,26 +19,53 @@ import {
 
 const TAB = SHEET_TABS.var_nhan_vien;
 
-/** Parsed row shape used across this file. */
+/** Chuẩn hoá `cap` về 'Trung tâm' | 'Tổ' — sheet có lẫn cách viết hoa/thường khác nhau (VD: "trung tâm"). */
+function normalizeCap(raw: string | null | undefined): string | null {
+  const v = raw?.trim().toLowerCase();
+  if (!v) return null;
+  if (v === 'trung tâm') return 'Trung tâm';
+  if (v === 'tổ') return 'Tổ';
+  return raw!.trim();
+}
+
+/**
+ * Parsed row shape used across this file.
+ *
+ * `id_chuc_vu` / `id_phong_ban`: tên cột giữ nguyên từ sheet nhưng giá trị là
+ * TEXT TỰ DO (chức danh, tên tổ/phòng) — không phải khóa ngoại, không có bảng
+ * tra tên (var_chuc_vu / var_phong_ban đã bị xóa khỏi sheet thật).
+ */
 export interface SheetNhanVienRow {
-  id: number;
+  id: string;
   ho_va_ten: string;
   hinh_anh: string | null;
   trang_thai: string;
+  id_chuc_vu: string | null;
+  id_phong_ban: string | null;
   mat_khau: string;
   must_change_password: boolean;
+  /** Cột `role` trong sheet — 'admin' mở toàn quyền phân quyền, mặc định 'user'. */
+  role: 'admin' | 'user';
+  email: string;
+  /** Cấp nhân viên — 'Trung tâm' | 'Tổ', dùng để lọc người theo cấp ở form Công việc. */
+  cap: string | null;
 }
 
 async function loadRows(): Promise<SheetNhanVienRow[]> {
   const { rows } = await readTable(TAB);
 
   return rows.map((r) => ({
-    id: Number(r.id),
+    id: (r.id ?? '').trim(),
     ho_va_ten: r.ho_va_ten ?? '',
     hinh_anh: r.hinh_anh || null,
     trang_thai: r.trang_thai || 'ACTIVE',
+    id_chuc_vu: r.id_chuc_vu?.trim() || null,
+    id_phong_ban: r.id_phong_ban?.trim() || null,
     mat_khau: r.mat_khau ?? '',
     must_change_password: r.must_change_password === 'true' || r.must_change_password === '1',
+    role: String(r.role ?? '').trim().toLowerCase() === 'admin' ? 'admin' : 'user',
+    email: (r.email ?? '').trim().toLowerCase(),
+    cap: normalizeCap(r.cap),
   }));
 }
 
@@ -73,20 +99,23 @@ export interface NhanVienStatsAggregatesResult {
 }
 
 export interface NhanVienCreateInput {
+  id: string;
   ho_ten: string;
   mat_khau_hash: string;
   trang_thai?: string;
   anh_dai_dien?: string | null;
+  chuc_danh?: string | null;
+  to_phong?: string | null;
   must_change_password?: boolean;
 }
 
-export type NhanVienUpdateInput = Partial<Omit<NhanVienCreateInput, 'mat_khau_hash'>> & {
+export type NhanVienUpdateInput = Partial<Omit<NhanVienCreateInput, 'mat_khau_hash' | 'id'>> & {
   mat_khau_hash?: string;
 };
 
 function sortRows(rows: SheetNhanVienRow[], orderBy: string | undefined, ascending: boolean): SheetNhanVienRow[] {
   const dir = ascending ? 1 : -1;
-  const key = (row: SheetNhanVienRow): string | number => {
+  const key = (row: SheetNhanVienRow): string => {
     switch (orderBy) {
       case 'ho_ten':
       case 'ho_va_ten':
@@ -104,13 +133,13 @@ function sortRows(rows: SheetNhanVienRow[], orderBy: string | undefined, ascendi
   });
 }
 
-export async function findEmployeeById(id: number): Promise<AppEmployee | null> {
+export async function findEmployeeById(id: string): Promise<AppEmployee | null> {
   const rows = await loadRows();
   const row = rows.find((r) => r.id === id);
   return row ? mapEmployeeFromDb(toDbNhanVien(row)) : null;
 }
 
-export async function findEmployeesByIds(ids: number[]): Promise<AppEmployee[]> {
+export async function findEmployeesByIds(ids: string[]): Promise<AppEmployee[]> {
   if (ids.length === 0) return [];
   const rows = await loadRows();
   const idSet = new Set(ids);
@@ -174,28 +203,51 @@ export async function getEmployeeStatsAggregates(
   };
 }
 
+/** Mọi giá trị `id_chuc_vu` (chức danh) khác nhau đang có ở nhân viên — trục vai_tro cho ma trận Phân quyền. */
+export async function getDistinctChucDanh(): Promise<string[]> {
+  const rows = await loadRows();
+  const set = new Set<string>();
+  for (const r of rows) {
+    if (r.id_chuc_vu?.trim()) set.add(r.id_chuc_vu.trim());
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, 'vi'));
+}
+
+/** Mọi giá trị `id_phong_ban` (tổ/phòng) khác nhau đang có ở nhân viên — nguồn dropdown `to` của module Tài liệu. */
+export async function getDistinctIdPhongBan(): Promise<string[]> {
+  const rows = await loadRows();
+  const set = new Set<string>();
+  for (const r of rows) {
+    if (r.id_phong_ban?.trim()) set.add(r.id_phong_ban.trim());
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, 'vi'));
+}
+
 export async function createEmployee(input: NhanVienCreateInput): Promise<AppEmployee> {
-  const id = await nextId(TAB);
   await insertRow(TAB, {
-    id: String(id),
+    id: input.id,
     ho_va_ten: input.ho_ten,
     hinh_anh: input.anh_dai_dien ?? '',
     trang_thai: mapNhanVienTrangThaiToDb(input.trang_thai ?? 'Đang làm việc'),
+    id_chuc_vu: input.chuc_danh ?? '',
+    id_phong_ban: input.to_phong ?? '',
     mat_khau: input.mat_khau_hash,
     must_change_password: String(input.must_change_password ?? true),
   });
-  const employee = await findEmployeeById(id);
+  const employee = await findEmployeeById(input.id);
   if (!employee) throw new Error('Failed to load created employee');
   return employee;
 }
 
-export async function updateEmployee(id: number, input: NhanVienUpdateInput): Promise<AppEmployee | null> {
+export async function updateEmployee(id: string, input: NhanVienUpdateInput): Promise<AppEmployee | null> {
   const patch: Record<string, string> = {};
   const setIf = (key: string, value: string | null | undefined) => {
     if (value !== undefined) patch[key] = value ?? '';
   };
   setIf('ho_va_ten', input.ho_ten);
   setIf('mat_khau', input.mat_khau_hash);
+  setIf('id_chuc_vu', input.chuc_danh);
+  setIf('id_phong_ban', input.to_phong);
   if (input.trang_thai != null) patch.trang_thai = mapNhanVienTrangThaiToDb(input.trang_thai);
   if (input.anh_dai_dien !== undefined) patch.hinh_anh = input.anh_dai_dien ?? '';
   if (input.must_change_password != null) patch.must_change_password = String(input.must_change_password);
@@ -205,11 +257,11 @@ export async function updateEmployee(id: number, input: NhanVienUpdateInput): Pr
   return findEmployeeById(id);
 }
 
-export async function deleteEmployee(id: number): Promise<boolean> {
+export async function deleteEmployee(id: string): Promise<boolean> {
   return deleteRowById(TAB, id);
 }
 
-export async function updateEmployeeStatusMany(ids: number[], trangThai: string): Promise<AppEmployee[]> {
+export async function updateEmployeeStatusMany(ids: string[], trangThai: string): Promise<AppEmployee[]> {
   const dbStatus = mapNhanVienTrangThaiToDb(trangThai);
   for (const id of ids) {
     await updateRowById(TAB, id, { trang_thai: dbStatus });
@@ -217,7 +269,7 @@ export async function updateEmployeeStatusMany(ids: number[], trangThai: string)
   return findEmployeesByIds(ids);
 }
 
-export async function deleteEmployeesMany(ids: number[]): Promise<number> {
+export async function deleteEmployeesMany(ids: string[]): Promise<number> {
   let count = 0;
   for (const id of ids) {
     if (await deleteRowById(TAB, id)) count += 1;
@@ -226,12 +278,13 @@ export async function deleteEmployeesMany(ids: number[]): Promise<number> {
 }
 
 export type EmployeeAuthCredential = {
-  id: number;
+  id: string;
   ho_va_ten: string;
   hinh_anh: string | null;
   trang_thai: string;
   mat_khau: string;
   must_change_password: boolean;
+  role: 'admin' | 'user';
 };
 
 function toAuthCredential(row: SheetNhanVienRow): EmployeeAuthCredential {
@@ -242,22 +295,32 @@ function toAuthCredential(row: SheetNhanVienRow): EmployeeAuthCredential {
     trang_thai: row.trang_thai,
     mat_khau: row.mat_khau,
     must_change_password: row.must_change_password,
+    role: row.role,
   };
 }
 
-export async function findEmployeeAuthById(id: number): Promise<EmployeeAuthCredential | null> {
+export async function findEmployeeAuthById(id: string): Promise<EmployeeAuthCredential | null> {
   const rows = await loadRows();
   const row = rows.find((r) => r.id === id);
   return row ? toAuthCredential(row) : null;
 }
 
-export async function findEmployeePasswordHash(id: number): Promise<{ id: number; mat_khau: string } | null> {
+/** Đăng nhập bằng email (cột `email` trên sheet `var_nhan_vien`) — so khớp không phân biệt hoa/thường. */
+export async function findEmployeeAuthByEmail(email: string): Promise<EmployeeAuthCredential | null> {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return null;
+  const rows = await loadRows();
+  const row = rows.find((r) => r.email === normalized);
+  return row ? toAuthCredential(row) : null;
+}
+
+export async function findEmployeePasswordHash(id: string): Promise<{ id: string; mat_khau: string } | null> {
   const rows = await loadRows();
   const row = rows.find((r) => r.id === id);
   return row ? { id: row.id, mat_khau: row.mat_khau } : null;
 }
 
-export async function updateEmployeePassword(id: number, matKhauHash: string): Promise<void> {
+export async function updateEmployeePassword(id: string, matKhauHash: string): Promise<void> {
   await updateRowById(TAB, id, {
     mat_khau: matKhauHash,
     must_change_password: 'false',

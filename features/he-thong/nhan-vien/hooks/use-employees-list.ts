@@ -49,9 +49,6 @@ export function toListParams(
     ascending,
     search: searchTerm.trim() || undefined,
     trang_thai: filters.trang_thai.length ? filters.trang_thai : undefined,
-    phong_ban_id: filters.phong_ban_id.length ? filters.phong_ban_id : undefined,
-    chuc_vu_id: filters.position.length ? filters.position : undefined,
-    gioi_tinh: filters.gender.length ? filters.gender : undefined,
     columnSearch: Object.keys(columnSearch).length ? columnSearch : undefined,
   };
 }

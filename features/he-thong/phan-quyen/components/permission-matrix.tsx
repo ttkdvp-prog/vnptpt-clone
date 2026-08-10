@@ -26,9 +26,6 @@ import {
 import { PERMISSION_MODULE_IDS } from '../core/permission-modules-config';
 import { useCan } from '@/hooks/use-can';
 import { useConfirmStore } from '@/store/useConfirmStore';
-import { useDepartments } from '@/features/he-thong/phong-ban/hooks/use-phong-ban';
-import { usePermissionDeptFilter } from '../hooks/use-permission-dept-filter';
-import type { DeptFilterGroup } from '../utils/build-dept-filter-groups';
 import {
   getInitialModuleId,
   moduleIdToTab,
@@ -102,79 +99,6 @@ const syncAll = (actions: ActionType[]): ActionType[] => {
   return actions;
 };
 
-/* ─── Department filter dropdown (grouped by root phòng ban) ─── */
-const DeptFilterDropdown: React.FC<{
-  value: string | null;
-  groups: DeptFilterGroup[];
-  selectedLabel: string;
-  onChange: (value: string | null) => void;
-  className?: string;
-}> = ({ value, groups, selectedLabel, onChange, className }) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const label = value === null ? txt('permission.matrix.filterByDeptAll') : selectedLabel;
-
-  return (
-    <div ref={ref} className={cn('relative shrink-0', className)}>
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        className={cn(
-          'flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left bg-card hover:bg-muted/50 min-w-0 max-w-[180px] sm:max-w-[220px]',
-          open ? 'border-primary ring-2 ring-primary/20' : 'border-border',
-        )}
-      >
-        <Building2 size={ICON_SIZE.compact} className="text-muted-foreground shrink-0" />
-        <span className="text-body-sm font-medium text-foreground truncate flex-1">{label}</span>
-        <ChevronDown size={ICON_SIZE.compact} className={cn('text-muted-foreground transition-transform shrink-0', open && 'rotate-180')} />
-      </button>
-      {open && (
-        <div className="absolute z-50 right-0 top-full mt-1 min-w-[200px] max-w-[280px] max-h-[280px] overflow-y-auto bg-card border border-border rounded-lg shadow-xl no-scrollbar py-1">
-          <button type="button" onClick={() => { onChange(null); setOpen(false); }} className={cn('w-full flex items-center gap-2 px-3 py-2 text-left text-body-sm', value === null ? 'bg-primary/10 text-primary font-semibold' : 'hover:bg-muted text-foreground')}>
-            {value === null && <Check size={ICON_SIZE.compact} className="shrink-0" />}
-            <span className={value === null ? 'font-semibold' : ''}>{txt('permission.matrix.filterByDeptAll')}</span>
-          </button>
-          {groups.map((group) => (
-            <React.Fragment key={group.rootId}>
-              <div className="h-px bg-border my-1" />
-              <div className="px-3 py-1.5 text-caption font-bold uppercase tracking-wide text-primary truncate">
-                {group.rootLabel}
-              </div>
-              {group.items.map((item) => {
-                const isSel = value === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => { onChange(item.value); setOpen(false); }}
-                    className={cn(
-                      'w-full flex items-center gap-2 py-2 text-left text-body-sm truncate',
-                      item.isGroup ? 'pl-6 pr-3' : 'px-3',
-                      isSel ? 'bg-primary/10 text-primary font-semibold' : 'hover:bg-muted text-foreground',
-                    )}
-                  >
-                    {isSel && <Check size={ICON_SIZE.compact} className="shrink-0" />}
-                    <span className={cn('truncate', isSel && 'font-semibold')}>{item.label}</span>
-                  </button>
-                );
-              })}
-            </React.Fragment>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
 /* ─── Desktop: Function Dropdown ─── */
 const FunctionDropdown: React.FC<{
   selected: PermissionFunction | null;
@@ -246,13 +170,7 @@ const MobileModuleDetail: React.FC<{
   const updateMutation = useUpdateModulePermissions();
   const [localPerms, setLocalPerms] = useState<Record<string, ActionType[]>>({});
   const [originalPerms, setOriginalPerms] = useState<Record<string, ActionType[]>>({});
-  const [deptFilter, setDeptFilter] = useState<string | null>(null);
-  const { data: departments = [] } = useDepartments();
-  const { groups: deptGroups, filteredRoles, labelForId: deptFilterLabel } = usePermissionDeptFilter(
-    roles,
-    departments,
-    deptFilter,
-  );
+  const filteredRoles = roles;
 
   const moduleConfig = useMemo(() => SYSTEM_MODULES_CONFIG.find((m) => m.id === moduleId), [moduleId]);
   const moduleName = moduleConfig ? txt(moduleConfig.nameKey) : moduleId;
@@ -288,20 +206,10 @@ const MobileModuleDetail: React.FC<{
     admin: txt('permission.matrix.admin'), all: txt('permission.form.all'),
   };
 
-  const groupedRoles = useMemo(() => {
-    const groups: Record<string, PositionPermission[]> = {};
-    const deptOrder: Record<string, number> = {};
-    filteredRoles.forEach((role) => {
-      const dept = role.ten_phong_ban || txt('permission.matrix.otherDept');
-      if (!groups[dept]) groups[dept] = [];
-      groups[dept].push(role);
-      const o = role.thu_tu_phong_ban ?? 9999;
-      if (deptOrder[dept] === undefined || o < deptOrder[dept]) deptOrder[dept] = o;
-    });
-    const sortedDepts = Object.keys(groups).sort((a, b) => (deptOrder[a] ?? 9999) - (deptOrder[b] ?? 9999));
-    sortedDepts.forEach((d) => groups[d].sort((a, b) => (a.thu_tu_chuc_vu ?? 9999) - (b.thu_tu_chuc_vu ?? 9999)));
-    return { groups, sortedDepts };
-  }, [filteredRoles]);
+  const sortedRoles = useMemo(
+    () => [...filteredRoles].sort((a, b) => a.ten_chuc_vu.localeCompare(b.ten_chuc_vu, 'vi')),
+    [filteredRoles],
+  );
 
   const allRoleIds = filteredRoles.map((r) => r.id);
 
@@ -385,17 +293,6 @@ const MobileModuleDetail: React.FC<{
         </Button>
       </div>
 
-      {/* Dept filter */}
-      <div className="flex p-3 pb-2 shrink-0 border-b border-border/50">
-        <DeptFilterDropdown
-          value={deptFilter}
-          groups={deptGroups}
-          selectedLabel={deptFilterLabel}
-          onChange={setDeptFilter}
-          className="w-full"
-        />
-      </div>
-
       {/* Permission cards */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2.5 pb-safe">
         {/* Select all */}
@@ -409,36 +306,19 @@ const MobileModuleDetail: React.FC<{
           </div>
         </div>
 
-        {groupedRoles.sortedDepts.map((dept) => {
-          const dr = groupedRoles.groups[dept]; const dids = dr.map((r) => r.id);
+        {sortedRoles.map((role) => {
+          const cur = localPerms[role.id] || [];
           return (
-            <div key={dept} className="space-y-1.5">
-              <div className="bg-muted/40 border border-border rounded-xl p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Building2 size={ICON_SIZE.compact} className="text-primary shrink-0" />
-                  <span className="text-xs font-bold text-foreground/80 flex-1 truncate">{txt(dept)}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {MATRIX_ACTIONS.map((a) => <MobileTriBtn key={a} label={actionLabels[a]} state={getActionState(dids, a)} onClick={() => toggleActionForRoles(dids, a)} disabled={!canEditMatrix} />)}
-                </div>
+            <div key={role.id} className="bg-card border border-border rounded-xl p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
+                <span className="text-xs font-semibold text-foreground flex-1 truncate">{role.ten_chuc_vu}</span>
               </div>
-              {dr.map((role) => {
-                const cur = localPerms[role.id] || [];
-                return (
-                  <div key={role.id} className="bg-card border border-border rounded-xl p-3 ml-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0" />
-                      <span className="text-xs font-semibold text-foreground flex-1 truncate">{role.ten_chuc_vu}</span>
-                      <span className="text-caption font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{role.ma_chuc_vu}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {MATRIX_ACTIONS.map((a) => (
-                        <MobileTriBtn key={a} label={actionLabels[a]} state={cur.includes(a) ? 'all' : 'none'} onClick={() => toggleOne(role.id, a)} disabled={!canEditMatrix} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+              <div className="grid grid-cols-3 gap-1.5">
+                {MATRIX_ACTIONS.map((a) => (
+                  <MobileTriBtn key={a} label={actionLabels[a]} state={cur.includes(a) ? 'all' : 'none'} onClick={() => toggleOne(role.id, a)} disabled={!canEditMatrix} />
+                ))}
+              </div>
             </div>
           );
         })}
@@ -571,15 +451,9 @@ const PermissionMatrix: React.FC = () => {
   });
   const activeModuleId = mobileSelectedModule ?? selectedModuleId;
   const { data: roles = [], isLoading } = usePermissionMatrixRoles(activeModuleId);
-  const { data: departments = [] } = useDepartments();
-  const [selectedDeptFilter, setSelectedDeptFilter] = useState<string | null>(null);
   const [localPermissions, setLocalPermissions] = useState<Record<string, ActionType[]>>({});
   const [originalPermissions, setOriginalPermissions] = useState<Record<string, ActionType[]>>({});
-  const { groups: deptGroups, filteredRoles, labelForId: deptFilterLabel } = usePermissionDeptFilter(
-    roles,
-    departments,
-    selectedDeptFilter,
-  );
+  const filteredRoles = roles;
 
   const syncTabToUrl = useCallback(
     (moduleId: string) => {
@@ -604,7 +478,6 @@ const PermissionMatrix: React.FC = () => {
     (id: string) => {
       const doSwitch = () => {
         setSelectedModuleId(id);
-        setSelectedDeptFilter(null);
         syncTabToUrl(id);
       };
       if (hasUnsavedChanges) {
@@ -620,7 +493,6 @@ const PermissionMatrix: React.FC = () => {
     (id: string) => {
       setMobileSelectedModule(id);
       setSelectedModuleId(id);
-      setSelectedDeptFilter(null);
       syncTabToUrl(id);
     },
     [syncTabToUrl],
@@ -631,7 +503,6 @@ const PermissionMatrix: React.FC = () => {
     if (!resolved || resolved === selectedModuleId) return;
     queueMicrotask(() => {
       setSelectedModuleId(resolved);
-      setSelectedDeptFilter(null);
     });
   }, [tabFromUrl, selectedModuleId]);
 
@@ -680,20 +551,10 @@ const PermissionMatrix: React.FC = () => {
 
   const filteredFunctions = useMemo(() => selectedFunction ? PERMISSION_FUNCTIONS.filter((f) => f.id === selectedFunction.id) : PERMISSION_FUNCTIONS, [selectedFunction]);
 
-  const groupedRoles = useMemo(() => {
-    const groups: Record<string, PositionPermission[]> = {};
-    const deptOrder: Record<string, number> = {};
-    filteredRoles.forEach((role) => {
-      const dept = role.ten_phong_ban || txt('permission.matrix.otherDept');
-      if (!groups[dept]) groups[dept] = [];
-      groups[dept].push(role);
-      const o = role.thu_tu_phong_ban ?? 9999;
-      if (deptOrder[dept] === undefined || o < deptOrder[dept]) deptOrder[dept] = o;
-    });
-    const sortedDepts = Object.keys(groups).sort((a, b) => (deptOrder[a] ?? 9999) - (deptOrder[b] ?? 9999));
-    sortedDepts.forEach((d) => groups[d].sort((a, b) => (a.thu_tu_chuc_vu ?? 9999) - (b.thu_tu_chuc_vu ?? 9999)));
-    return { groups, sortedDepts };
-  }, [filteredRoles]);
+  const sortedRoles = useMemo(
+    () => [...filteredRoles].sort((a, b) => a.ten_chuc_vu.localeCompare(b.ten_chuc_vu, 'vi')),
+    [filteredRoles],
+  );
 
   const toggleOne = (roleId: string, action: ActionType) => {
     if (!canEditMatrix) return;
@@ -873,12 +734,6 @@ const PermissionMatrix: React.FC = () => {
                 </div>
                 <h1 className="text-sm font-semibold text-foreground truncate">{txt('permission.title')}</h1>
               </div>
-              <DeptFilterDropdown
-                value={selectedDeptFilter}
-                groups={deptGroups}
-                selectedLabel={deptFilterLabel}
-                onChange={setSelectedDeptFilter}
-              />
               <Button onClick={handleSave} disabled={!canEditMatrix} isLoading={updateMutation.isPending} className="bg-primary text-primary-foreground shadow-xl h-8 px-5 rounded-lg font-bold text-sm shrink-0">
                 <Save size={ICON_SIZE.compact} className="mr-1.5" />
                 {txt('common.saveChanges')}
@@ -905,14 +760,10 @@ const PermissionMatrix: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {groupedRoles.sortedDepts.map((dept) => {
-                    const dr = groupedRoles.groups[dept]; const dids = dr.map((r) => r.id);
+                  {(() => {
+                    const dr = sortedRoles;
                     return (
-                      <React.Fragment key={dept}>
-                        <tr className="bg-muted/40 border-t-2 border-border">
-                          <td className="px-6 py-2"><span className="flex items-center gap-1.5 font-bold text-xs text-foreground/80"><Building2 size={ICON_SIZE.compact} className="text-primary shrink-0" />{txt(dept)}</span></td>
-                          {MATRIX_ACTIONS.map((a) => <td key={a} className="px-1 py-2 text-center"><TriCheck state={getActionState(dids, a)} disabled={!canEditMatrix} onClick={() => toggleActionForRoles(dids, a)} /></td>)}
-                        </tr>
+                      <>
                         {dr.map((role, ri) => {
                           const cur = localPermissions[role.id] || []; const isLast = ri === dr.length - 1;
                           return (
@@ -931,9 +782,9 @@ const PermissionMatrix: React.FC = () => {
                             </tr>
                           );
                         })}
-                      </React.Fragment>
+                      </>
                     );
-                  })}
+                  })()}
                 </tbody>
               </table>
             </div>

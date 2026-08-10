@@ -4,11 +4,7 @@ import { ICON_SIZE } from '@/lib/icon-sizes';
 import { Employee } from '../core/types';
 import {
   User,
-  Mail,
-  Phone,
   Briefcase,
-  Printer,
-  FileSignature,
   ScrollText,
   KeyRound,
 } from 'lucide-react';
@@ -21,20 +17,17 @@ import EnumBadge from '@/components/ui/EnumBadge';
 import PreviewableImage from '@/components/ui/PreviewableImage';
 import TabGroup from '@/components/ui/TabGroup';
 import { cn, getAvatarUrl } from '@/lib/utils';
-import { openEmployeeProfilePreviewTab } from '../utils/open-employee-profile-preview';
 import { CONFIRM_YES } from '@/lib/button-labels';
 import { useConfirmStore } from '@/store/useConfirmStore';
 import { useUpdateStatusEmployee } from '../hooks/use-nhan-vien';
 import { STATUS_OPTIONS, STATUS_BADGE_CONFIG } from '../core/constants';
 import { useCan } from '@/hooks/use-can';
-import { useCanOnRecord } from '@/hooks/use-can-on-record';
 import { useAuthStore } from '@/store/useStore';
 import { NhanVienDetailInfo } from './nhan-vien-detail-info';
-import { NhanVienDetailContracts } from './nhan-vien-detail-contracts';
 import { NhanVienDetailDecisions } from './nhan-vien-detail-decisions';
 import NhanVienChangePasswordDialog from './nhan-vien-change-password-dialog';
 
-type DetailTabId = 'info' | 'contracts' | 'decisions';
+type DetailTabId = 'info' | 'decisions';
 
 interface Props {
   data: Employee;
@@ -58,17 +51,15 @@ const EmployeeDetailComponent: React.FC<Props> = ({
   const confirm = useConfirmStore((state) => state.confirm);
   const statusMutation = useUpdateStatusEmployee();
   const currentUser = useAuthStore((state) => state.user);
-  const recordCtx = { nguoi_tao: data.nguoi_tao };
-  const canEdit = useCanOnRecord('edit', 'employees', recordCtx);
-  const canDelete = useCanOnRecord('delete', 'employees', recordCtx);
-  const canViewExtras = useCanOnRecord('view', 'employees', recordCtx);
+  const canEdit = useCan('edit', 'employees');
+  const canDelete = useCan('delete', 'employees');
+  const canViewExtras = useCan('view', 'employees');
   const canCreate = useCan('create', 'employees');
-  const canResetPassword = currentUser?.cap_bac === 1 || currentUser?.role === 'admin';
+  const canResetPassword = currentUser?.role === 'admin';
 
   const tabs = useMemo(
     () => [
       { id: 'info', label: txt('employee.detail.tabInfo'), icon: User },
-      { id: 'contracts', label: txt('employee.detail.tabContracts'), icon: FileSignature },
       { id: 'decisions', label: txt('employee.detail.tabDecisions'), icon: ScrollText },
     ],
     [],
@@ -125,39 +116,11 @@ const EmployeeDetailComponent: React.FC<Props> = ({
         variant: 'secondary',
       });
     }
-    if (canViewExtras) {
-      actions.push(
-        {
-          label: txt('employee.detail.print'),
-          icon: <Printer />,
-          onClick: () => openEmployeeProfilePreviewTab(data.id),
-          variant: 'secondary',
-        },
-        {
-          label: txt('employee.detail.sendEmail'),
-          icon: <Mail />,
-          onClick: () => {
-            window.location.href = `mailto:${data.email}`;
-          },
-          variant: 'primary',
-        },
-        {
-          label: txt('employee.detail.callPhone'),
-          icon: <Phone />,
-          onClick: () => {
-            window.location.href = `tel:${data.so_dien_thoai}`;
-          },
-          variant: 'success',
-        },
-      );
-    }
+    void canViewExtras;
     return actions;
   }, [
     handleUpdateStatus,
     handleChangePassword,
-    data.id,
-    data.email,
-    data.so_dien_thoai,
     canEdit,
     canResetPassword,
     canViewExtras,
@@ -212,7 +175,6 @@ const EmployeeDetailComponent: React.FC<Props> = ({
                 <EnumBadge value={data.trang_thai} config={STATUS_BADGE_CONFIG} />
               </div>
             </div>
-            <p className="text-body-sm text-primary font-medium">{data.ten_chuc_vu}</p>
           </div>
         </div>
 
@@ -225,9 +187,6 @@ const EmployeeDetailComponent: React.FC<Props> = ({
 
         {activeTab === 'info' ? (
           <NhanVienDetailInfo data={data} toolbarActions={toolbarActions} />
-        ) : null}
-        {activeTab === 'contracts' ? (
-          <NhanVienDetailContracts employeeId={data.id} />
         ) : null}
         {activeTab === 'decisions' ? <NhanVienDetailDecisions /> : null}
       </div>

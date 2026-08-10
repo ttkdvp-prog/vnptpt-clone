@@ -29,20 +29,8 @@ export function formatQuyenCsv(quyens: Iterable<string>): string {
 
 const MODULE_KEY_APP_TO_DB: Record<string, string> = {
   'he-thong/nhan-vien': 'nhan_vien',
-  'he-thong/phong-ban': 'phong_ban',
-  'he-thong/chuc-vu': 'chuc_vu',
   'he-thong/thong-tin-cong-ty': 'thong_tin_cong_ty',
   'he-thong/phan-quyen': 'phan_quyen',
-  'kinh-doanh/thiet-lap-khach-hang': 'thiet_lap_khach_hang',
-  'kinh-doanh/khach-hang': 'danh_sach_khach_hang',
-  'kinh-doanh/nguoi-lien-he': 'nguoi_lien_he',
-  'san-xuat/danh-sach-market-in': 'danh_sach_market_in',
-  'hanh-chinh/thiet-lap-tai-lieu': 'thiet_lap_tai_lieu',
-  'hanh-chinh/danh-sach-tai-lieu': 'danh_sach_tai_lieu',
-  'hanh-chinh/thiet-lap-cong-luong': 'thiet_lap_cong_luong',
-  'hanh-chinh/phieu-hanh-chinh': 'phieu_hanh_chinh',
-  'hanh-chinh/hop-dong': 'hop_dong',
-  'hanh-chinh/thong-bao': 'thong_bao',
 };
 
 const MODULE_KEY_DB_TO_APP: Record<string, string> = Object.fromEntries(

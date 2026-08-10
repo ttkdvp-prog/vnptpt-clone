@@ -1,7 +1,7 @@
 import type { ActionType, PhanQuyenRow, PositionPermission, VarPhanQuyenRow } from '../core/types';
 import { isApi } from '@/lib/data/config';
-import { apiGetPhanQuyen, apiPutPhanQuyen } from '@/lib/api/he-thong';
-import { getActivePositions } from '@/features/he-thong/chuc-vu/services/chuc-vu-service';
+import { apiGetPhanQuyen, apiPutPhanQuyen, apiGetDistinctChucDanh } from '@/lib/api/he-thong';
+import { MOCK_EMPLOYEES } from '@/mocks/he-thong';
 import {
   aggregateVarRowsToPhanQuyenRows,
   normalizePhanQuyenRow,
@@ -49,13 +49,19 @@ function buildMockPhanQuyen(): PhanQuyenRow[] {
 
 let mockPhanQuyenRows: PhanQuyenRow[] = buildMockPhanQuyen();
 
-async function fetchVarRowsFromApi(filters: {
-  moduleId?: string;
-  chucVuIds?: string[];
-}): Promise<VarPhanQuyenRow[]> {
+/** Danh sách chức danh (text tự do) đang có ở nhân viên — trục vai_tro của ma trận. */
+async function getDistinctChucDanh(): Promise<string[]> {
+  if (isApi()) return apiGetDistinctChucDanh();
+  const set = new Set<string>();
+  for (const e of MOCK_EMPLOYEES) {
+    if (e.chuc_danh?.trim()) set.add(e.chuc_danh.trim());
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, 'vi'));
+}
+
+async function fetchVarRowsFromApi(filters: { moduleId?: string }): Promise<VarPhanQuyenRow[]> {
   const items = await apiGetPhanQuyen({
     moduleKey: filters.moduleId ? mapModuleKeyToDb(filters.moduleId) : undefined,
-    chucVuIds: filters.chucVuIds,
   });
   return items.map((row) =>
     mapVarPhanQuyenFromDb(row as unknown as Record<string, unknown>),
@@ -67,8 +73,11 @@ async function getAggregatedPhanQuyenRows(filters: {
   chucVuIds?: string[];
 }): Promise<PhanQuyenRow[]> {
   if (isApi()) {
-    const varRows = await fetchVarRowsFromApi(filters);
-    return aggregateVarRowsToPhanQuyenRows(varRows);
+    const varRows = await fetchVarRowsFromApi({ moduleId: filters.moduleId });
+    const aggregated = aggregateVarRowsToPhanQuyenRows(varRows);
+    if (!filters.chucVuIds || filters.chucVuIds.length === 0) return aggregated;
+    const idSet = new Set(filters.chucVuIds);
+    return aggregated.filter((r) => idSet.has(r.vai_tro));
   }
 
   let rows = mockPhanQuyenRows;
@@ -102,26 +111,24 @@ export const getPhanQuyenGrantsByVaiTro = async (
   return phanQuyenRowsToGrants(rows);
 };
 
-/** Shell matrix: chức vụ active, chưa gắn quyền module. */
+/** Shell matrix: mọi chức danh đang có ở nhân viên, chưa gắn quyền module. */
 export async function getRoleMatrixPositions(): Promise<PositionPermission[]> {
-  const positions = await getActivePositions();
-  return positions.map((p) => positionToMatrixRow(p, [], getModuleName));
+  const chucDanhs = await getDistinctChucDanh();
+  return chucDanhs.map((cd) => positionToMatrixRow(cd, [], getModuleName));
 }
 
 /** Matrix một module — chỉ fetch quyền module đang chọn. */
 export async function getRolesForModule(moduleId: string): Promise<PositionPermission[]> {
-  const positions = await getActivePositions();
-  const vaiTroIds = positions.map((p) => p.id);
-  const rows = await getPhanQuyenByModule(moduleId, vaiTroIds);
-  return positions.map((p) => positionToMatrixRow(p, rows, getModuleName));
+  const chucDanhs = await getDistinctChucDanh();
+  const rows = await getPhanQuyenByModule(moduleId, chucDanhs);
+  return chucDanhs.map((cd) => positionToMatrixRow(cd, rows, getModuleName));
 }
 
 /** Toàn bộ matrix (mọi module) — tránh dùng trên UI; giữ cho tương thích / export. */
 export const getRoles = async (): Promise<PositionPermission[]> => {
-  const positions = await getActivePositions();
-  const vaiTroIds = positions.map((p) => p.id);
-  const rows = await getAggregatedPhanQuyenRows({ chucVuIds: vaiTroIds });
-  return positions.map((p) => positionToMatrixRow(p, rows, getModuleName));
+  const chucDanhs = await getDistinctChucDanh();
+  const rows = await getAggregatedPhanQuyenRows({ chucVuIds: chucDanhs });
+  return chucDanhs.map((cd) => positionToMatrixRow(cd, rows, getModuleName));
 };
 
 async function upsertMockPhanQuyen(

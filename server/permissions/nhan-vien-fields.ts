@@ -27,68 +27,25 @@ export type EmployeeFieldTier = 'self' | 'sua' | 'admin';
 /** Client gửi nhiều tên cho cùng một cột — quy về một tên trước khi tra tầng. */
 const FIELD_ALIASES: Readonly<Record<string, string>> = {
   ho_va_ten: 'ho_ten',
-  tai_khoan: 'ten_dang_nhap',
   hinh_anh: 'anh_dai_dien',
   mat_khau: 'mat_khau_tam',
 };
 
 /**
- * `cap_bac` CỐ Ý không có trong bảng này: nó được SUY RA từ `chuc_vu.cap_bac` ở
- * route và giá trị trong body bị bỏ qua hoàn toàn. Nhờ vậy client cũ gửi kèm
- * `cap_bac` vẫn chạy (không 403) mà đường leo quyền thì đóng vĩnh viễn.
- * Vector escalation dời sang `chuc_vu_id` — và trường đó ở tầng `admin`.
- *
- * `nguoi_tao` cũng không có: nó không nằm trong schema body lẫn
- * `NhanVienUpdateInput`, nên zod strip sẵn. Giữ nguyên như vậy.
+ * Sheet nhân viên chỉ còn: ho_va_ten, hinh_anh, trang_thai, mat_khau,
+ * must_change_password. Không còn tài khoản/chức vụ/phòng ban/cấp bậc.
  */
 export const EMPLOYEE_FIELD_TIERS: Readonly<Record<string, EmployeeFieldTier>> = {
-  // ─── ADMIN: danh tính đăng nhập, mật khẩu, và những gì quyết định quyền ───
-  ten_dang_nhap: 'admin',
+  // ─── ADMIN: mật khẩu, và những gì quyết định quyền ───
   mat_khau_tam: 'admin',
   must_change_password: 'admin',
-  // Chức vụ quyết định cả ma trận quyền lẫn `cap_bac` suy ra ⇒ tự gán là leo quyền.
-  chuc_vu_id: 'admin',
 
-  // ─── SELF: đúng phần self-service hợp lệ ───
+  // ─── SELF: tự đổi ảnh đại diện ───
   anh_dai_dien: 'self',
-  so_dien_thoai: 'self',
-  email_ca_nhan: 'self',
-  dia_chi_hien_tai: 'self',
-  nguoi_lien_he_khan: 'self',
-  sdt_khan: 'self',
-  moi_quan_he: 'self',
 
-  // ─── SUA: dữ liệu HR-of-record (lên hợp đồng / lương / BHXH) ───
+  // ─── SUA: dữ liệu HR-of-record ───
   ho_ten: 'sua',
-  email: 'sua',
-  gioi_tinh: 'sua',
-  ngay_sinh: 'sua',
-  so_cccd: 'sua',
-  ngay_cap_cccd: 'sua',
-  noi_cap_cccd: 'sua',
-  dia_chi_thuong_tru: 'sua',
-  que_quan: 'sua',
-  dan_toc: 'sua',
-  ton_giao: 'sua',
-  tinh_trang_hon_nhan: 'sua',
-  quoc_tich: 'sua',
-  ngay_vao_lam: 'sua',
-  ngay_chinh_thuc: 'sua',
-  ngay_nghi_viec: 'sua',
-  ly_do_nghi: 'sua',
-  so_tai_khoan: 'sua',
-  ten_chu_tai_khoan: 'sua',
-  ngan_hang: 'sua',
-  chi_nhanh: 'sua',
-  so_so_bhxh: 'sua',
-  so_bhyt: 'sua',
-  ma_so_thue_ca_nhan: 'sua',
-  trinh_do: 'sua',
-  chuyen_nganh: 'sua',
-  truong: 'sua',
-  // Không nâng quyền được, chỉ thu hồi — để `sua` cho HR làm việc hàng ngày.
   trang_thai: 'sua',
-  phong_ban_id: 'sua',
 };
 
 /**

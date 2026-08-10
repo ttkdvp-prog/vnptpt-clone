@@ -37,6 +37,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/nhan-vien') ||
     pathname.startsWith('/cong-ty') ||
     pathname.startsWith('/phan-quyen') ||
+    pathname.startsWith('/tai-lieu') ||
     pathname.startsWith('/uploads') ||
     pathname.startsWith('/auth/')
   ) {

@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { txt } from '@/lib/text';
-import { Download, Upload, Building2, Briefcase, Tag, Pencil, KeyRound, Users } from 'lucide-react';
+import { Download, Upload, Tag, Pencil, KeyRound } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import { useResourcePermissions } from '@/hooks/use-resource-permissions';
 import { useAuthStore } from '@/store/useStore';
@@ -23,9 +23,7 @@ import {
   ListToolbarAddButton,
   ListToolbarIconButton,
 } from '@/components/shared/ListToolbarActions';
-import { useDepartments } from '@/features/he-thong/phong-ban/hooks/use-phong-ban';
-import { usePositions } from '@/features/he-thong/chuc-vu/hooks/use-chuc-vu';
-import { GENDER_OPTIONS, STATUS_OPTIONS, type TrangThaiNhanVien } from '../core/constants';
+import { STATUS_OPTIONS, type TrangThaiNhanVien } from '../core/constants';
 import { useFilterCounts } from '../hooks/use-filter-counts';
 import type { Employee } from '../core/types';
 import { countColumnSearchActive } from '../utils/column-search';
@@ -44,13 +42,13 @@ interface Props {
 const chipClass = (layout: 'inline' | 'menu', width?: string) =>
   layout === 'inline' ? (width ?? INLINE_CHIP_CLASS) : MENU_CHIP_CLASS;
 
-const EmployeeToolbar: React.FC<Props> = ({ 
+const EmployeeToolbar: React.FC<Props> = ({
     employees, onAdd, onExport, onImport, onDeleteMany, onStatusChangeMany, onBulkEdit,
 }) => {
   const { canCreate, canImport, canExport, canEdit, canDelete } = useResourcePermissions('employees');
   const currentUser = useAuthStore((state) => state.user);
   /** Cùng cổng quyền với nút Đổi mật khẩu ở drawer chi tiết (`nhan-vien-detail.tsx`). */
-  const canResetPassword = currentUser?.cap_bac === 1 || currentUser?.role === 'admin';
+  const canResetPassword = currentUser?.role === 'admin';
   const [bulkPasswordOpen, setBulkPasswordOpen] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
 
@@ -93,64 +91,27 @@ const EmployeeToolbar: React.FC<Props> = ({
     filters, sort, columns, density, searchTerm, applyView,
   });
 
-  const { data: departments = [] } = useDepartments();
-  const { data: positions = [] } = usePositions();
+  const { statusCounts } = useFilterCounts(employees, searchTerm, filters);
 
-  const { deptCounts, posCounts, statusCounts, genderCounts } = useFilterCounts(employees, searchTerm, filters);
-
-  const departmentOptions = useMemo(
-    () => departments.map(d => ({ label: d.ten_phong_ban, value: d.id, count: deptCounts[d.id] || 0 })),
-    [departments, deptCounts]
-  );
-  const positionOptions = useMemo(
-    () => positions.map(p => ({ label: p.ten_chuc_vu, value: p.id, count: posCounts[p.id] || 0 })),
-    [positions, posCounts]
-  );
   const statusOptions = useMemo(
     () => STATUS_OPTIONS.map(s => ({ label: s.label, value: String(s.value), count: statusCounts[String(s.value)] || 0 })),
     [statusCounts]
-  );
-  const genderOptions = useMemo(
-    () => GENDER_OPTIONS.map(g => ({ label: g.label, value: g.value, count: genderCounts[g.value] || 0 })),
-    [genderCounts]
   );
 
   const activeFilterCount = useMemo(() => {
     const columnSearchN = countColumnSearchActive(filters.columnSearch);
     return (searchTerm ? 1 : 0)
       + columnSearchN
-      + (filters.phong_ban_id.length > 0 ? 1 : 0)
-      + (filters.position.length > 0 ? 1 : 0)
-      + (filters.trang_thai.length > 0 ? 1 : 0)
-      + (filters.gender.length > 0 ? 1 : 0);
+      + (filters.trang_thai.length > 0 ? 1 : 0);
   }, [searchTerm, filters]);
 
   const handleClearAllFilters = () => {
     setSearchTerm('');
     setFilter('columnSearch', {});
-    setFilter('phong_ban_id', []);
-    setFilter('position', []);
     setFilter('trang_thai', []);
-    setFilter('gender', []);
   };
 
   const filterGroups = useMemo(() => [
-    {
-      key: 'phong_ban_id',
-      label: txt('employee.toolbar.department'),
-      icon: Building2,
-      options: departmentOptions,
-      value: filters.phong_ban_id,
-      onChange: (val: string[]) => setFilter('phong_ban_id', val),
-    },
-    {
-      key: 'position',
-      label: txt('employee.toolbar.position'),
-      icon: Briefcase,
-      options: positionOptions,
-      value: filters.position,
-      onChange: (val: string[]) => setFilter('position', val),
-    },
     {
       key: 'trang_thai',
       label: txt('employee.toolbar.status'),
@@ -159,15 +120,7 @@ const EmployeeToolbar: React.FC<Props> = ({
       value: filters.trang_thai,
       onChange: (val: string[]) => setFilter('trang_thai', val),
     },
-    {
-      key: 'gender',
-      label: txt('employee.toolbar.gender'),
-      icon: Users,
-      options: genderOptions,
-      value: filters.gender,
-      onChange: (val: string[]) => setFilter('gender', val),
-    },
-  ], [departmentOptions, positionOptions, statusOptions, genderOptions, filters, setFilter]);
+  ], [statusOptions, filters, setFilter]);
 
   /** Trạng thái đích cho dropdown "Đổi trạng thái" — đủ 4 giá trị, khớp bulk edit và dialog dòng. */
   const bulkStatusMenuOptions = useMemo(
@@ -247,34 +200,6 @@ const EmployeeToolbar: React.FC<Props> = ({
   const filterChipItems = useMemo<ToolbarFilterChipItem[]>(
     () => [
       {
-        id: 'phong_ban_id',
-        active: filters.phong_ban_id.length > 0,
-        renderChip: (layout) => (
-          <FilterChipMultiSelect
-            options={departmentOptions}
-            value={filters.phong_ban_id}
-            onChange={(val) => setFilter('phong_ban_id', val)}
-            placeholder={txt('employee.toolbar.department')}
-            icon={Building2}
-            className={chipClass(layout)}
-          />
-        ),
-      },
-      {
-        id: 'position',
-        active: filters.position.length > 0,
-        renderChip: (layout) => (
-          <FilterChipMultiSelect
-            options={positionOptions}
-            value={filters.position}
-            onChange={(val) => setFilter('position', val)}
-            placeholder={txt('employee.toolbar.position')}
-            icon={Briefcase}
-            className={chipClass(layout, 'w-[136px]')}
-          />
-        ),
-      },
-      {
         id: 'trang_thai',
         active: filters.trang_thai.length > 0,
         renderChip: (layout) => (
@@ -288,32 +213,8 @@ const EmployeeToolbar: React.FC<Props> = ({
           />
         ),
       },
-      {
-        id: 'gender',
-        active: filters.gender.length > 0,
-        renderChip: (layout) => (
-          <FilterChipMultiSelect
-            options={genderOptions}
-            value={filters.gender}
-            onChange={(val) => setFilter('gender', val)}
-            placeholder={txt('employee.toolbar.gender')}
-            icon={Users}
-            className={chipClass(layout, 'w-[132px]')}
-          />
-        ),
-      },
     ],
-    [
-      departmentOptions,
-      positionOptions,
-      statusOptions,
-      genderOptions,
-      filters.phong_ban_id,
-      filters.position,
-      filters.trang_thai,
-      filters.gender,
-      setFilter,
-    ],
+    [statusOptions, filters.trang_thai, setFilter],
   );
 
   const renderFilters = useMemo(

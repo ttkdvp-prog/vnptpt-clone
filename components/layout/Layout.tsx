@@ -27,11 +27,7 @@ import { LiveClock } from './LiveClock';
 import { useFilteredSidebarMenu } from '@/hooks/use-filtered-sidebar-menu';
 import { useCurrentUserDisplay } from '@/hooks/use-current-user-display';
 import { toast } from 'sonner';
-import {
-  changePassword,
-  resolveUserAuthEmail,
-  resolveUserLoginName,
-} from '@/lib/employee-auth/change-password';
+import { changePassword } from '@/lib/employee-auth/change-password';
 import { logoutCurrentSession } from '@/lib/employee-auth/restore-session';
 
 /** Sidebar width: expanded 240px (gọn), collapsed 64px (4rem, 8px grid) */
@@ -70,7 +66,7 @@ const LayoutMobileUserMenuHeader: React.FC<{
   user: User | null;
 }> = ({ user }) => {
   const { displayName, positionName } = useCurrentUserDisplay(user);
-  const subtitle = user?.ten_dang_nhap ?? user?.email ?? '';
+  const subtitle = user?.email ?? '';
 
   return (
     <div className="px-3 py-2.5 border-b border-border md:hidden">
@@ -209,15 +205,14 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       setChangePasswordError(txt('nav.changePassword.errorSameAsCurrent'));
       return;
     }
-    const loginName = user ? resolveUserLoginName(user) : '';
-    if (!loginName) {
-      setChangePasswordError('Chưa có tên đăng nhập');
+    const employeeId = user?.employee_id ?? '';
+    if (!employeeId) {
+      setChangePasswordError('Chưa có mã nhân viên');
       return;
     }
     setChangePasswordSubmitting(true);
     const result = await changePassword({
-      loginName,
-      authEmail: user ? resolveUserAuthEmail(user) : undefined,
+      employeeId,
       currentPassword: current,
       newPassword: newPw,
     });
@@ -242,15 +237,6 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   );
 
   const sidebarTransition = { duration: 0.15, ease: 'circOut' as const };
-
-  /** Live TV wallboard — fullscreen, no sidebar/topbar */
-  if (location.pathname === '/tong-quan/tv') {
-    return (
-      <div className="h-[100dvh] w-full overflow-hidden bg-zinc-950 font-sans text-foreground">
-        {children}
-      </div>
-    );
-  }
 
   return (
     <div className="flex h-[100dvh] bg-background font-sans text-foreground selection:bg-primary/20 selection:text-primary overflow-x-hidden min-h-0">

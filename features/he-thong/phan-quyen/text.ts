@@ -45,6 +45,7 @@ export const permission = {
     "hrGroup": "Nhân sự & Tổ chức",
     "salaryGroup": "Tiền lương & Công",
     "systemGroup": "Hệ thống & Bảo mật",
+    "workGroup": "Công việc",
     "setupTitle": "Thiết lập quyền:",
     "setupDesc": "Phân quyền chi tiết cho từng chức vụ đối với module này.",
     "position": "Chức vụ",
@@ -59,6 +60,8 @@ export const permission = {
   },
   "module": {
     "employeeList": "Danh sách Nhân viên",
+    "taiLieu": "Tài liệu",
+    "congViec": "Công việc",
     "departmentChart": "Sơ đồ Phòng ban",
     "positionRole": "Chức danh & Vị trí",
     "laborContract": "Hợp đồng lao động",

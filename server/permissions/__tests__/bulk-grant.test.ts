@@ -1,15 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/server/repositories/nhan-vien', () => ({
-  findEmployeeChucVuId: vi.fn(),
-}));
-vi.mock('@/server/repositories/phan-quyen', () => ({
-  findQuyenCsvByChucVuAndModule: vi.fn(),
-}));
-
-import { findEmployeeChucVuId } from '@/server/repositories/nhan-vien';
-import { findQuyenCsvByChucVuAndModule } from '@/server/repositories/phan-quyen';
 import { resolveModuleGrant, grantAllowsRow } from '../bulk-grant';
 
 function mockContext(session: unknown) {
@@ -27,53 +18,16 @@ describe('resolveModuleGrant', () => {
     expect((result as { status: number }).status).toBe(401);
   });
 
-  it('cap_bac === 1 ⇒ super, không cần tra chức vụ', async () => {
-    const result = await resolveModuleGrant(
-      mockContext({ employee_id: '1', cap_bac: 1 }),
-      'khach_hang',
-    );
+  it('có session ⇒ luôn super/module admin (không còn chức vụ để tra)', async () => {
+    const result = await resolveModuleGrant(mockContext({ employee_id: '1' }), 'khach_hang');
     expect(result).toMatchObject({ isSuper: true, isModuleAdmin: true });
-    expect(findEmployeeChucVuId).not.toHaveBeenCalled();
-  });
-
-  it('không tra được chức vụ ⇒ Response 403', async () => {
-    vi.mocked(findEmployeeChucVuId).mockResolvedValue(null);
-    const result = await resolveModuleGrant(
-      mockContext({ employee_id: '2', cap_bac: 4 }),
-      'khach_hang',
-    );
-    expect((result as { status: number }).status).toBe(403);
-  });
-
-  it('token admin/tat_ca trên module ⇒ isModuleAdmin', async () => {
-    vi.mocked(findEmployeeChucVuId).mockResolvedValue(10);
-    vi.mocked(findQuyenCsvByChucVuAndModule).mockResolvedValue('admin,xem');
-    const result = await resolveModuleGrant(
-      mockContext({ employee_id: '2', cap_bac: 4 }),
-      'khach_hang',
-    );
-    expect(result).toMatchObject({ isSuper: false, isModuleAdmin: true });
-  });
-
-  it('token thường ⇒ isModuleAdmin false', async () => {
-    vi.mocked(findEmployeeChucVuId).mockResolvedValue(10);
-    vi.mocked(findQuyenCsvByChucVuAndModule).mockResolvedValue('xem,sua');
-    const result = await resolveModuleGrant(
-      mockContext({ employee_id: '2', cap_bac: 4 }),
-      'khach_hang',
-    );
-    expect(result).toMatchObject({
-      isSuper: false,
-      isModuleAdmin: false,
-      tokens: ['xem', 'sua'],
-    });
   });
 });
 
 describe('grantAllowsRow', () => {
-  const superGrant = { session: { employee_id: '1', tai_khoan: 'a', cap_bac: 1 }, tokens: [], isSuper: true, isModuleAdmin: true };
-  const adminGrant = { session: { employee_id: '1', tai_khoan: 'a', cap_bac: 4 }, tokens: ['admin'], isSuper: false, isModuleAdmin: true };
-  const xemOnlyGrant = { session: { employee_id: '2', tai_khoan: 'b', cap_bac: 4 }, tokens: ['xem'], isSuper: false, isModuleAdmin: false };
+  const superGrant = { session: { employee_id: '1' }, tokens: [], isSuper: true, isModuleAdmin: true };
+  const adminGrant = { session: { employee_id: '1' }, tokens: ['admin'], isSuper: false, isModuleAdmin: true };
+  const xemOnlyGrant = { session: { employee_id: '2' }, tokens: ['xem'], isSuper: false, isModuleAdmin: false };
 
   it('super hoặc module admin ⇒ mọi dòng, kể cả xoa', () => {
     expect(grantAllowsRow(superGrant, 'xoa')).toBe(true);

@@ -25,6 +25,7 @@ export const ui = {
     "adminOps": "Hành chính",
     "business": "Kinh doanh",
     "production": "Sản xuất",
+    "workItems": "Công việc",
     "system": "Hệ thống",
     "skipToMain": "Chuyển đến nội dung chính",
     "collapseSidebar": "Thu gọn sidebar",
@@ -52,6 +53,7 @@ export const ui = {
       "groupAdminOps": "Hành chính",
       "groupBusiness": "Kinh doanh",
       "groupProduction": "Sản xuất",
+      "groupWorkItems": "Công việc",
       "groupSystem": "Hệ thống",
       "groupAccount": "Tài khoản"
     }
@@ -169,6 +171,7 @@ export const ui = {
       "adminOpsModuleDesc": "Công văn, chấm công và nghiệp vụ hành chính.",
       "businessModuleDesc": "Bán hàng, khách hàng và cơ hội kinh doanh.",
       "productionModuleDesc": "Kế hoạch, sản xuất và quản lý kho.",
+      "workItemsModuleDesc": "Công việc, nhiệm vụ và tài liệu liên quan.",
       "systemModuleDesc": "Cấu hình, phân quyền và nhân sự.",
       "licenseInfoDesc": "Quản lý sở hữu trí tuệ và thông tin nhà phát triển."
     },
@@ -256,7 +259,7 @@ export const ui = {
       "noAccount": "Bạn chưa có tài khoản?",
       "register": "Đăng ký ngay",
       "copyright": "© 2024",
-      "companyFallback": "5F Quản lý thiết bị",
+      "companyFallback": "Phần mềm ERP",
       "legal": "Bảo mật • Điều khoản sử dụng",
       "forgotPasswordTitle": "Quên mật khẩu",
       "forgotPasswordDesc": "Tài khoản dùng email hệ thống (@gmail.com). Vui lòng liên hệ HR hoặc Quản trị để đặt lại mật khẩu.",
@@ -379,6 +382,20 @@ export const ui = {
       "pelletMixingFormula": "Công thức trộn hạt",
       "pelletMixingFormulaDesc": "Quản lý công thức trộn hạt dùng trong sản xuất."
     },
+    "workDashboard": {
+      "taskGroup": "Công việc",
+      "task": "Công việc",
+      "taskDesc": "Danh sách công việc đang xử lý.",
+      "assignment": "Nhiệm vụ",
+      "assignmentDesc": "Nhiệm vụ được giao và theo dõi tiến độ.",
+      "taskStats": "Thống kê",
+      "taskStatsDesc": "Báo cáo và thống kê công việc.",
+      "docGroup": "Tài liệu",
+      "documentList": "Danh sách tài liệu",
+      "documentListDesc": "Quản lý tài liệu liên quan đến công việc.",
+      "documentStats": "Thống kê",
+      "documentStatsDesc": "Báo cáo và thống kê tài liệu."
+    },
     "adminOpsDashboard": {
       "title": "Hành chính",
       "payrollGroup": "Công lương",
@@ -435,6 +452,10 @@ export const ui = {
     "adminOps": "Hành chính",
     "business": "Kinh doanh",
     "production": "Sản xuất",
+    "workItems": "Công việc",
+    "task": "Công việc",
+    "assignment": "Nhiệm vụ",
+    "taskStats": "Thống kê",
     "adminForm": "Phiếu hành chính",
     "adminFormStats": "Thống kê phiếu hành chính",
     "kpiScoring": "Chấm điểm KPI",

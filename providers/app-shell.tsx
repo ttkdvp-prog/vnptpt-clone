@@ -50,39 +50,5 @@ export function WithPageSuspense({ children }: { children: ReactNode }) {
 export const EmployeePage = lazy(() => import('@/features/he-thong/nhan-vien/index'));
 export const CompanyInfoPage = lazy(() => import('@/features/he-thong/thong-tin-cong-ty/index'));
 export const SecurityPage = lazy(() => import('@/features/he-thong/phan-quyen/index'));
-export const DepartmentPage = lazy(() => import('@/features/he-thong/phong-ban/index'));
-export const PositionPage = lazy(() => import('@/features/he-thong/chuc-vu/index'));
-export const CustomerSettingsPage = lazy(
-  () => import('@/features/kinh-doanh/thiet-lap-khach-hang/index'),
-);
-export const CustomerListPage = lazy(() => import('@/features/kinh-doanh/khach-hang/index'));
-export const ContactListPage = lazy(() => import('@/features/kinh-doanh/nguoi-lien-he/index'));
-export const DocumentSettingsPage = lazy(
-  () => import('@/features/hanh-chinh/thiet-lap-tai-lieu/index'),
-);
-export const PayrollSettingsPage = lazy(
-  () => import('@/features/hanh-chinh/thiet-lap-cong-luong/index'),
-);
-export const DocumentListPage = lazy(
-  () => import('@/features/hanh-chinh/danh-sach-tai-lieu/index'),
-);
-export const DocumentStatsPage = lazy(
-  () => import('@/features/hanh-chinh/thong-ke-tai-lieu/index'),
-);
-export const AdminFormStatsPage = lazy(
-  () => import('@/features/hanh-chinh/thong-ke-phieu-hanh-chinh/index'),
-);
-export const MarketInListPage = lazy(
-  () => import('@/features/san-xuat/danh-sach-market-in/index'),
-);
-export const PhieuHanhChinhListPage = lazy(
-  () => import('@/features/hanh-chinh/phieu-hanh-chinh/index'),
-);
-export const HopDongListPage = lazy(() => import('@/features/hanh-chinh/hop-dong/index'));
-export const ThongBaoListPage = lazy(() => import('@/features/hanh-chinh/thong-bao/index'));
-export const ContractPrintPage = lazy(
-  () => import('@/features/hanh-chinh/hop-dong/pages/contract-print-page'),
-);
-export const EmployeeProfilePreviewPage = lazy(
-  () => import('@/features/he-thong/nhan-vien/pages/employee-profile-preview-page'),
-);
+export const TaiLieuPage = lazy(() => import('@/features/cong-viec/tai-lieu/index'));
+export const CongViecPage = lazy(() => import('@/features/cong-viec/danh-sach-cong-viec/index'));

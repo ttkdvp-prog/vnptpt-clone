@@ -43,8 +43,7 @@ export function buildEmployeePredicate(
 
   return (row: SheetNhanVienRow): boolean => {
     if (search) {
-      const asId = Number(search);
-      const idMatch = Number.isFinite(asId) && String(asId) === search && row.id === asId;
+      const idMatch = contains(row.id, search);
       const textMatch = contains(row.ho_va_ten, search) || contains(row.trang_thai, search);
       if (!idMatch && !textMatch) return false;
     }
@@ -57,11 +56,9 @@ export function buildEmployeePredicate(
         case 'ho_ten':
           if (!contains(row.ho_va_ten, v)) return false;
           break;
-        case 'id': {
-          const n = Number(v);
-          if (!Number.isFinite(n) || row.id !== n) return false;
+        case 'id':
+          if (!contains(row.id, v)) return false;
           break;
-        }
         default:
           break;
       }

@@ -63,7 +63,7 @@ describe('can', () => {
     usePermissionGrantStore.getState().setMatrixGrants({}, 1);
     expect(isGlobalPermissionSuperUser()).toBe(true);
     expect(can(member, 'delete', 'employees')).toBe(true);
-    expect(can(member, 'delete', 'departments')).toBe(true);
+    expect(can(member, 'delete', 'company')).toBe(true);
   });
 
   it('matrix: admin on module grants full actions on that module only', () => {
@@ -71,7 +71,7 @@ describe('can', () => {
       'he-thong/nhan-vien': ['admin'],
     });
     expect(can(member, 'delete', 'employees')).toBe(true);
-    expect(can(member, 'delete', 'departments')).toBe(false);
+    expect(can(member, 'delete', 'company')).toBe(false);
   });
 });
 

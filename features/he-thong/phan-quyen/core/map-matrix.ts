@@ -6,8 +6,6 @@ import {
   parseQuyenCsv,
   quyenListToActions,
 } from '@/lib/permission-db-keys';
-import { coerceEntityId } from '@/lib/db/map-entity-row';
-import type { Position } from '@/features/he-thong/chuc-vu/core/types';
 import type {
   ActionType,
   ModulePermission,
@@ -22,7 +20,7 @@ export function normalizeVarPhanQuyenRow(
   return {
     ...row,
     id: String(row.id),
-    chuc_vu_id: coerceEntityId(row.chuc_vu_id),
+    chuc_vu_id: String(row.chuc_vu_id),
   };
 }
 
@@ -85,7 +83,7 @@ export function splitMatrixToVarRows(
   return [
     {
       module_key: dbModuleKey,
-      chuc_vu_id: coerceEntityId(chucVuId),
+      chuc_vu_id: chucVuId,
       quyen: formatQuyenCsv(quyens),
       tg_tao: now,
       tg_cap_nhat: now,
@@ -112,31 +110,27 @@ export function rowsToQuyenHan(
   }));
 }
 
+/**
+ * `chuc-vu` (chức vụ) đã bị xóa khỏi hệ thống. Trục vai_tro của ma trận Phân
+ * quyền giờ là chính giá trị text tự do ở cột `id_chuc_vu` (chức danh) của
+ * nhân viên — không có bảng tra, không có mã/phòng ban/thứ tự riêng.
+ */
 export function positionToMatrixRow(
-  position: Position,
+  chucDanh: string,
   rows: PhanQuyenRow[],
   getModuleName: (moduleKey: string) => string,
-  deptOrder?: number,
 ): PositionPermission {
-  const forPosition = rows.filter((r) => r.vai_tro === position.id);
+  const forPosition = rows.filter((r) => r.vai_tro === chucDanh);
   const latestRowTs = forPosition.reduce(
     (max, r) => (r.tg_cap_nhat > max ? r.tg_cap_nhat : max),
     '',
   );
   return {
-    id: position.id,
-    id_chuc_vu: position.id,
-    ma_chuc_vu: position.ma_chuc_vu,
-    ten_chuc_vu: position.ten_chuc_vu,
-    ten_phong_ban: position.ten_phong_ban ?? '',
-    phong_ban_id: position.phong_ban_id ?? null,
-    thu_tu_phong_ban: deptOrder,
-    thu_tu_chuc_vu: position.thu_tu,
-    mo_ta: position.mo_ta,
+    id: chucDanh,
+    ten_chuc_vu: chucDanh,
     so_nhan_vien: 0,
     quyen_han: rowsToQuyenHan(forPosition, getModuleName),
-    trang_thai: position.trang_thai,
-    tg_cap_nhat: latestRowTs || position.tg_cap_nhat,
+    tg_cap_nhat: latestRowTs,
   };
 }
 
