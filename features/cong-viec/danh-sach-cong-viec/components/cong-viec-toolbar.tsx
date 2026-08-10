@@ -222,7 +222,7 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
     [toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
   );
 
-  const renderFilters = useMemo(() => <ToolbarFilterChipGroup items={filterChipItems} maxVisible={3} />, [filterChipItems]);
+  const renderFilters = useMemo(() => <ToolbarFilterChipGroup items={filterChipItems} maxVisible={4} />, [filterChipItems]);
 
   const renderActions = (
     <>
