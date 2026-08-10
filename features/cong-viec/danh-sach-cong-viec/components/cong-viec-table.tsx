@@ -184,6 +184,9 @@ const CongViecTable = memo(function CongViecTable({
             </div>
           </div>
         )}
+        metaLine={(
+          <EnumBadge value={getCongViecTrangThai(item)} config={TRANG_THAI_BADGE_CONFIG} />
+        )}
         footerStart={(
           <label className="inline-flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-lg">
             <input
