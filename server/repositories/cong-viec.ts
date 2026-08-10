@@ -106,12 +106,9 @@ function splitCsvField(value: string): string[] {
   return value.split(',').map((s) => s.trim()).filter(Boolean);
 }
 
-/** Khớp `getCongViecTrangThai` phía client (core/types.ts) — giữ 2 nơi đồng bộ khi đổi logic. */
+/** Khớp `getCongViecTrangThai` phía client (core/types.ts) — giữ đồng bộ khi đổi logic. */
 function rowTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
-  if (row.ngay_ht) return 'hoan_thanh';
-  const today = new Date().toISOString().slice(0, 10);
-  if (row.ngay_kt && today > row.ngay_kt) return 'qua_han';
-  return 'dang_thuc_hien';
+  return deriveTrangThai(row);
 }
 
 export interface CongViecPageQuery extends CongViecListFilters {
@@ -247,6 +244,7 @@ export interface CongViecStatsAggregatesResult {
   byCap: Array<{ key: string; count: number }>;
   byUuTien: Array<{ key: string; count: number }>;
   byNguoiPhuTrach: Array<{ key: string; count: number }>;
+  byToTeam: Array<{ key: string; giao: number; hoanThanh: number; quaHan: number }>;
 }
 
 function deriveTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
@@ -265,6 +263,7 @@ export async function getCongViecStatsAggregates(
   const capMap: Record<string, number> = {};
   const uuTienMap: Record<string, number> = {};
   const nguoiPhuTrachMap: Record<string, number> = {};
+  const toTeamMap: Record<string, { giao: number; hoanThanh: number; quaHan: number }> = {};
   let hoanThanh = 0;
   let quaHan = 0;
   let dangThucHien = 0;
@@ -276,6 +275,13 @@ export async function getCongViecStatsAggregates(
     if (trangThai === 'hoan_thanh') hoanThanh += 1;
     else if (trangThai === 'qua_han') quaHan += 1;
     else dangThucHien += 1;
+
+    if (r.to_ar) {
+      const team = (toTeamMap[r.to_ar] ??= { giao: 0, hoanThanh: 0, quaHan: 0 });
+      team.giao += 1;
+      if (trangThai === 'hoan_thanh') team.hoanThanh += 1;
+      else if (trangThai === 'qua_han') team.quaHan += 1;
+    }
   }
 
   return {
@@ -283,6 +289,7 @@ export async function getCongViecStatsAggregates(
     byCap: Object.entries(capMap).map(([key, count]) => ({ key, count })),
     byUuTien: Object.entries(uuTienMap).map(([key, count]) => ({ key, count })),
     byNguoiPhuTrach: Object.entries(nguoiPhuTrachMap).map(([key, count]) => ({ key, count })),
+    byToTeam: Object.entries(toTeamMap).map(([key, v]) => ({ key, ...v })),
   };
 }
 

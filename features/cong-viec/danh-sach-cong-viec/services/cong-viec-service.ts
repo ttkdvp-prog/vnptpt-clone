@@ -150,17 +150,26 @@ export const getCongViecStatsAggregates = async (
   const capMap: Record<string, number> = {};
   const uuTienMap: Record<string, number> = {};
   const nguoiPhuTrachMap: Record<string, number> = {};
+  const toTeamMap: Record<string, { giao: number; hoanThanh: number; quaHan: number }> = {};
   let hoanThanh = 0;
   let quaHan = 0;
   let dangThucHien = 0;
-  const today = new Date().toISOString().slice(0, 10);
   for (const item of filtered) {
     if (item.cap) capMap[item.cap] = (capMap[item.cap] ?? 0) + 1;
     if (item.uu_tien) uuTienMap[item.uu_tien] = (uuTienMap[item.uu_tien] ?? 0) + 1;
     if (item.mnv_a) nguoiPhuTrachMap[item.mnv_a] = (nguoiPhuTrachMap[item.mnv_a] ?? 0) + 1;
-    if (item.ngay_ht) hoanThanh += 1;
-    else if (item.ngay_kt && today > item.ngay_kt) quaHan += 1;
+
+    const trangThai = getCongViecTrangThai(item);
+    if (trangThai === 'hoan_thanh') hoanThanh += 1;
+    else if (trangThai === 'qua_han') quaHan += 1;
     else dangThucHien += 1;
+
+    if (item.to_ar) {
+      const team = (toTeamMap[item.to_ar] ??= { giao: 0, hoanThanh: 0, quaHan: 0 });
+      team.giao += 1;
+      if (trangThai === 'hoan_thanh') team.hoanThanh += 1;
+      else if (trangThai === 'qua_han') team.quaHan += 1;
+    }
   }
 
   return {
@@ -168,6 +177,7 @@ export const getCongViecStatsAggregates = async (
     byCap: Object.entries(capMap).map(([key, count]) => ({ key, count })),
     byUuTien: Object.entries(uuTienMap).map(([key, count]) => ({ key, count })),
     byNguoiPhuTrach: Object.entries(nguoiPhuTrachMap).map(([key, count]) => ({ key, count })),
+    byToTeam: Object.entries(toTeamMap).map(([key, v]) => ({ key, ...v })),
   };
 };
 

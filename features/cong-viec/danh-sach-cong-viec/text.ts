@@ -132,6 +132,12 @@ export const congViec = {
     "byCap": "Số lượng theo cấp",
     "byUuTien": "Phân bổ theo ưu tiên",
     "byNguoiPhuTrach": "Số lượng theo người phụ trách",
+    "byToTeam": "Thống kê theo tổ",
+    "toTeamCol": "Tổ",
+    "giaoCol": "Số lượng giao",
+    "hoanThanhCol": "Số lượng hoàn thành",
+    "quaHanCol": "Số lượng quá hạn",
+    "totalRow": "Cộng các tổ",
     "quantity": "Số lượng",
     "loading": "Đang tải thống kê...",
     "noData": "Không có dữ liệu"

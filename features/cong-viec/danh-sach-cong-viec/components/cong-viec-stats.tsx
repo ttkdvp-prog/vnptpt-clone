@@ -53,6 +53,15 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap }) => {
         .sort((a, b) => b.count - a.count),
     [data, employeeMap],
   );
+  const byToTeam = useMemo(() => (data?.byToTeam ?? []).slice().sort((a, b) => a.key.localeCompare(b.key, 'vi')), [data]);
+  const toTeamTotal = useMemo(
+    () =>
+      byToTeam.reduce(
+        (acc, t) => ({ giao: acc.giao + t.giao, hoanThanh: acc.hoanThanh + t.hoanThanh, quaHan: acc.quaHan + t.quaHan }),
+        { giao: 0, hoanThanh: 0, quaHan: 0 },
+      ),
+    [byToTeam],
+  );
 
   if (isLoading) {
     return (
@@ -104,6 +113,43 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap }) => {
               <Bar dataKey="count" fill="var(--color-primary, #6366f1)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        </StatsChartCard>
+
+        <StatsChartCard title={txt('congViec.stats.byToTeam')} icon={Users}>
+          {byToTeam.length === 0 ? (
+            <p className="text-body-sm text-muted-foreground py-6 text-center">{txt('congViec.stats.noData')}</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-body-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground">
+                    <th className="text-left font-medium py-2 pr-3">{txt('congViec.stats.toTeamCol')}</th>
+                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.giaoCol')}</th>
+                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.hoanThanhCol')}</th>
+                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.quaHanCol')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {byToTeam.map((t) => (
+                    <tr key={t.key} className="border-b border-border/60">
+                      <td className="py-2 pr-3 text-foreground">{t.key}</td>
+                      <td className="py-2 px-3 text-right tabular-nums text-foreground">{t.giao}</td>
+                      <td className="py-2 px-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400">{t.hoanThanh}</td>
+                      <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{t.quaHan}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="font-semibold">
+                    <td className="py-2 pr-3 text-foreground">{txt('congViec.stats.totalRow')}</td>
+                    <td className="py-2 px-3 text-right tabular-nums text-foreground">{toTeamTotal.giao}</td>
+                    <td className="py-2 px-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400">{toTeamTotal.hoanThanh}</td>
+                    <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{toTeamTotal.quaHan}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
         </StatsChartCard>
       </div>
     </div>
