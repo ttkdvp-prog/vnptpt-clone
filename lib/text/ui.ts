@@ -264,7 +264,7 @@ export const ui = {
       "forgotPasswordTitle": "Quên mật khẩu",
       "forgotPasswordDesc": "Tài khoản dùng email hệ thống (@gmail.com). Vui lòng liên hệ HR hoặc Quản trị để đặt lại mật khẩu.",
       "loginFailed": "Đăng nhập thất bại",
-      "authConfigError": "Lỗi cấu hình máy chủ đăng nhập (AUTH_SECRET / DATABASE_URL). Kiểm tra log server hoặc liên hệ quản trị.",
+      "authConfigError": "Lỗi cấu hình máy chủ đăng nhập (AUTH_SECRET / kết nối Google Sheets). Kiểm tra log server hoặc liên hệ quản trị.",
       "accountNotFound": "Tài khoản không tồn tại. Kiểm tra lại tên đăng nhập hoặc liên hệ HR.",
       "wrongPassword": "Sai mật khẩu.",
       "employeeNotLinked": "Tài khoản chưa được gắn với hồ sơ nhân viên. Liên hệ quản trị.",
