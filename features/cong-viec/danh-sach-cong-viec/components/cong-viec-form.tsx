@@ -53,7 +53,7 @@ function toFormValues(item?: CongViec | null): CongViecFormValues {
     mnv_r: item?.mnv_r ?? '',
     mnv_c: item?.mnv_c ?? '',
     uu_tien: item?.uu_tien ?? 'Trung bình',
-    ngay_bd: item?.ngay_bd ?? '',
+    ngay_bd: item?.ngay_bd ?? new Date().toISOString().slice(0, 10),
     ngay_kt: item?.ngay_kt ?? '',
     ghi_chu: item?.ghi_chu ?? '',
     ngay_ht: item?.ngay_ht ?? '',
