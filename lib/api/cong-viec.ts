@@ -169,7 +169,7 @@ export type ApiCongViecStatsAggregates = {
   byUuTien: Array<{ key: string; count: number }>;
   byNguoiPhuTrach: Array<{ key: string; count: number }>;
   byToTeam: Array<{ key: string; giao: number; hoanThanh: number; quaHan: number }>;
-  byNguoiRaci: Array<{ key: string; ar: number; r: number }>;
+  byNguoiRaci: Array<{ key: string; ar: number; r: number; hoanThanh: number; quaHan: number }>;
 };
 
 export async function apiGetCongViecStatsAggregates(

@@ -176,7 +176,9 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                     <th className="text-left font-medium py-2 pr-3">{txt('congViec.stats.toCuaNguoiCol')}</th>
                     <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.nguoiCol')}</th>
                     <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.arCol')}</th>
-                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.rCol')}</th>
+                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.rCol')}</th>
+                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.nguoiHoanThanhCol')}</th>
+                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.nguoiQuaHanCol')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -185,7 +187,9 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                       <td className="py-2 pr-3 text-muted-foreground">{p.team}</td>
                       <td className="py-2 px-3 text-foreground">{p.name}</td>
                       <td className="py-2 px-3 text-right tabular-nums text-foreground">{p.ar}</td>
-                      <td className="py-2 pl-3 text-right tabular-nums text-foreground">{p.r}</td>
+                      <td className="py-2 px-3 text-right tabular-nums text-foreground">{p.r}</td>
+                      <td className="py-2 px-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400">{p.hoanThanh}</td>
+                      <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{p.quaHan}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -245,7 +245,7 @@ export interface CongViecStatsAggregatesResult {
   byUuTien: Array<{ key: string; count: number }>;
   byNguoiPhuTrach: Array<{ key: string; count: number }>;
   byToTeam: Array<{ key: string; giao: number; hoanThanh: number; quaHan: number }>;
-  byNguoiRaci: Array<{ key: string; ar: number; r: number }>;
+  byNguoiRaci: Array<{ key: string; ar: number; r: number; hoanThanh: number; quaHan: number }>;
 }
 
 function deriveTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
@@ -265,7 +265,7 @@ export async function getCongViecStatsAggregates(
   const uuTienMap: Record<string, number> = {};
   const nguoiPhuTrachMap: Record<string, number> = {};
   const toTeamMap: Record<string, { giao: number; hoanThanh: number; quaHan: number }> = {};
-  const raciMap: Record<string, { ar: number; r: number }> = {};
+  const raciMap: Record<string, { ar: number; r: number; hoanThanh: number; quaHan: number }> = {};
   let hoanThanh = 0;
   let quaHan = 0;
   let dangThucHien = 0;
@@ -285,11 +285,20 @@ export async function getCongViecStatsAggregates(
       else if (trangThai === 'qua_han') team.quaHan += 1;
     }
 
+    const raciPeople = new Set<string>();
     if (r.mnv_a) {
-      (raciMap[r.mnv_a] ??= { ar: 0, r: 0 }).ar += 1;
+      const p = (raciMap[r.mnv_a] ??= { ar: 0, r: 0, hoanThanh: 0, quaHan: 0 });
+      p.ar += 1;
+      raciPeople.add(r.mnv_a);
     }
     for (const id of splitCsvField(r.mnv_r)) {
-      (raciMap[id] ??= { ar: 0, r: 0 }).r += 1;
+      const p = (raciMap[id] ??= { ar: 0, r: 0, hoanThanh: 0, quaHan: 0 });
+      p.r += 1;
+      raciPeople.add(id);
+    }
+    for (const id of raciPeople) {
+      if (trangThai === 'hoan_thanh') raciMap[id]!.hoanThanh += 1;
+      else if (trangThai === 'qua_han') raciMap[id]!.quaHan += 1;
     }
   }
 

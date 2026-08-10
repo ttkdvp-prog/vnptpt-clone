@@ -151,7 +151,7 @@ export const getCongViecStatsAggregates = async (
   const uuTienMap: Record<string, number> = {};
   const nguoiPhuTrachMap: Record<string, number> = {};
   const toTeamMap: Record<string, { giao: number; hoanThanh: number; quaHan: number }> = {};
-  const raciMap: Record<string, { ar: number; r: number }> = {};
+  const raciMap: Record<string, { ar: number; r: number; hoanThanh: number; quaHan: number }> = {};
   let hoanThanh = 0;
   let quaHan = 0;
   let dangThucHien = 0;
@@ -172,11 +172,20 @@ export const getCongViecStatsAggregates = async (
       else if (trangThai === 'qua_han') team.quaHan += 1;
     }
 
+    const raciPeople = new Set<string>();
     if (item.mnv_a) {
-      (raciMap[item.mnv_a] ??= { ar: 0, r: 0 }).ar += 1;
+      const p = (raciMap[item.mnv_a] ??= { ar: 0, r: 0, hoanThanh: 0, quaHan: 0 });
+      p.ar += 1;
+      raciPeople.add(item.mnv_a);
     }
     for (const id of (item.mnv_r ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
-      (raciMap[id] ??= { ar: 0, r: 0 }).r += 1;
+      const p = (raciMap[id] ??= { ar: 0, r: 0, hoanThanh: 0, quaHan: 0 });
+      p.r += 1;
+      raciPeople.add(id);
+    }
+    for (const id of raciPeople) {
+      if (trangThai === 'hoan_thanh') raciMap[id]!.hoanThanh += 1;
+      else if (trangThai === 'qua_han') raciMap[id]!.quaHan += 1;
     }
   }
 

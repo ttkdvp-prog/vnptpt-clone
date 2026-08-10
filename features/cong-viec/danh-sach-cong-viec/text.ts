@@ -143,6 +143,8 @@ export const congViec = {
     "toCuaNguoiCol": "Tổ",
     "arCol": "Số lượng AR",
     "rCol": "Số lượng R",
+    "nguoiHoanThanhCol": "Số việc hoàn thành",
+    "nguoiQuaHanCol": "Số việc quá hạn",
     "quantity": "Số lượng",
     "loading": "Đang tải thống kê...",
     "noData": "Không có dữ liệu"
