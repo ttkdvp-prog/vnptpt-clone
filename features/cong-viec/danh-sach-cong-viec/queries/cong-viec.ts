@@ -18,6 +18,11 @@ function listFilterKey(params: GetCongViecParams): Omit<GetCongViecParams, 'limi
     cap: params.cap,
     uu_tien: params.uu_tien,
     to_ar: params.to_ar,
+    to_r: params.to_r,
+    mnv_a: params.mnv_a,
+    mnv_r: params.mnv_r,
+    mnv_c: params.mnv_c,
+    trang_thai: params.trang_thai,
   };
 }
 
