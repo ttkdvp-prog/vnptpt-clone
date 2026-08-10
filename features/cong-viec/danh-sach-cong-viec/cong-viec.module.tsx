@@ -53,7 +53,11 @@ const CongViecStatsWrapper: React.FC<CongViecStatsProps> = memo(function CongVie
     () => new Map(allEmployees.map((e) => [e.id, e.ho_ten])),
     [allEmployees],
   );
-  return <CongViecStats {...props} employeeMap={employeeMap} />;
+  const employeeTeamMap = useMemo(
+    () => new Map(allEmployees.map((e) => [e.id, e.to_phong ?? ''])),
+    [allEmployees],
+  );
+  return <CongViecStats {...props} employeeMap={employeeMap} employeeTeamMap={employeeTeamMap} />;
 });
 
 function useCongViecImportLookupSheets(): ImportLookupSheet[] {

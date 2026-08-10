@@ -138,6 +138,11 @@ export const congViec = {
     "hoanThanhCol": "Số lượng hoàn thành",
     "quaHanCol": "Số lượng quá hạn",
     "totalRow": "Cộng các tổ",
+    "byNguoiRaci": "Thống kê theo cá nhân (AR/R)",
+    "nguoiCol": "Cá nhân",
+    "toCuaNguoiCol": "Tổ",
+    "arCol": "Số lượng AR",
+    "rCol": "Số lượng R",
     "quantity": "Số lượng",
     "loading": "Đang tải thống kê...",
     "noData": "Không có dữ liệu"

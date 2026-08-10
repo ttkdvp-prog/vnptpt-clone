@@ -245,6 +245,7 @@ export interface CongViecStatsAggregatesResult {
   byUuTien: Array<{ key: string; count: number }>;
   byNguoiPhuTrach: Array<{ key: string; count: number }>;
   byToTeam: Array<{ key: string; giao: number; hoanThanh: number; quaHan: number }>;
+  byNguoiRaci: Array<{ key: string; ar: number; r: number }>;
 }
 
 function deriveTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
@@ -264,6 +265,7 @@ export async function getCongViecStatsAggregates(
   const uuTienMap: Record<string, number> = {};
   const nguoiPhuTrachMap: Record<string, number> = {};
   const toTeamMap: Record<string, { giao: number; hoanThanh: number; quaHan: number }> = {};
+  const raciMap: Record<string, { ar: number; r: number }> = {};
   let hoanThanh = 0;
   let quaHan = 0;
   let dangThucHien = 0;
@@ -282,6 +284,13 @@ export async function getCongViecStatsAggregates(
       if (trangThai === 'hoan_thanh') team.hoanThanh += 1;
       else if (trangThai === 'qua_han') team.quaHan += 1;
     }
+
+    if (r.mnv_a) {
+      (raciMap[r.mnv_a] ??= { ar: 0, r: 0 }).ar += 1;
+    }
+    for (const id of splitCsvField(r.mnv_r)) {
+      (raciMap[id] ??= { ar: 0, r: 0 }).r += 1;
+    }
   }
 
   return {
@@ -290,6 +299,7 @@ export async function getCongViecStatsAggregates(
     byUuTien: Object.entries(uuTienMap).map(([key, count]) => ({ key, count })),
     byNguoiPhuTrach: Object.entries(nguoiPhuTrachMap).map(([key, count]) => ({ key, count })),
     byToTeam: Object.entries(toTeamMap).map(([key, v]) => ({ key, ...v })),
+    byNguoiRaci: Object.entries(raciMap).map(([key, v]) => ({ key, ...v })),
   };
 }
 

@@ -29,9 +29,11 @@ const UU_TIEN_COLORS: Record<string, string> = {
 interface CongViecStatsProps {
   /** Map<id, ho_ten> — dùng để hiển thị tên thay vì mã nhân viên trên chart theo người phụ trách. */
   employeeMap?: Map<string, string>;
+  /** Map<id, to_phong> — tổ của từng nhân viên, dùng để nhóm/sắp xếp bảng theo AR/R. */
+  employeeTeamMap?: Map<string, string>;
 }
 
-const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap }) => {
+const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeamMap }) => {
   const { data, isLoading } = useQuery(congViecStatsAggregatesQueryOptions());
 
   const kpis = useMemo((): StatsKpiCardItem[] => {
@@ -54,6 +56,17 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap }) => {
     [data, employeeMap],
   );
   const byToTeam = useMemo(() => (data?.byToTeam ?? []).slice().sort((a, b) => a.key.localeCompare(b.key, 'vi')), [data]);
+  const byNguoiRaci = useMemo(
+    () =>
+      (data?.byNguoiRaci ?? [])
+        .map((entry) => ({
+          ...entry,
+          name: employeeMap?.get(entry.key) ?? entry.key,
+          team: employeeTeamMap?.get(entry.key) || '—',
+        }))
+        .sort((a, b) => a.team.localeCompare(b.team, 'vi') || a.name.localeCompare(b.name, 'vi')),
+    [data, employeeMap, employeeTeamMap],
+  );
   const toTeamTotal = useMemo(
     () =>
       byToTeam.reduce(
@@ -147,6 +160,35 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap }) => {
                     <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{toTeamTotal.quaHan}</td>
                   </tr>
                 </tfoot>
+              </table>
+            </div>
+          )}
+        </StatsChartCard>
+
+        <StatsChartCard title={txt('congViec.stats.byNguoiRaci')} icon={Users}>
+          {byNguoiRaci.length === 0 ? (
+            <p className="text-body-sm text-muted-foreground py-6 text-center">{txt('congViec.stats.noData')}</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-body-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground">
+                    <th className="text-left font-medium py-2 pr-3">{txt('congViec.stats.toCuaNguoiCol')}</th>
+                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.nguoiCol')}</th>
+                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.arCol')}</th>
+                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.rCol')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {byNguoiRaci.map((p) => (
+                    <tr key={p.key} className="border-b border-border/60">
+                      <td className="py-2 pr-3 text-muted-foreground">{p.team}</td>
+                      <td className="py-2 px-3 text-foreground">{p.name}</td>
+                      <td className="py-2 px-3 text-right tabular-nums text-foreground">{p.ar}</td>
+                      <td className="py-2 pl-3 text-right tabular-nums text-foreground">{p.r}</td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           )}
