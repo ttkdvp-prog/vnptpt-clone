@@ -12,7 +12,7 @@ import ToolbarFilterChipGroup, {
   type ToolbarFilterChipItem,
 } from '@/components/shared/ToolbarFilterChipGroup';
 import { ListToolbarAddButton, ListToolbarIconButton } from '@/components/shared/ListToolbarActions';
-import { CAP_OPTIONS, UU_TIEN_OPTIONS } from '../core/constants';
+import { CAP_OPTIONS, TRANG_THAI_OPTIONS } from '../core/constants';
 import { useCongViecFilterCounts } from '../hooks/use-filter-counts';
 import { useCongViecDistinctTo } from '../hooks/use-cong-viec';
 import { useEmployeeOptions } from '../hooks/use-employee-options';
@@ -51,7 +51,7 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
     })),
   );
 
-  const { capCounts, uuTienCounts } = useCongViecFilterCounts(searchTerm, filters);
+  const { capCounts } = useCongViecFilterCounts(searchTerm, filters);
   const { data: toList = [] } = useCongViecDistinctTo();
   const employeeOptions = useEmployeeOptions();
 
@@ -59,32 +59,31 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
     () => CAP_OPTIONS.map((s) => ({ label: s.label, value: String(s.value), count: capCounts[String(s.value)] || 0 })),
     [capCounts],
   );
-  const uuTienOptions = useMemo(
-    () => UU_TIEN_OPTIONS.map((s) => ({ label: s.label, value: String(s.value), count: uuTienCounts[String(s.value)] || 0 })),
-    [uuTienCounts],
-  );
   const toArOptions = useMemo(() => toList.map((t) => ({ label: t, value: t })), [toList]);
+  const trangThaiOptions = useMemo(() => TRANG_THAI_OPTIONS.map((s) => ({ label: s.label, value: String(s.value) })), []);
 
   const activeFilterCount = useMemo(
     () =>
       (searchTerm ? 1 : 0) +
       (filters.cap.length > 0 ? 1 : 0) +
-      (filters.uu_tien.length > 0 ? 1 : 0) +
       (filters.to_ar.length > 0 ? 1 : 0) +
+      (filters.to_r.length > 0 ? 1 : 0) +
       (filters.mnv_a.length > 0 ? 1 : 0) +
       (filters.mnv_r.length > 0 ? 1 : 0) +
-      (filters.mnv_c.length > 0 ? 1 : 0),
+      (filters.mnv_c.length > 0 ? 1 : 0) +
+      (filters.trang_thai.length > 0 ? 1 : 0),
     [searchTerm, filters],
   );
 
   const handleClearAllFilters = () => {
     setSearchTerm('');
     setFilter('cap', []);
-    setFilter('uu_tien', []);
     setFilter('to_ar', []);
+    setFilter('to_r', []);
     setFilter('mnv_a', []);
     setFilter('mnv_r', []);
     setFilter('mnv_c', []);
+    setFilter('trang_thai', []);
   };
 
   const filterGroups = useMemo(
@@ -98,20 +97,20 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
         onChange: (val: string[]) => setFilter('cap', val),
       },
       {
-        key: 'uu_tien',
-        label: txt('congViec.toolbar.uuTien'),
-        icon: Tag,
-        options: uuTienOptions,
-        value: filters.uu_tien,
-        onChange: (val: string[]) => setFilter('uu_tien', val),
-      },
-      {
         key: 'to_ar',
         label: txt('congViec.toolbar.toAr'),
         icon: Building2,
         options: toArOptions,
         value: filters.to_ar,
         onChange: (val: string[]) => setFilter('to_ar', val),
+      },
+      {
+        key: 'to_r',
+        label: txt('congViec.toolbar.toR'),
+        icon: Building2,
+        options: toArOptions,
+        value: filters.to_r,
+        onChange: (val: string[]) => setFilter('to_r', val),
       },
       {
         key: 'mnv_a',
@@ -137,8 +136,16 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
         value: filters.mnv_c,
         onChange: (val: string[]) => setFilter('mnv_c', val),
       },
+      {
+        key: 'trang_thai',
+        label: txt('congViec.toolbar.trangThai'),
+        icon: Tag,
+        options: trangThaiOptions,
+        value: filters.trang_thai,
+        onChange: (val: string[]) => setFilter('trang_thai', val),
+      },
     ],
-    [capOptions, uuTienOptions, toArOptions, employeeOptions, filters, setFilter],
+    [capOptions, toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
   );
 
   const filterChipItems = useMemo<ToolbarFilterChipItem[]>(
@@ -158,20 +165,6 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
         ),
       },
       {
-        id: 'uu_tien',
-        active: filters.uu_tien.length > 0,
-        renderChip: (layout) => (
-          <FilterChipMultiSelect
-            options={uuTienOptions}
-            value={filters.uu_tien}
-            onChange={(val) => setFilter('uu_tien', val)}
-            placeholder={txt('congViec.toolbar.uuTien')}
-            icon={Tag}
-            className={chipClass(layout, 'w-[140px]')}
-          />
-        ),
-      },
-      {
         id: 'to_ar',
         active: filters.to_ar.length > 0,
         renderChip: (layout) => (
@@ -180,6 +173,20 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
             value={filters.to_ar}
             onChange={(val) => setFilter('to_ar', val)}
             placeholder={txt('congViec.toolbar.toAr')}
+            icon={Building2}
+            className={chipClass(layout, 'w-[140px]')}
+          />
+        ),
+      },
+      {
+        id: 'to_r',
+        active: filters.to_r.length > 0,
+        renderChip: (layout) => (
+          <FilterChipMultiSelect
+            options={toArOptions}
+            value={filters.to_r}
+            onChange={(val) => setFilter('to_r', val)}
+            placeholder={txt('congViec.toolbar.toR')}
             icon={Building2}
             className={chipClass(layout, 'w-[140px]')}
           />
@@ -227,8 +234,22 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
           />
         ),
       },
+      {
+        id: 'trang_thai',
+        active: filters.trang_thai.length > 0,
+        renderChip: (layout) => (
+          <FilterChipMultiSelect
+            options={trangThaiOptions}
+            value={filters.trang_thai}
+            onChange={(val) => setFilter('trang_thai', val)}
+            placeholder={txt('congViec.toolbar.trangThai')}
+            icon={Tag}
+            className={chipClass(layout, 'w-[140px]')}
+          />
+        ),
+      },
     ],
-    [capOptions, uuTienOptions, toArOptions, employeeOptions, filters, setFilter],
+    [capOptions, toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
   );
 
   const renderFilters = useMemo(() => <ToolbarFilterChipGroup items={filterChipItems} maxVisible={3} />, [filterChipItems]);

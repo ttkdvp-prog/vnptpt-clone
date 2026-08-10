@@ -93,8 +93,18 @@ export interface CongViecListFilters {
   cap?: string[];
   uu_tien?: string[];
   to_ar?: string[];
+  to_r?: string[];
+  trang_thai?: string[];
   /** Server-side team scope — nếu set, chỉ trả dòng có to_ar hoặc to_r nằm trong danh sách. */
   scopeTeams?: string[];
+}
+
+/** Khớp `getCongViecTrangThai` phía client (core/types.ts) — giữ 2 nơi đồng bộ khi đổi logic. */
+function rowTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
+  if (row.ngay_ht) return 'hoan_thanh';
+  const today = new Date().toISOString().slice(0, 10);
+  if (row.ngay_kt && today > row.ngay_kt) return 'qua_han';
+  return 'dang_thuc_hien';
 }
 
 export interface CongViecPageQuery extends CongViecListFilters {
@@ -119,6 +129,12 @@ function matchesFilters(row: SheetCongViecRow, filters: CongViecListFilters, ski
     return false;
   }
   if (skip !== 'to_ar' && filters.to_ar?.length && !filters.to_ar.includes(row.to_ar)) {
+    return false;
+  }
+  if (skip !== 'to_r' && filters.to_r?.length && !filters.to_r.includes(row.to_r)) {
+    return false;
+  }
+  if (skip !== 'trang_thai' && filters.trang_thai?.length && !filters.trang_thai.includes(rowTrangThai(row))) {
     return false;
   }
   if (filters.scopeTeams?.length) {

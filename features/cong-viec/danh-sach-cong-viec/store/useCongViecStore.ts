@@ -28,9 +28,11 @@ const initialFilters: CongViecFilters = {
   cap: [],
   uu_tien: [],
   to_ar: [],
+  to_r: [],
   mnv_a: [],
   mnv_r: [],
   mnv_c: [],
+  trang_thai: [],
 };
 
 export const useCongViecStore = createGenericStore<CongViecFilters>(

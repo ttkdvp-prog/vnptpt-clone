@@ -34,3 +34,9 @@ export const TRANG_THAI_BADGE_CONFIG: BadgeConfig<'hoan_thanh' | 'qua_han' | 'da
   qua_han: { get label() { return txt('congViec.trangThai.quaHan'); }, color: 'rose' },
   dang_thuc_hien: { get label() { return txt('congViec.trangThai.dangThucHien'); }, color: 'sky' },
 };
+
+export const TRANG_THAI_OPTIONS: { label: string; value: 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' }[] = [
+  { get label() { return txt('congViec.trangThai.hoanThanh'); }, value: 'hoan_thanh' },
+  { get label() { return txt('congViec.trangThai.quaHan'); }, value: 'qua_han' },
+  { get label() { return txt('congViec.trangThai.dangThucHien'); }, value: 'dang_thuc_hien' },
+];

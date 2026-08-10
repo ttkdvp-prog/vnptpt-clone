@@ -30,6 +30,8 @@ function parseListFilters(c: { req: { query: (key: string) => string | undefined
     cap: splitCsv(c.req.query('cap')),
     uu_tien: splitCsv(c.req.query('uu_tien')),
     to_ar: splitCsv(c.req.query('to_ar')),
+    to_r: splitCsv(c.req.query('to_r')),
+    trang_thai: splitCsv(c.req.query('trang_thai')),
   };
 }
 

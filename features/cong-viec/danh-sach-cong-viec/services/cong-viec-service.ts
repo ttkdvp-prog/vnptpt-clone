@@ -1,4 +1,4 @@
-import type { CongViec } from '../core/types';
+import { getCongViecTrangThai, type CongViec } from '../core/types';
 import { congViecSchema, type CongViecFormValues } from '../core/schema';
 import { MOCK_CONG_VIEC } from '@/mocks/cong-viec';
 import { createRepository } from '@/lib/data/create-repository';
@@ -51,10 +51,12 @@ function mockMatches(item: CongViec, params: GetCongViecParams): boolean {
   const capOk = !params.cap?.length || params.cap.includes(item.cap);
   const uuTienOk = !params.uu_tien?.length || params.uu_tien.includes(item.uu_tien);
   const toArOk = !params.to_ar?.length || params.to_ar.includes(item.to_ar);
+  const toROk = !params.to_r?.length || (!!item.to_r && params.to_r.includes(item.to_r));
   const mnvAOk = !params.mnv_a?.length || params.mnv_a.includes(item.mnv_a);
   const mnvROk = !params.mnv_r?.length || params.mnv_r.some((id) => item.mnv_r?.split(',').map((s) => s.trim()).includes(id));
   const mnvCOk = !params.mnv_c?.length || params.mnv_c.some((id) => item.mnv_c?.split(',').map((s) => s.trim()).includes(id));
-  return Boolean(searchOk && capOk && uuTienOk && toArOk && mnvAOk && mnvROk && mnvCOk);
+  const trangThaiOk = !params.trang_thai?.length || params.trang_thai.includes(getCongViecTrangThai(item));
+  return Boolean(searchOk && capOk && uuTienOk && toArOk && toROk && mnvAOk && mnvROk && mnvCOk && trangThaiOk);
 }
 
 function mockSort(items: CongViec[], orderBy?: string, ascending = true): CongViec[] {

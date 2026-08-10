@@ -44,7 +44,9 @@ export interface CongViecFilters {
   cap: string[];
   uu_tien: string[];
   to_ar: string[];
+  to_r: string[];
   mnv_a: string[];
   mnv_r: string[];
   mnv_c: string[];
+  trang_thai: string[];
 }

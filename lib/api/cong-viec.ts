@@ -114,9 +114,11 @@ export type ApiCongViecListParams = {
   cap?: string[];
   uu_tien?: string[];
   to_ar?: string[];
+  to_r?: string[];
   mnv_a?: string[];
   mnv_r?: string[];
   mnv_c?: string[];
+  trang_thai?: string[];
 };
 
 function appendCongViecListParams(searchParams: URLSearchParams, params?: ApiCongViecListParams): void {
@@ -129,9 +131,11 @@ function appendCongViecListParams(searchParams: URLSearchParams, params?: ApiCon
   if (params.cap?.length) searchParams.set('cap', params.cap.join(','));
   if (params.uu_tien?.length) searchParams.set('uu_tien', params.uu_tien.join(','));
   if (params.to_ar?.length) searchParams.set('to_ar', params.to_ar.join(','));
+  if (params.to_r?.length) searchParams.set('to_r', params.to_r.join(','));
   if (params.mnv_a?.length) searchParams.set('mnv_a', params.mnv_a.join(','));
   if (params.mnv_r?.length) searchParams.set('mnv_r', params.mnv_r.join(','));
   if (params.mnv_c?.length) searchParams.set('mnv_c', params.mnv_c.join(','));
+  if (params.trang_thai?.length) searchParams.set('trang_thai', params.trang_thai.join(','));
 }
 
 export async function apiGetCongViecPage(params?: ApiCongViecListParams): Promise<ListResult<CongViec>> {

@@ -36,9 +36,11 @@ export function toListParams(page: number, pageSize: number, sort: SortState, se
     cap: filters.cap.length ? filters.cap : undefined,
     uu_tien: filters.uu_tien.length ? filters.uu_tien : undefined,
     to_ar: filters.to_ar.length ? filters.to_ar : undefined,
+    to_r: filters.to_r.length ? filters.to_r : undefined,
     mnv_a: filters.mnv_a.length ? filters.mnv_a : undefined,
     mnv_r: filters.mnv_r.length ? filters.mnv_r : undefined,
     mnv_c: filters.mnv_c.length ? filters.mnv_c : undefined,
+    trang_thai: filters.trang_thai.length ? filters.trang_thai : undefined,
   };
 }
 
