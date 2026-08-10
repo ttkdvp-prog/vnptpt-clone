@@ -37,7 +37,6 @@ const WORK_ITEMS_PALETTE_ENTRIES: CommandPaletteEntry[] = CONG_VIEC_MODULE_NAV_G
 
 export const COMMAND_PALETTE_ENTRIES: readonly CommandPaletteEntry[] = [
   { path: '/', nameKey: 'nav.home', groupKey: 'nav.commandPalette.groupGeneral' },
-  { path: '/thong-tin-ban-quyen', nameKey: 'nav.licenseInfo', groupKey: 'nav.commandPalette.groupGeneral' },
   { path: '/cong-viec', nameKey: 'nav.workItems', groupKey: 'nav.commandPalette.groupWorkItems' },
   ...WORK_ITEMS_PALETTE_ENTRIES,
   { path: '/he-thong', nameKey: 'nav.system', groupKey: 'nav.commandPalette.groupSystem' },

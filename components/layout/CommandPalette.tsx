@@ -4,7 +4,6 @@ import * as m from 'framer-motion/m';
 import { AnimatePresence } from 'framer-motion';
 import {
   Home,
-  FileKey,
   LayoutDashboard,
   Users,
   Landmark,
@@ -26,7 +25,6 @@ import { cn } from '@/lib/utils';
 
 const PATH_ICONS: Record<string, LucideIcon> = {
   '/': Home,
-  '/thong-tin-ban-quyen': FileKey,
   '/cong-viec': ListTodo,
   '/cong-viec/danh-sach-cong-viec': ListTodo,
   '/cong-viec/nhiem-vu': CheckSquare,

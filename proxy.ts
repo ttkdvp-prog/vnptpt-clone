@@ -51,7 +51,6 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith('/he-thong') ||
       pathname.startsWith('/ho-so') ||
       pathname.startsWith('/thong-bao') ||
-      pathname.startsWith('/thong-tin-ban-quyen') ||
       pathname.startsWith('/doi-mat-khau') ||
       pathname.startsWith('/ho-so-nhan-vien') ||
       pathname.startsWith('/in-hop-dong')
