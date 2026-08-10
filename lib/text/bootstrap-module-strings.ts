@@ -8,14 +8,12 @@ import { permission } from '@/features/he-thong/phan-quyen/text';
 import { company } from '@/features/he-thong/thong-tin-cong-ty/text';
 import { congViecTaiLieu } from '@/features/cong-viec/tai-lieu/text';
 import { congViec } from '@/features/cong-viec/danh-sach-cong-viec/text';
-import { nhiemVu } from '@/features/cong-viec/nhiem-vu/text';
 
 registerModuleStrings('employee', employee);
 registerModuleStrings('permission', permission);
 registerModuleStrings('company', company);
 registerModuleStrings('congViecTaiLieu', congViecTaiLieu);
 registerModuleStrings('congViec', congViec);
-registerModuleStrings('nhiemVu', nhiemVu);
 
 export {
   employee,
@@ -23,5 +21,4 @@ export {
   company,
   congViecTaiLieu,
   congViec,
-  nhiemVu,
 };
