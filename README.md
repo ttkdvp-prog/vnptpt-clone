@@ -67,8 +67,8 @@ Chi tiết lộ trình: [`docs/roadmap.md`](docs/roadmap.md).
 ### Installation
 
 ```bash
-git clone <repo-url>
-cd an-hung-thinh-corp
+git clone https://github.com/ttkdvp-prog/vnptpt-clone.git
+cd vnptpt-clone
 cp .env.example .env
 # chỉnh DATABASE_URL, AUTH_SECRET, JWT_SECRET, NEXT_PUBLIC_DATA_SOURCE
 npm install
