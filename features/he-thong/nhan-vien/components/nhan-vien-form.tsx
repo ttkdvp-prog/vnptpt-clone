@@ -230,6 +230,13 @@ const EmployeeForm: React.FC<Props> = ({ initialData, mode, prefillData, onClose
           <FormSection title={txt('employee.form.authAccount')} icon={<KeyRound size={ICON_SIZE.compact} />}>
             <FormGrid cols={2}>
               <Input
+                label={txt('employee.form.loginName')}
+                placeholder={txt('employee.form.loginNamePlaceholder')}
+                icon={fieldIcon(EMPLOYEE_FIELD_ICONS.ten_dang_nhap)}
+                {...register('ten_dang_nhap')}
+                error={errors.ten_dang_nhap?.message}
+              />
+              <Input
                 label={txt('employee.form.tempPassword')}
                 type="password"
                 required
@@ -244,6 +251,14 @@ const EmployeeForm: React.FC<Props> = ({ initialData, mode, prefillData, onClose
         {isEdit && initialData && (
           <FormSection title={txt('employee.form.authAccount')} icon={<KeyRound size={ICON_SIZE.compact} />}>
             <div className="space-y-3">
+              <FormGrid cols={2}>
+                <Input
+                  label={txt('employee.form.username')}
+                  icon={fieldIcon(EMPLOYEE_FIELD_ICONS.ten_dang_nhap)}
+                  {...register('ten_dang_nhap')}
+                  error={errors.ten_dang_nhap?.message}
+                />
+              </FormGrid>
               {!resetPasswordOpen ? (
                 <Button type="button" variant="outline" size="sm" onClick={() => setResetPasswordOpen(true)}>
                   {txt('employee.form.resetPassword')}

@@ -1,6 +1,6 @@
 # Roadmap
 
-Lộ trình phát triển An Hưng Thịnh ERP (cập nhật theo tiến độ thực tế).
+Lộ trình phát triển Trung tâm hạ tầng (cập nhật theo tiến độ thực tế).
 
 ## Phase 1 — Nền tảng ✅
 

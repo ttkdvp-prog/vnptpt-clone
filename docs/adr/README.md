@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADR)
 
-Quyết định kiến trúc quan trọng của An Hưng Thịnh ERP. Mỗi ADR trả lời: **Context → Options → Decision → Consequences**.
+Quyết định kiến trúc quan trọng của Trung tâm hạ tầng. Mỗi ADR trả lời: **Context → Options → Decision → Consequences**.
 
 | ID | Title |
 |----|-------|

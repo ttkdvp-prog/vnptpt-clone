@@ -6,6 +6,7 @@ export const employeeSchema = z.object({
   ho_ten: z.string().min(2, { message: txt('employee.validation.nameMin') }),
   trang_thai: z.enum(TRANG_THAI_NHAN_VIEN),
   anh_dai_dien: z.string().optional().nullable(),
+  ten_dang_nhap: z.string().optional().nullable(),
 });
 
 export type EmployeeFormValues = z.infer<typeof employeeSchema>;

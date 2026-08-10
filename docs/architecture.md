@@ -1,6 +1,6 @@
 # Architecture
 
-Tài liệu kiến trúc An Hưng Thịnh ERP. README chỉ tóm tắt — đây là nguồn chi tiết.
+Tài liệu kiến trúc Trung tâm hạ tầng. README chỉ tóm tắt — đây là nguồn chi tiết.
 
 > **Lưu ý:** data layer đã chuyển từ PostgreSQL/Prisma sang Google Sheets API
 > (`lib/sheets/`) và deploy target sang Vercel — xem [`AGENTS.md`](../AGENTS.md) và

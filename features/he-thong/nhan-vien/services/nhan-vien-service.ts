@@ -256,6 +256,7 @@ export const createEmployee = async (
       mat_khau_tam: tempPassword,
       trang_thai: data.trang_thai,
       anh_dai_dien: data.anh_dai_dien || getAvatarUrl(data.ho_ten ?? ''),
+      ten_dang_nhap: data.ten_dang_nhap || undefined,
     });
     return created;
   }
@@ -265,6 +266,7 @@ export const createEmployee = async (
     trang_thai: data.trang_thai,
     anh_dai_dien: data.anh_dai_dien || getAvatarUrl(data.ho_ten ?? ''),
     must_change_password: true,
+    ten_dang_nhap: data.ten_dang_nhap || undefined,
   };
 
   const inserted = await repo.insert(
@@ -284,6 +286,7 @@ export const updateEmployee = async (
       mat_khau_tam: tempPassword || undefined,
       trang_thai: data.trang_thai,
       anh_dai_dien: data.anh_dai_dien,
+      ten_dang_nhap: data.ten_dang_nhap,
     });
     return updated;
   }
@@ -296,6 +299,7 @@ export const updateEmployee = async (
     ho_ten: data.ho_ten,
     trang_thai: data.trang_thai,
     anh_dai_dien: data.anh_dai_dien,
+    ten_dang_nhap: data.ten_dang_nhap,
   };
 
   const updated = await repo.update(id, updatePatch);

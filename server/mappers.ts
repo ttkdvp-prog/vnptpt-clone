@@ -1,4 +1,4 @@
-/** Map Postgres An Hung Thinh columns ↔ app domain shapes (no schema ALTER). */
+/** Map Postgres Trung tam ha tang columns ↔ app domain shapes (no schema ALTER). */
 
 const nowIso = (): string => new Date().toISOString();
 
@@ -36,6 +36,8 @@ export interface DbNhanVien {
   must_change_password?: boolean | null;
   /** Cấp nhân viên — 'Trung tâm' | 'Tổ', cột tự do trong sheet. */
   cap?: string | null;
+  /** Cột `ten_tai_khoan` trong sheet — tên đăng nhập app. */
+  ten_dang_nhap?: string | null;
 }
 
 export interface AppEmployee {
@@ -48,6 +50,7 @@ export interface AppEmployee {
   chuc_danh?: string | null;
   to_phong?: string | null;
   cap?: string | null;
+  ten_dang_nhap?: string | null;
 }
 
 export function mapEmployeeFromDb(row: DbNhanVien): AppEmployee {
@@ -62,6 +65,7 @@ export function mapEmployeeFromDb(row: DbNhanVien): AppEmployee {
     chuc_danh: row.id_chuc_vu ?? null,
     to_phong: row.id_phong_ban ?? null,
     cap: row.cap || null,
+    ten_dang_nhap: row.ten_dang_nhap || null,
   };
 }
 

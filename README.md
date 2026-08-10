@@ -1,4 +1,4 @@
-# An Hưng Thịnh ERP
+# Trung tâm hạ tầng
 
 Modern Enterprise Resource Planning (ERP) web application for internal operations — built with **Next.js 16**, **PostgreSQL**, **Prisma**, and **Auth.js**.
 
@@ -278,7 +278,7 @@ Xem [`docs/deployment.md`](docs/deployment.md).
 
 ## License
 
-**Proprietary** — nội bộ An Hưng Thịnh. Không phân phối / tái sử dụng ngoài tổ chức trừ khi có thỏa thuận riêng.
+**Proprietary** — nội bộ Trung tâm hạ tầng. Không phân phối / tái sử dụng ngoài tổ chức trừ khi có thỏa thuận riêng.
 
 `package.json` đánh dấu `"private": true`.
 
@@ -286,6 +286,6 @@ Xem [`docs/deployment.md`](docs/deployment.md).
 
 ## Contributors
 
-Nhóm phát triển nội bộ **An Hưng Thịnh**.
+Nhóm phát triển nội bộ **Trung tâm hạ tầng**.
 
 Liên hệ / onboarding kỹ thuật: xem tài liệu trong `docs/` và `AGENTS.md`.

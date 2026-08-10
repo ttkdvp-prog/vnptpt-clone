@@ -13,6 +13,8 @@ export interface Employee {
   to_phong?: string | null;
   /** Cấp nhân viên — 'Trung tâm' | 'Tổ', cột tự do trong sheet `var_nhan_vien`. */
   cap?: string | null;
+  /** Cột `ten_tai_khoan` trong sheet — tên đăng nhập app. */
+  ten_dang_nhap?: string | null;
 }
 
 export interface EmployeeFilters {

@@ -6,6 +6,7 @@ export function getDefaultEmployeeFormValues(): EmployeeFormValues {
     ho_ten: '',
     trang_thai: 'Đang làm việc',
     anh_dai_dien: '',
+    ten_dang_nhap: '',
   };
 }
 
@@ -22,6 +23,7 @@ export function employeeToFormValues(emp: Employee): EmployeeFormValues {
     ho_ten: emp.ho_ten,
     trang_thai: emp.trang_thai,
     anh_dai_dien: emp.anh_dai_dien ?? undefined,
+    ten_dang_nhap: emp.ten_dang_nhap ?? '',
   };
 }
 

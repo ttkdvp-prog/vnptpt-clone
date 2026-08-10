@@ -4,20 +4,20 @@ import { AppProviders } from '@/providers/app-providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'An Hưng Thịnh ERP',
+  title: 'Trung tâm hạ tầng',
   description: 'Ứng dụng quản lý ERP',
   icons: {
     icon: [{ url: '/api/pwa-icon/192', sizes: '192x192', type: 'image/png' }],
     apple: [{ url: '/api/pwa-icon/192', sizes: '192x192', type: 'image/png' }],
   },
   openGraph: {
-    title: 'An Hưng Thịnh ERP',
+    title: 'Trung tâm hạ tầng',
     description: 'Ứng dụng quản lý ERP',
     images: ['/api/pwa-icon/512'],
   },
   appleWebApp: {
     capable: true,
-    title: 'An Hưng Thịnh ERP',
+    title: 'Trung tâm hạ tầng',
     statusBarStyle: 'default',
   },
 };

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { findCompany } from '@/server/repositories/cong-ty';
 
-const FALLBACK_NAME = 'An Hưng Thịnh ERP';
+const FALLBACK_NAME = 'Trung tâm hạ tầng';
 const FALLBACK_DESCRIPTION = 'Ứng dụng quản lý ERP';
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {

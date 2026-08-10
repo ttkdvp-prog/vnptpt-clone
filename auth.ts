@@ -2,7 +2,11 @@ import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { encode as defaultJwtEncode } from 'next-auth/jwt';
 import bcrypt from 'bcryptjs';
-import { findEmployeeAuthById, findEmployeeAuthByEmail } from '@/server/repositories/nhan-vien';
+import {
+  findEmployeeAuthById,
+  findEmployeeAuthByEmail,
+  findEmployeeAuthByTenDangNhap,
+} from '@/server/repositories/nhan-vien';
 import {
   REMEMBER_SESSION_MAX_AGE,
   parseRememberFlag,
@@ -66,7 +70,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           const row = employeeId.includes('@')
             ? await findEmployeeAuthByEmail(employeeId)
-            : (await findEmployeeAuthById(employeeId)) ?? (await findEmployeeAuthByEmail(employeeId));
+            : (await findEmployeeAuthById(employeeId)) ??
+              (await findEmployeeAuthByEmail(employeeId)) ??
+              (await findEmployeeAuthByTenDangNhap(employeeId));
           if (!row) return null;
 
           if (String(row.trang_thai).toUpperCase() === 'INACTIVE') {

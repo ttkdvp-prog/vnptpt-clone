@@ -49,6 +49,8 @@ export interface SheetNhanVienRow {
   email: string;
   /** Cấp nhân viên — 'Trung tâm' | 'Tổ', dùng để lọc người theo cấp ở form Công việc. */
   cap: string | null;
+  /** Cột `ten_tai_khoan` trong sheet — tên đăng nhập app, so khớp không phân biệt hoa/thường. */
+  ten_dang_nhap: string;
 }
 
 async function loadRows(): Promise<SheetNhanVienRow[]> {
@@ -66,6 +68,7 @@ async function loadRows(): Promise<SheetNhanVienRow[]> {
     role: String(r.role ?? '').trim().toLowerCase() === 'admin' ? 'admin' : 'user',
     email: (r.email ?? '').trim().toLowerCase(),
     cap: normalizeCap(r.cap),
+    ten_dang_nhap: (r.ten_tai_khoan ?? '').trim().toLowerCase(),
   }));
 }
 
@@ -107,6 +110,7 @@ export interface NhanVienCreateInput {
   chuc_danh?: string | null;
   to_phong?: string | null;
   must_change_password?: boolean;
+  ten_dang_nhap?: string | null;
 }
 
 export type NhanVienUpdateInput = Partial<Omit<NhanVienCreateInput, 'mat_khau_hash' | 'id'>> & {
@@ -233,6 +237,7 @@ export async function createEmployee(input: NhanVienCreateInput): Promise<AppEmp
     id_phong_ban: input.to_phong ?? '',
     mat_khau: input.mat_khau_hash,
     must_change_password: String(input.must_change_password ?? true),
+    ten_tai_khoan: input.ten_dang_nhap ?? '',
   });
   const employee = await findEmployeeById(input.id);
   if (!employee) throw new Error('Failed to load created employee');
@@ -248,6 +253,7 @@ export async function updateEmployee(id: string, input: NhanVienUpdateInput): Pr
   setIf('mat_khau', input.mat_khau_hash);
   setIf('id_chuc_vu', input.chuc_danh);
   setIf('id_phong_ban', input.to_phong);
+  setIf('ten_tai_khoan', input.ten_dang_nhap);
   if (input.trang_thai != null) patch.trang_thai = mapNhanVienTrangThaiToDb(input.trang_thai);
   if (input.anh_dai_dien !== undefined) patch.hinh_anh = input.anh_dai_dien ?? '';
   if (input.must_change_password != null) patch.must_change_password = String(input.must_change_password);
@@ -311,6 +317,17 @@ export async function findEmployeeAuthByEmail(email: string): Promise<EmployeeAu
   if (!normalized) return null;
   const rows = await loadRows();
   const row = rows.find((r) => r.email === normalized);
+  return row ? toAuthCredential(row) : null;
+}
+
+/** Đăng nhập bằng tên tài khoản (cột `ten_tai_khoan` trên sheet `var_nhan_vien`) — so khớp không phân biệt hoa/thường. */
+export async function findEmployeeAuthByTenDangNhap(
+  tenDangNhap: string,
+): Promise<EmployeeAuthCredential | null> {
+  const normalized = tenDangNhap.trim().toLowerCase();
+  if (!normalized) return null;
+  const rows = await loadRows();
+  const row = rows.find((r) => r.ten_dang_nhap === normalized);
   return row ? toAuthCredential(row) : null;
 }
 

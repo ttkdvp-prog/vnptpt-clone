@@ -1,6 +1,6 @@
 # Coding convention
 
-Quy ước code An Hưng Thịnh ERP. Gate trước merge: `npm run lint:ci` · `npm run test` · `npm run build`.
+Quy ước code Trung tâm hạ tầng. Gate trước merge: `npm run lint:ci` · `npm run test` · `npm run build`.
 
 ## Ngôn ngữ
 

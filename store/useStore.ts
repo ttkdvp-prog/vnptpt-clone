@@ -174,10 +174,10 @@ export const useUIStore = create<UIState>()(
 
       // Default Company Info (overridden by CompanyBrandingSynchronizer after login)
       companyInfo: {
-        appName: 'An Hưng Thịnh ERP',
+        appName: 'Trung tâm hạ tầng',
         appDescription: 'Ứng dụng quản lý ERP',
         appLogo: null,
-        companyName: 'An Hưng Thịnh',
+        companyName: 'Trung tâm hạ tầng',
         taxId: '0101234567',
         address: 'Số 1 Đường Mẫu, Quận 1, TP. Hồ Chí Minh',
         phone: '028 1234 5678',

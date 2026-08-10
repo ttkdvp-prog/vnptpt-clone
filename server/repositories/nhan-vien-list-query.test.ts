@@ -15,6 +15,7 @@ function row(overrides: Partial<SheetNhanVienRow> = {}): SheetNhanVienRow {
     role: 'user',
     email: '',
     cap: null,
+    ten_dang_nhap: '',
     ...overrides,
   };
 }

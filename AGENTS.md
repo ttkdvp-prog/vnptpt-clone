@@ -1,4 +1,4 @@
-# An Hưng Thịnh ERP — Agent Instructions
+# Trung tâm hạ tầng — Agent Instructions
 
 > Vietnamese internal ERP/admin app (Next.js App Router). Cross-tool context for Cursor and other agents.
 

@@ -26,7 +26,7 @@ Vertical-slice reference. Standard: [`module-standard.md`](../module-standard.md
 | `so_dien_thoai` | `so_dien_thoai` |
 | `gioi_tinh` | `gioi_tinh` |
 | `hinh_anh` | `anh_dai_dien` |
-| `tai_khoan` | `ten_dang_nhap` |
+| `ten_tai_khoan` | `ten_dang_nhap` — tên đăng nhập app, dùng trong `authorize()` (`auth.ts`) song song với mã NV/email |
 | `mat_khau` | (server only) |
 | `id_phong_ban` | `phong_ban_id` |
 | `id_chuc_vu` | `chuc_vu_id` |

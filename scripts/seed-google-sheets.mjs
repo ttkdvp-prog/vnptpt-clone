@@ -118,8 +118,8 @@ const SHEETS = [
     ],
     rows: [
       [
-        '1', 'An Hưng Thịnh ERP', 'Hệ thống quản trị nội bộ An Hưng Thịnh', '',
-        'Công ty TNHH An Hưng Thịnh', '0312345678',
+        '1', 'Trung tâm hạ tầng', 'Hệ thống quản trị nội bộ Trung tâm hạ tầng', '',
+        'Công ty TNHH Trung tâm hạ tầng', '0312345678',
         '12 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh', '028 3822 1234', 'contact@anhungthinh.vn',
         'https://anhungthinh.vn', 'Nguyễn Văn An', 'Giám Đốc', 'TP. Hồ Chí Minh', now, now,
       ],

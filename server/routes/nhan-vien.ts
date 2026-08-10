@@ -77,6 +77,7 @@ const createBodySchema = z.object({
   anh_dai_dien: z.union([z.string(), z.null()]).optional(),
   hinh_anh: z.union([z.string(), z.null()]).optional(),
   must_change_password: z.boolean().optional(),
+  ten_dang_nhap: z.union([z.string(), z.null()]).optional(),
 });
 
 const updateBodySchema = createBodySchema.partial();
@@ -106,6 +107,7 @@ async function createOne(
           : null,
     // Mật khẩu của tài khoản mới do người khác đặt ⇒ luôn buộc đổi lần đầu.
     must_change_password: true,
+    ten_dang_nhap: body.ten_dang_nhap ?? null,
   });
 }
 
@@ -337,6 +339,7 @@ nhanVienRoutes.patch('/:id', async (c) => {
           ? body.hinh_anh
           : undefined,
     must_change_password: mustChangePassword,
+    ten_dang_nhap: body.ten_dang_nhap !== undefined ? body.ten_dang_nhap : undefined,
   });
 
   if (!employee) return c.json({ error: 'Not found' }, 404);
