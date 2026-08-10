@@ -12,8 +12,7 @@ import ToolbarFilterChipGroup, {
   type ToolbarFilterChipItem,
 } from '@/components/shared/ToolbarFilterChipGroup';
 import { ListToolbarAddButton, ListToolbarIconButton } from '@/components/shared/ListToolbarActions';
-import { CAP_OPTIONS, TRANG_THAI_OPTIONS } from '../core/constants';
-import { useCongViecFilterCounts } from '../hooks/use-filter-counts';
+import { TRANG_THAI_OPTIONS } from '../core/constants';
 import { useCongViecDistinctTo } from '../hooks/use-cong-viec';
 import { useEmployeeOptions } from '../hooks/use-employee-options';
 
@@ -51,21 +50,15 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
     })),
   );
 
-  const { capCounts } = useCongViecFilterCounts(searchTerm, filters);
   const { data: toList = [] } = useCongViecDistinctTo();
   const employeeOptions = useEmployeeOptions();
 
-  const capOptions = useMemo(
-    () => CAP_OPTIONS.map((s) => ({ label: s.label, value: String(s.value), count: capCounts[String(s.value)] || 0 })),
-    [capCounts],
-  );
   const toArOptions = useMemo(() => toList.map((t) => ({ label: t, value: t })), [toList]);
   const trangThaiOptions = useMemo(() => TRANG_THAI_OPTIONS.map((s) => ({ label: s.label, value: String(s.value) })), []);
 
   const activeFilterCount = useMemo(
     () =>
       (searchTerm ? 1 : 0) +
-      (filters.cap.length > 0 ? 1 : 0) +
       (filters.to_ar.length > 0 ? 1 : 0) +
       (filters.to_r.length > 0 ? 1 : 0) +
       (filters.mnv_a.length > 0 ? 1 : 0) +
@@ -77,7 +70,6 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
 
   const handleClearAllFilters = () => {
     setSearchTerm('');
-    setFilter('cap', []);
     setFilter('to_ar', []);
     setFilter('to_r', []);
     setFilter('mnv_a', []);
@@ -88,14 +80,6 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
 
   const filterGroups = useMemo(
     () => [
-      {
-        key: 'cap',
-        label: txt('congViec.toolbar.cap'),
-        icon: Tag,
-        options: capOptions,
-        value: filters.cap,
-        onChange: (val: string[]) => setFilter('cap', val),
-      },
       {
         key: 'to_ar',
         label: txt('congViec.toolbar.toAr'),
@@ -145,25 +129,11 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
         onChange: (val: string[]) => setFilter('trang_thai', val),
       },
     ],
-    [capOptions, toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
+    [toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
   );
 
   const filterChipItems = useMemo<ToolbarFilterChipItem[]>(
     () => [
-      {
-        id: 'cap',
-        active: filters.cap.length > 0,
-        renderChip: (layout) => (
-          <FilterChipMultiSelect
-            options={capOptions}
-            value={filters.cap}
-            onChange={(val) => setFilter('cap', val)}
-            placeholder={txt('congViec.toolbar.cap')}
-            icon={Tag}
-            className={chipClass(layout, 'w-[140px]')}
-          />
-        ),
-      },
       {
         id: 'to_ar',
         active: filters.to_ar.length > 0,
@@ -249,7 +219,7 @@ const CongViecToolbar: React.FC<Props> = ({ onAdd, onExport, onImport, onDeleteM
         ),
       },
     ],
-    [capOptions, toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
+    [toArOptions, trangThaiOptions, employeeOptions, filters, setFilter],
   );
 
   const renderFilters = useMemo(() => <ToolbarFilterChipGroup items={filterChipItems} maxVisible={3} />, [filterChipItems]);

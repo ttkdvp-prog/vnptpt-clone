@@ -94,9 +94,16 @@ export interface CongViecListFilters {
   uu_tien?: string[];
   to_ar?: string[];
   to_r?: string[];
+  mnv_a?: string[];
+  mnv_r?: string[];
+  mnv_c?: string[];
   trang_thai?: string[];
   /** Server-side team scope — nếu set, chỉ trả dòng có to_ar hoặc to_r nằm trong danh sách. */
   scopeTeams?: string[];
+}
+
+function splitCsvField(value: string): string[] {
+  return value.split(',').map((s) => s.trim()).filter(Boolean);
 }
 
 /** Khớp `getCongViecTrangThai` phía client (core/types.ts) — giữ 2 nơi đồng bộ khi đổi logic. */
@@ -135,6 +142,15 @@ function matchesFilters(row: SheetCongViecRow, filters: CongViecListFilters, ski
     return false;
   }
   if (skip !== 'trang_thai' && filters.trang_thai?.length && !filters.trang_thai.includes(rowTrangThai(row))) {
+    return false;
+  }
+  if (skip !== 'mnv_a' && filters.mnv_a?.length && !filters.mnv_a.includes(row.mnv_a)) {
+    return false;
+  }
+  if (skip !== 'mnv_r' && filters.mnv_r?.length && !filters.mnv_r.some((id) => splitCsvField(row.mnv_r).includes(id))) {
+    return false;
+  }
+  if (skip !== 'mnv_c' && filters.mnv_c?.length && !filters.mnv_c.some((id) => splitCsvField(row.mnv_c).includes(id))) {
     return false;
   }
   if (filters.scopeTeams?.length) {
