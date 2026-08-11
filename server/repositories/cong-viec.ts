@@ -21,6 +21,10 @@ export interface SheetCongViecRow {
   ghi_chu: string;
   ngay_ht: string;
   tep_dinh_kem: string;
+  /** Số lượng kế hoạch. */
+  ke_hoach: number | null;
+  /** Số lượng thực hiện. */
+  thuc_hien: number | null;
   nguoi_tao: string;
   tg_tao: string;
   tg_cap_nhat: string;
@@ -53,6 +57,13 @@ function normalizeDate(value: string): string {
   return `${m[3]}-${m[2]}-${m[1]}`;
 }
 
+function parseNumOrNull(value: string | undefined): number | null {
+  const trimmed = (value ?? '').trim();
+  if (!trimmed) return null;
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? n : null;
+}
+
 function fromRow(r: Record<string, string>): SheetCongViecRow {
   return {
     id: (r.id ?? '').trim(),
@@ -71,6 +82,8 @@ function fromRow(r: Record<string, string>): SheetCongViecRow {
     ghi_chu: r.ghi_chu ?? '',
     ngay_ht: normalizeDate(r.ngay_ht ?? ''),
     tep_dinh_kem: readAliased(r, 'tep_dinh_kem'),
+    ke_hoach: parseNumOrNull(r.ke_hoach),
+    thuc_hien: parseNumOrNull(r.thuc_hien),
     nguoi_tao: r.nguoi_tao ?? '',
     tg_tao: r.tg_tao ?? '',
     tg_cap_nhat: r.tg_cap_nhat ?? '',
@@ -344,6 +357,8 @@ export interface CongViecCreateInput {
   ghi_chu?: string | null;
   ngay_ht?: string | null;
   tep_dinh_kem?: string | null;
+  ke_hoach?: number | null;
+  thuc_hien?: number | null;
   nguoi_tao: string;
 }
 
@@ -369,6 +384,8 @@ export async function createCongViec(input: CongViecCreateInput): Promise<SheetC
     ghi_chu: input.ghi_chu ?? '',
     ngay_ht: input.ngay_ht ?? '',
     tep_dinh_kem: input.tep_dinh_kem ?? '',
+    ke_hoach: input.ke_hoach != null ? String(input.ke_hoach) : '',
+    thuc_hien: input.thuc_hien != null ? String(input.thuc_hien) : '',
     nguoi_tao: input.nguoi_tao,
     tg_tao: now,
     tg_cap_nhat: now,
@@ -398,6 +415,8 @@ export async function updateCongViec(id: string, input: CongViecUpdateInput): Pr
   setIf('ghi_chu', input.ghi_chu);
   setIf('ngay_ht', input.ngay_ht);
   setIf('tep_dinh_kem', input.tep_dinh_kem);
+  if (input.ke_hoach !== undefined) patch.ke_hoach = input.ke_hoach != null ? String(input.ke_hoach) : '';
+  if (input.thuc_hien !== undefined) patch.thuc_hien = input.thuc_hien != null ? String(input.thuc_hien) : '';
 
   const ok = await updateRowById(TAB, id, toSheetRow(patch));
   if (!ok) return null;

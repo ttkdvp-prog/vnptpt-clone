@@ -73,6 +73,8 @@ const bodySchema = z.object({
   ghi_chu: z.union([z.string(), z.null()]).optional(),
   ngay_ht: z.union([z.string(), z.null()]).optional(),
   tep_dinh_kem: z.union([z.string(), z.null()]).optional(),
+  ke_hoach: z.coerce.number().int().nonnegative().nullable().optional(),
+  thuc_hien: z.coerce.number().int().nonnegative().nullable().optional(),
 });
 
 const updateBodySchema = bodySchema.partial();
@@ -211,6 +213,8 @@ congViecRoutes.post('/', async (c) => {
     ghi_chu: body.ghi_chu,
     ngay_ht: body.ngay_ht,
     tep_dinh_kem: body.tep_dinh_kem,
+    ke_hoach: body.ke_hoach,
+    thuc_hien: body.thuc_hien,
     nguoi_tao: session.employee_id,
   });
   return c.json(created, 201);
