@@ -94,14 +94,23 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
       return { ...item, personGroup: groupIndex };
     });
   }, [tonQuaHanItems, employeeMap]);
-  const tonList = useMemo(
-    () =>
-      tonQuaHanItems
-        .filter((item) => getCongViecTrangThai(item) === 'dang_thuc_hien')
-        .slice()
-        .sort((a, b) => nguoiArName(a).localeCompare(nguoiArName(b), 'vi') || a.ngay_kt.localeCompare(b.ngay_kt)),
-    [tonQuaHanItems, employeeMap],
-  );
+  /** Đánh dấu nhóm theo Người AR liền kề — tô xen kẽ 2 màu để phân biệt cá nhân cạnh nhau. */
+  const tonList = useMemo(() => {
+    const sorted = tonQuaHanItems
+      .filter((item) => getCongViecTrangThai(item) === 'dang_thuc_hien')
+      .slice()
+      .sort((a, b) => nguoiArName(a).localeCompare(nguoiArName(b), 'vi') || a.ngay_kt.localeCompare(b.ngay_kt));
+    let groupIndex = -1;
+    let prevName: string | null = null;
+    return sorted.map((item) => {
+      const name = nguoiArName(item);
+      if (name !== prevName) {
+        groupIndex += 1;
+        prevName = name;
+      }
+      return { ...item, personGroup: groupIndex };
+    });
+  }, [tonQuaHanItems, employeeMap]);
 
   const toTeamTotal = useMemo(
     () =>
@@ -294,7 +303,13 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                 </thead>
                 <tbody>
                   {tonList.map((item, idx) => (
-                    <tr key={item.id} className="border-b border-border/60">
+                    <tr
+                      key={item.id}
+                      className={cn(
+                        'border-b border-border/60',
+                        item.personGroup % 2 === 1 && 'bg-sky-100 dark:bg-sky-900/30',
+                      )}
+                    >
                       <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{idx + 1}</td>
                       <td className="py-2 px-3 text-foreground">{item.tieu_de}</td>
                       <td className="py-2 px-3 text-muted-foreground">{item.to_ar}</td>
