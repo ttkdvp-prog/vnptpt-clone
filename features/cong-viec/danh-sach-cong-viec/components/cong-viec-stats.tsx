@@ -16,9 +16,12 @@ import {
 import StatsKpiGrid from '@/components/shared/stats/StatsKpiGrid';
 import StatsChartCard from '@/components/shared/stats/StatsChartCard';
 import LoadingSpinnerWithText from '@/components/shared/LoadingSpinnerWithText';
+import { formatDate } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { congViecStatsAggregatesQueryOptions } from '../queries/cong-viec';
+import { useCongViecTonQuaHanDetail } from '../hooks/use-cong-viec';
 import type { StatsKpiCardItem } from '@/components/shared/stats/types';
+import { getCongViecTrangThai } from '../core/types';
 
 const UU_TIEN_COLORS: Record<string, string> = {
   'Cao': '#e11d48',
@@ -35,6 +38,7 @@ interface CongViecStatsProps {
 
 const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeamMap }) => {
   const { data, isLoading } = useQuery(congViecStatsAggregatesQueryOptions());
+  const { data: tonQuaHanItems = [], isLoading: isLoadingTonQuaHan } = useCongViecTonQuaHanDetail();
 
   const kpis = useMemo((): StatsKpiCardItem[] => {
     const kpi = data?.kpis ?? { total: 0, hoanThanh: 0, quaHan: 0, dangThucHien: 0 };
@@ -67,6 +71,27 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
         .sort((a, b) => a.team.localeCompare(b.team, 'vi') || a.name.localeCompare(b.name, 'vi')),
     [data, employeeMap, employeeTeamMap],
   );
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const daysLate = (ngayKt: string): number =>
+    Math.max(0, Math.round((new Date(today).getTime() - new Date(ngayKt).getTime()) / 86_400_000));
+
+  const quaHanList = useMemo(
+    () =>
+      tonQuaHanItems
+        .filter((item) => getCongViecTrangThai(item) === 'qua_han')
+        .slice()
+        .sort((a, b) => a.ngay_kt.localeCompare(b.ngay_kt)),
+    [tonQuaHanItems],
+  );
+  const tonList = useMemo(
+    () =>
+      tonQuaHanItems
+        .filter((item) => getCongViecTrangThai(item) === 'dang_thuc_hien')
+        .slice()
+        .sort((a, b) => a.ngay_kt.localeCompare(b.ngay_kt)),
+    [tonQuaHanItems],
+  );
+
   const toTeamTotal = useMemo(
     () =>
       byToTeam.reduce(
@@ -190,6 +215,70 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                       <td className="py-2 px-3 text-right tabular-nums text-foreground">{p.r}</td>
                       <td className="py-2 px-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400">{p.hoanThanh}</td>
                       <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{p.quaHan}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </StatsChartCard>
+
+        <StatsChartCard title={txt('congViec.stats.quaHanDetailTitle')} icon={AlertTriangle}>
+          {quaHanList.length === 0 ? (
+            <p className="text-body-sm text-muted-foreground py-6 text-center">
+              {isLoadingTonQuaHan ? txt('congViec.stats.loading') : txt('congViec.stats.noData')}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-body-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground">
+                    <th className="text-left font-medium py-2 pr-3">{txt('congViec.stats.colTieuDe')}</th>
+                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colToAr')}</th>
+                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
+                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.colNgayKt')}</th>
+                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.colSoNgayTre')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quaHanList.map((item) => (
+                    <tr key={item.id} className="border-b border-border/60">
+                      <td className="py-2 pr-3 text-foreground">{item.tieu_de}</td>
+                      <td className="py-2 px-3 text-muted-foreground">{item.to_ar}</td>
+                      <td className="py-2 px-3 text-foreground">{employeeMap?.get(item.mnv_a) ?? item.mnv_a}</td>
+                      <td className="py-2 px-3 text-right tabular-nums text-foreground">{formatDate(item.ngay_kt)}</td>
+                      <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{daysLate(item.ngay_kt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </StatsChartCard>
+
+        <StatsChartCard title={txt('congViec.stats.tonDetailTitle')} icon={Clock}>
+          {tonList.length === 0 ? (
+            <p className="text-body-sm text-muted-foreground py-6 text-center">
+              {isLoadingTonQuaHan ? txt('congViec.stats.loading') : txt('congViec.stats.noData')}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-body-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground">
+                    <th className="text-left font-medium py-2 pr-3">{txt('congViec.stats.colTieuDe')}</th>
+                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colToAr')}</th>
+                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
+                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.colNgayKt')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tonList.map((item) => (
+                    <tr key={item.id} className="border-b border-border/60">
+                      <td className="py-2 pr-3 text-foreground">{item.tieu_de}</td>
+                      <td className="py-2 px-3 text-muted-foreground">{item.to_ar}</td>
+                      <td className="py-2 px-3 text-foreground">{employeeMap?.get(item.mnv_a) ?? item.mnv_a}</td>
+                      <td className="py-2 pl-3 text-right tabular-nums text-sky-600 dark:text-sky-400">{formatDate(item.ngay_kt)}</td>
                     </tr>
                   ))}
                 </tbody>

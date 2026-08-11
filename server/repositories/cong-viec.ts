@@ -110,7 +110,7 @@ function splitCsvField(value: string): string[] {
 }
 
 /** Khớp `getCongViecTrangThai` phía client (core/types.ts) — giữ đồng bộ khi đổi logic. */
-function rowTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
+function rowTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'hoan_thanh_qua_han' | 'qua_han' | 'dang_thuc_hien' {
   return deriveTrangThai(row);
 }
 
@@ -251,8 +251,10 @@ export interface CongViecStatsAggregatesResult {
   byNguoiRaci: Array<{ key: string; ar: number; r: number; hoanThanh: number; quaHan: number }>;
 }
 
-function deriveTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien' {
-  if (row.ngay_ht) return 'hoan_thanh';
+function deriveTrangThai(row: SheetCongViecRow): 'hoan_thanh' | 'hoan_thanh_qua_han' | 'qua_han' | 'dang_thuc_hien' {
+  if (row.ngay_ht) {
+    return row.ngay_kt && row.ngay_ht > row.ngay_kt ? 'hoan_thanh_qua_han' : 'hoan_thanh';
+  }
   const today = new Date().toISOString().slice(0, 10);
   if (row.ngay_kt && today > row.ngay_kt) return 'qua_han';
   return 'dang_thuc_hien';
@@ -277,14 +279,15 @@ export async function getCongViecStatsAggregates(
     if (r.uu_tien) uuTienMap[r.uu_tien] = (uuTienMap[r.uu_tien] ?? 0) + 1;
     if (r.mnv_a) nguoiPhuTrachMap[r.mnv_a] = (nguoiPhuTrachMap[r.mnv_a] ?? 0) + 1;
     const trangThai = deriveTrangThai(r);
-    if (trangThai === 'hoan_thanh') hoanThanh += 1;
+    const isHoanThanh = trangThai === 'hoan_thanh' || trangThai === 'hoan_thanh_qua_han';
+    if (isHoanThanh) hoanThanh += 1;
     else if (trangThai === 'qua_han') quaHan += 1;
     else dangThucHien += 1;
 
     if (r.to_ar) {
       const team = (toTeamMap[r.to_ar] ??= { giao: 0, hoanThanh: 0, quaHan: 0 });
       team.giao += 1;
-      if (trangThai === 'hoan_thanh') team.hoanThanh += 1;
+      if (isHoanThanh) team.hoanThanh += 1;
       else if (trangThai === 'qua_han') team.quaHan += 1;
     }
 
@@ -300,7 +303,7 @@ export async function getCongViecStatsAggregates(
       raciPeople.add(id);
     }
     for (const id of raciPeople) {
-      if (trangThai === 'hoan_thanh') raciMap[id]!.hoanThanh += 1;
+      if (isHoanThanh) raciMap[id]!.hoanThanh += 1;
       else if (trangThai === 'qua_han') raciMap[id]!.quaHan += 1;
     }
   }

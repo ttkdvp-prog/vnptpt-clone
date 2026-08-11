@@ -2,6 +2,7 @@
 export const congViec = {
   "title": "Công việc",
   "tabList": "Danh sách",
+  "tabTon": "Tồn & quá hạn",
   "tabStats": "Thống kê",
   "searchPlaceholder": "Tìm theo tiêu đề, mô tả, ghi chú…",
   "cap": {
@@ -15,6 +16,7 @@ export const congViec = {
   },
   "trangThai": {
     "hoanThanh": "Hoàn thành",
+    "hoanThanhQuaHan": "Hoàn thành quá hạn",
     "quaHan": "Quá hạn",
     "dangThucHien": "Đang thực hiện"
   },
@@ -27,7 +29,7 @@ export const congViec = {
     "mnvA": "Người chịu trách nhiệm (A)",
     "mnvR": "Người thực hiện (R)",
     "mnvC": "Người tham vấn (C)",
-    "mnvBgd": "Ban giám đốc giám sát",
+    "mnvBgd": "Ban giám đốc",
     "uuTien": "Ưu tiên",
     "ngayBd": "Ngày bắt đầu",
     "ngayKt": "Ngày kết thúc",
@@ -149,6 +151,13 @@ export const congViec = {
     "nguoiQuaHanCol": "Số việc quá hạn",
     "quantity": "Số lượng",
     "loading": "Đang tải thống kê...",
-    "noData": "Không có dữ liệu"
+    "noData": "Không có dữ liệu",
+    "quaHanDetailTitle": "Chi tiết công việc quá hạn",
+    "tonDetailTitle": "Chi tiết công việc tồn (đang thực hiện)",
+    "colTieuDe": "Tiêu đề",
+    "colToAr": "Tổ chính",
+    "colNguoiAr": "Người AR",
+    "colNgayKt": "Ngày kết thúc",
+    "colSoNgayTre": "Số ngày trễ"
   }
 } as const;

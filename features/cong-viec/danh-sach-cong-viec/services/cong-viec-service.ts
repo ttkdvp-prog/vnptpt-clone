@@ -161,14 +161,15 @@ export const getCongViecStatsAggregates = async (
     if (item.mnv_a) nguoiPhuTrachMap[item.mnv_a] = (nguoiPhuTrachMap[item.mnv_a] ?? 0) + 1;
 
     const trangThai = getCongViecTrangThai(item);
-    if (trangThai === 'hoan_thanh') hoanThanh += 1;
+    const isHoanThanh = trangThai === 'hoan_thanh' || trangThai === 'hoan_thanh_qua_han';
+    if (isHoanThanh) hoanThanh += 1;
     else if (trangThai === 'qua_han') quaHan += 1;
     else dangThucHien += 1;
 
     if (item.to_ar) {
       const team = (toTeamMap[item.to_ar] ??= { giao: 0, hoanThanh: 0, quaHan: 0 });
       team.giao += 1;
-      if (trangThai === 'hoan_thanh') team.hoanThanh += 1;
+      if (isHoanThanh) team.hoanThanh += 1;
       else if (trangThai === 'qua_han') team.quaHan += 1;
     }
 
@@ -184,7 +185,7 @@ export const getCongViecStatsAggregates = async (
       raciPeople.add(id);
     }
     for (const id of raciPeople) {
-      if (trangThai === 'hoan_thanh') raciMap[id]!.hoanThanh += 1;
+      if (isHoanThanh) raciMap[id]!.hoanThanh += 1;
       else if (trangThai === 'qua_han') raciMap[id]!.quaHan += 1;
     }
   }

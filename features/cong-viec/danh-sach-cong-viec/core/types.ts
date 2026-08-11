@@ -32,10 +32,12 @@ export interface CongViec {
   thuc_hien?: number | null;
 }
 
-export type TrangThaiCongViec = 'hoan_thanh' | 'qua_han' | 'dang_thuc_hien';
+export type TrangThaiCongViec = 'hoan_thanh' | 'hoan_thanh_qua_han' | 'qua_han' | 'dang_thuc_hien';
 
 export function getCongViecTrangThai(item: Pick<CongViec, 'ngay_ht' | 'ngay_kt'>): TrangThaiCongViec {
-  if (item.ngay_ht) return 'hoan_thanh';
+  if (item.ngay_ht) {
+    return item.ngay_kt && item.ngay_ht > item.ngay_kt ? 'hoan_thanh_qua_han' : 'hoan_thanh';
+  }
   const today = new Date().toISOString().slice(0, 10);
   if (item.ngay_kt && today > item.ngay_kt) return 'qua_han';
   return 'dang_thuc_hien';

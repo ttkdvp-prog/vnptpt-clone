@@ -17,7 +17,7 @@ import FormGrid from '@/components/shared/FormGrid';
 import type { FormMode } from '@/lib/last-view-flow';
 import { createCongViecSchema, type CongViecFormValues } from '../core/schema';
 import { CongViec } from '../core/types';
-import { CAP_OPTIONS, UU_TIEN_OPTIONS } from '../core/constants';
+import { CAP_OPTIONS, UU_TIEN_OPTIONS, BAN_GIAM_DOC_MEMBERS } from '../core/constants';
 import { CONG_VIEC_FIELD_ICONS } from '../core/cong-viec-field-icons';
 import {
   useCreateCongViec,
@@ -132,9 +132,17 @@ const CongViecForm: React.FC<Props> = ({ initialData, mode, onClose }) => {
     () => capFilteredEmployees.map((e) => ({ label: e.ho_ten, value: e.id })),
     [capFilteredEmployees],
   );
-  /** Ban giám đốc giao việc/giám sát toàn bộ — không lọc theo cấp/tổ, chọn từ toàn bộ nhân viên. */
-  const allEmployeeOptions = useMemo(
-    () => employees.map((e) => ({ label: e.ho_ten, value: e.id })),
+  /**
+   * Ban giám đốc giao việc/giám sát toàn bộ — mặc định chỉ 3 người cố định
+   * (`BAN_GIAM_DOC_MEMBERS`), giữ nguyên thứ tự; lấy `ho_ten` mới nhất từ danh
+   * sách nhân viên nếu đã tải được, không thì dùng tên mặc định.
+   */
+  const banGiamDocOptions = useMemo(
+    () =>
+      BAN_GIAM_DOC_MEMBERS.map((m) => ({
+        label: employees.find((e) => e.id === m.id)?.ho_ten ?? m.ho_ten,
+        value: m.id,
+      })),
     [employees],
   );
 
@@ -379,7 +387,7 @@ const CongViecForm: React.FC<Props> = ({ initialData, mode, onClose }) => {
               render={({ field }) => (
                 <MultiSelect
                   label={txt('congViec.field.mnvBgd')}
-                  options={allEmployeeOptions}
+                  options={banGiamDocOptions}
                   value={csvToArray(field.value)}
                   onChange={(vals) => field.onChange(vals.join(','))}
                   placeholder={txt('congViec.form.mnvBgdPlaceholder')}

@@ -1,6 +1,6 @@
 import React, { lazy, memo, useCallback, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { List, BarChart3 } from 'lucide-react';
+import { List, BarChart3, AlertTriangle } from 'lucide-react';
 import { txt } from '@/lib/text';
 import { DRAWER_Z_CONTENT_BASE } from '@/lib/dialog-sizes';
 import { createFeatureModule } from '@/lib/factories/create-feature-module';
@@ -111,13 +111,14 @@ const CongViecPage = createFeatureModule<CongViec, CongViecFilters, CongViecWrap
 
   tabs: [
     { id: 'list', label: txt('congViec.tabList'), icon: List },
+    { id: 'ton', label: txt('congViec.tabTon'), icon: AlertTriangle },
     { id: 'stats', label: txt('congViec.tabStats'), icon: BarChart3 },
   ],
 
-  urlTabs: { validTabs: ['list', 'stats'], defaultTab: 'list' },
+  urlTabs: { validTabs: ['list', 'ton', 'stats'], defaultTab: 'list' },
 
-  useData: () => {
-    const result = useCongViec();
+  useData: (ctx) => {
+    const result = useCongViec(ctx);
     return {
       data: result.data,
       isLoading: result.isLoading,

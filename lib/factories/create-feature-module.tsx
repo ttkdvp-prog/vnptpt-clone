@@ -640,7 +640,7 @@ export function createFeatureModule<
           </div>
         )}
 
-        {activeTab === 'list' ? (
+        {activeTab !== 'stats' ? (
           <div className="flex-1 min-h-0 flex flex-col mt-1.5 rounded-xl border border-border bg-card shadow-sm overflow-hidden relative z-0">
             <ToolbarComponent {...toolbarProps} />
             <div className="flex-1 min-h-0">
