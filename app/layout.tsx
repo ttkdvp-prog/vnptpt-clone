@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   title: 'Trung tâm hạ tầng',
   description: 'Ứng dụng quản lý ERP',
   icons: {
-    icon: [{ url: '/api/pwa-icon/192', sizes: '192x192', type: 'image/png' }],
-    apple: [{ url: '/api/pwa-icon/192', sizes: '192x192', type: 'image/png' }],
+    icon: [{ url: '/api/pwa-icon/192?v=vnpt1', sizes: '192x192', type: 'image/png' }],
+    apple: [{ url: '/api/pwa-icon/192?v=vnpt1', sizes: '192x192', type: 'image/png' }],
   },
   openGraph: {
     title: 'Trung tâm hạ tầng',

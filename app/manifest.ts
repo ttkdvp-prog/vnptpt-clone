@@ -30,19 +30,19 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     theme_color: '#ffffff',
     icons: [
       {
-        src: '/api/pwa-icon/192',
+        src: '/api/pwa-icon/192?v=vnpt1',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/api/pwa-icon/512',
+        src: '/api/pwa-icon/512?v=vnpt1',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/api/pwa-icon/192',
+        src: '/api/pwa-icon/192?v=vnpt1',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
