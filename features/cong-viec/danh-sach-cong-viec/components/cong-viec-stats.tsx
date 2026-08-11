@@ -267,7 +267,7 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                       key={item.id}
                       className={cn(
                         'border-b border-border/60',
-                        item.personGroup % 2 === 1 && 'bg-muted/40',
+                        item.personGroup % 2 === 1 && 'bg-sky-100 dark:bg-sky-900/30',
                       )}
                     >
                       <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{idx + 1}</td>
