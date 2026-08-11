@@ -83,6 +83,8 @@ export interface EnumBadgeProps {
    * Nên bật trong cell có maxWidth; kèm `title` để xem đủ khi hover.
    */
   truncate?: boolean;
+  /** Cho phép label xuống dòng thay vì ellipsis/tràn — dùng khi cột hẹp nhưng không muốn mất chữ. Bỏ qua `truncate` nếu cả hai cùng bật. */
+  wrap?: boolean;
 }
 
 /**
@@ -96,6 +98,7 @@ const EnumBadge: React.FC<EnumBadgeProps> = ({
   className,
   shape = 'pill',
   truncate = false,
+  wrap = false,
 }) => {
   if (value === undefined || value === null || value === '') {
     return null;
@@ -116,18 +119,20 @@ const EnumBadge: React.FC<EnumBadgeProps> = ({
 
   return (
     <span
-      title={truncate ? labelStr : undefined}
+      title={truncate && !wrap ? labelStr : undefined}
       className={cn(
         'inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium border transition-colors',
         shape === 'pill' ? 'rounded-full' : 'rounded-lg',
-        truncate && 'max-w-full min-w-0',
+        truncate && !wrap && 'max-w-full min-w-0',
         colorClasses,
         className,
       )}
     >
       {item?.icon != null && <span className="shrink-0">{item.icon}</span>}
-      {/* whitespace-nowrap: badge luôn 1 dòng — cột hẹp thì truncate/ellipsis, không xuống dòng */}
-      <span className={cn('whitespace-nowrap', truncate && 'min-w-0 truncate')}>{labelStr}</span>
+      {/* whitespace-nowrap: badge luôn 1 dòng — cột hẹp thì truncate/ellipsis, không xuống dòng. `wrap` bỏ qua để không mất chữ. */}
+      <span className={cn(wrap ? 'whitespace-normal break-words' : 'whitespace-nowrap', truncate && !wrap && 'min-w-0 truncate')}>
+        {labelStr}
+      </span>
     </span>
   );
 };
