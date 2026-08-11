@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { txt } from '@/lib/text';
-import { ClipboardList, CheckCircle2, AlertTriangle, Clock, BarChart3, PieChart as PieChartIcon, Users } from 'lucide-react';
+import { ClipboardList, CheckCircle2, AlertTriangle, Clock, BarChart3, PieChart as PieChartIcon, Users, Search } from 'lucide-react';
+import Input from '@/components/ui/Input';
 import {
   Bar,
   BarChart,
@@ -94,6 +95,14 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
       return { ...item, personGroup: groupIndex };
     });
   }, [tonQuaHanItems, employeeMap]);
+
+  const [quaHanSearch, setQuaHanSearch] = useState('');
+  const quaHanFiltered = useMemo(() => {
+    const term = quaHanSearch.trim().toLowerCase();
+    if (!term) return quaHanList;
+    return quaHanList.filter((item) => nguoiArName(item).toLowerCase().includes(term));
+  }, [quaHanList, quaHanSearch]);
+
   /** Đánh dấu nhóm theo Người AR liền kề — tô xen kẽ 2 màu để phân biệt cá nhân cạnh nhau. */
   const tonList = useMemo(() => {
     const sorted = tonQuaHanItems
@@ -111,6 +120,13 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
       return { ...item, personGroup: groupIndex };
     });
   }, [tonQuaHanItems, employeeMap]);
+
+  const [tonSearch, setTonSearch] = useState('');
+  const tonFiltered = useMemo(() => {
+    const term = tonSearch.trim().toLowerCase();
+    if (!term) return tonList;
+    return tonList.filter((item) => nguoiArName(item).toLowerCase().includes(term));
+  }, [tonList, tonSearch]);
 
   const toTeamTotal = useMemo(
     () =>
@@ -244,25 +260,37 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
         </StatsChartCard>
 
         <StatsChartCard title={txt('congViec.stats.quaHanDetailTitle')} icon={AlertTriangle}>
-          {quaHanList.length === 0 ? (
+          <div className="mb-3 max-w-xs">
+            <Input
+              value={quaHanSearch}
+              onChange={(e) => setQuaHanSearch(e.target.value)}
+              placeholder={txt('congViec.stats.timNguoiArPlaceholder')}
+              icon={<Search size={14} />}
+            />
+          </div>
+          {quaHanFiltered.length === 0 ? (
             <p className="text-body-sm text-muted-foreground py-6 text-center">
-              {isLoadingTonQuaHan ? txt('congViec.stats.loading') : txt('congViec.stats.noData')}
+              {isLoadingTonQuaHan
+                ? txt('congViec.stats.loading')
+                : quaHanSearch.trim()
+                  ? txt('congViec.stats.noSearchResult')
+                  : txt('congViec.stats.noData')}
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-body-sm">
+              <table className="w-full table-fixed text-body-sm">
                 <thead>
                   <tr className="border-b border-border text-muted-foreground">
-                    <th className="text-right font-bold py-2 pr-3">{txt('congViec.stats.colStt')}</th>
-                    <th className="text-left font-bold py-2 px-3">{txt('congViec.stats.colTieuDe')}</th>
-                    <th className="text-left font-bold py-2 px-3">{txt('congViec.stats.colToAr')}</th>
-                    <th className="text-left font-bold py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
-                    <th className="text-right font-bold py-2 px-3">{txt('congViec.stats.colNgayKt')}</th>
-                    <th className="text-right font-bold py-2 pl-3">{txt('congViec.stats.colSoNgayTre')}</th>
+                    <th className="w-[6%] text-right font-bold py-2 pr-3">{txt('congViec.stats.colStt')}</th>
+                    <th className="w-[34%] text-left font-bold py-2 px-3">{txt('congViec.stats.colTieuDe')}</th>
+                    <th className="w-[16%] text-left font-bold py-2 px-3">{txt('congViec.stats.colToAr')}</th>
+                    <th className="w-[18%] text-left font-bold py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
+                    <th className="w-[14%] text-right font-bold py-2 px-3">{txt('congViec.stats.colNgayKt')}</th>
+                    <th className="w-[12%] text-right font-bold py-2 pl-3">{txt('congViec.stats.colSoNgayTre')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {quaHanList.map((item, idx) => (
+                  {quaHanFiltered.map((item, idx) => (
                     <tr
                       key={item.id}
                       className={cn(
@@ -271,9 +299,9 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                       )}
                     >
                       <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{idx + 1}</td>
-                      <td className="py-2 px-3 text-foreground">{item.tieu_de}</td>
-                      <td className="py-2 px-3 text-muted-foreground">{item.to_ar}</td>
-                      <td className="py-2 px-3 text-foreground">{nguoiArName(item)}</td>
+                      <td className="py-2 px-3 text-foreground break-words">{item.tieu_de}</td>
+                      <td className="py-2 px-3 text-muted-foreground truncate">{item.to_ar}</td>
+                      <td className="py-2 px-3 text-foreground truncate">{nguoiArName(item)}</td>
                       <td className="py-2 px-3 text-right tabular-nums text-foreground">{formatDate(item.ngay_kt)}</td>
                       <td className="py-2 pl-3 text-right tabular-nums text-rose-600 dark:text-rose-400">{daysLate(item.ngay_kt)}</td>
                     </tr>
@@ -285,24 +313,36 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
         </StatsChartCard>
 
         <StatsChartCard title={txt('congViec.stats.tonDetailTitle')} icon={Clock}>
-          {tonList.length === 0 ? (
+          <div className="mb-3 max-w-xs">
+            <Input
+              value={tonSearch}
+              onChange={(e) => setTonSearch(e.target.value)}
+              placeholder={txt('congViec.stats.timNguoiArPlaceholder')}
+              icon={<Search size={14} />}
+            />
+          </div>
+          {tonFiltered.length === 0 ? (
             <p className="text-body-sm text-muted-foreground py-6 text-center">
-              {isLoadingTonQuaHan ? txt('congViec.stats.loading') : txt('congViec.stats.noData')}
+              {isLoadingTonQuaHan
+                ? txt('congViec.stats.loading')
+                : tonSearch.trim()
+                  ? txt('congViec.stats.noSearchResult')
+                  : txt('congViec.stats.noData')}
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-body-sm">
+              <table className="w-full table-fixed text-body-sm">
                 <thead>
                   <tr className="border-b border-border text-muted-foreground">
-                    <th className="text-right font-medium py-2 pr-3">{txt('congViec.stats.colStt')}</th>
-                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colTieuDe')}</th>
-                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colToAr')}</th>
-                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
-                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.colNgayKt')}</th>
+                    <th className="w-[7%] text-right font-medium py-2 pr-3">{txt('congViec.stats.colStt')}</th>
+                    <th className="w-[38%] text-left font-medium py-2 px-3">{txt('congViec.stats.colTieuDe')}</th>
+                    <th className="w-[18%] text-left font-medium py-2 px-3">{txt('congViec.stats.colToAr')}</th>
+                    <th className="w-[20%] text-left font-medium py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
+                    <th className="w-[17%] text-right font-medium py-2 pl-3">{txt('congViec.stats.colNgayKt')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tonList.map((item, idx) => (
+                  {tonFiltered.map((item, idx) => (
                     <tr
                       key={item.id}
                       className={cn(
@@ -311,9 +351,9 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                       )}
                     >
                       <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{idx + 1}</td>
-                      <td className="py-2 px-3 text-foreground">{item.tieu_de}</td>
-                      <td className="py-2 px-3 text-muted-foreground">{item.to_ar}</td>
-                      <td className="py-2 px-3 text-foreground">{nguoiArName(item)}</td>
+                      <td className="py-2 px-3 text-foreground break-words">{item.tieu_de}</td>
+                      <td className="py-2 px-3 text-muted-foreground truncate">{item.to_ar}</td>
+                      <td className="py-2 px-3 text-foreground truncate">{nguoiArName(item)}</td>
                       <td className="py-2 pl-3 text-right tabular-nums text-sky-600 dark:text-sky-400">{formatDate(item.ngay_kt)}</td>
                     </tr>
                   ))}

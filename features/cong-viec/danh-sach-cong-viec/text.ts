@@ -152,6 +152,8 @@ export const congViec = {
     "quantity": "Số lượng",
     "loading": "Đang tải thống kê...",
     "noData": "Không có dữ liệu",
+    "noSearchResult": "Không tìm thấy công việc phù hợp",
+    "timNguoiArPlaceholder": "Tìm theo Người AR…",
     "quaHanDetailTitle": "Chi tiết công việc quá hạn",
     "tonDetailTitle": "Chi tiết công việc tồn (đang thực hiện)",
     "colStt": "STT",
