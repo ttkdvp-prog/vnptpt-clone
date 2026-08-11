@@ -13,7 +13,7 @@ export const company = {
   "capture": "Chụp",
   "imageHint": "Hỗ trợ PNG, JPG, WebP. Tối đa 2MB.",
   "appName": "Tên Ứng dụng",
-  "appNamePlaceholder": "VD: 5F Template",
+  "appNamePlaceholder": "VD: VNPT",
   "appNameHint": "Hiển thị trên Sidebar và tiêu đề Browser.",
   "appDescription": "Mô tả ngắn",
   "appDescPlaceholder": "VD: Nền tảng quản trị nội bộ",
