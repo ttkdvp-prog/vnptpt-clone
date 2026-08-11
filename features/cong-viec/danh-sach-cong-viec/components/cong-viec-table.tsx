@@ -119,7 +119,7 @@ const CongViecTable = memo(function CongViecTable({
         case 'ngay_kt':
           return <span className="text-body-sm text-foreground truncate">{formatDate(item.ngay_kt)}</span>;
         case 'trang_thai':
-          return <EnumBadge value={getCongViecTrangThai(item)} config={TRANG_THAI_BADGE_CONFIG} truncate />;
+          return <EnumBadge value={getCongViecTrangThai(item)} config={TRANG_THAI_BADGE_CONFIG} wrap />;
         case 'ngay_ht':
           return (
             <span className="text-body-sm text-foreground truncate">
