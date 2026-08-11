@@ -15,6 +15,8 @@ export interface CongViec {
   mnv_r?: string | null;
   /** CSV mã nhân viên tham vấn (Consulted). */
   mnv_c?: string | null;
+  /** CSV mã nhân viên Ban giám đốc — giao việc + giám sát toàn bộ, không phụ thuộc cấp/tổ. */
+  mnv_bgd?: string | null;
   uu_tien: UuTienCongViec;
   ngay_bd: string;
   ngay_kt: string;

@@ -52,6 +52,7 @@ function toFormValues(item?: CongViec | null): CongViecFormValues {
     mnv_a: item?.mnv_a ?? '',
     mnv_r: item?.mnv_r ?? '',
     mnv_c: item?.mnv_c ?? '',
+    mnv_bgd: item?.mnv_bgd ?? '',
     uu_tien: item?.uu_tien ?? 'Trung bình',
     ngay_bd: item?.ngay_bd ?? new Date().toISOString().slice(0, 10),
     ngay_kt: item?.ngay_kt ?? '',
@@ -130,6 +131,11 @@ const CongViecForm: React.FC<Props> = ({ initialData, mode, onClose }) => {
   const capFilteredEmployeeOptions = useMemo(
     () => capFilteredEmployees.map((e) => ({ label: e.ho_ten, value: e.id })),
     [capFilteredEmployees],
+  );
+  /** Ban giám đốc giao việc/giám sát toàn bộ — không lọc theo cấp/tổ, chọn từ toàn bộ nhân viên. */
+  const allEmployeeOptions = useMemo(
+    () => employees.map((e) => ({ label: e.ho_ten, value: e.id })),
+    [employees],
   );
 
   /** Giao của tổ ∩ cấp — lọc cứng theo cấp đang chọn, không rơi về cả tổ để tránh hiện nhầm người sai cấp. */
@@ -364,6 +370,20 @@ const CongViecForm: React.FC<Props> = ({ initialData, mode, onClose }) => {
                   onChange={(vals) => field.onChange(vals.join(','))}
                   placeholder={txt('congViec.form.mnvCPlaceholder')}
                   icon={CONG_VIEC_FIELD_ICONS.mnv_c}
+                />
+              )}
+            />
+            <Controller
+              name="mnv_bgd"
+              control={control}
+              render={({ field }) => (
+                <MultiSelect
+                  label={txt('congViec.field.mnvBgd')}
+                  options={allEmployeeOptions}
+                  value={csvToArray(field.value)}
+                  onChange={(vals) => field.onChange(vals.join(','))}
+                  placeholder={txt('congViec.form.mnvBgdPlaceholder')}
+                  icon={CONG_VIEC_FIELD_ICONS.mnv_bgd}
                 />
               )}
             />

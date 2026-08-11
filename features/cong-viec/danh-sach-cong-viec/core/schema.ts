@@ -12,6 +12,7 @@ export const congViecSchema = z
     mnv_a: z.string().min(1, { message: txt('congViec.validation.mnvARequired') }),
     mnv_r: z.string().optional().nullable(),
     mnv_c: z.string().optional().nullable(),
+    mnv_bgd: z.string().optional().nullable(),
     uu_tien: z.enum(UU_TIEN_CONG_VIEC, { message: txt('congViec.validation.uuTienInvalid') }),
     ngay_bd: z.string().min(1, { message: txt('congViec.validation.ngayBdRequired') }),
     ngay_kt: z.string().min(1, { message: txt('congViec.validation.ngayKtRequired') }),

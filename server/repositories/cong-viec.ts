@@ -13,6 +13,8 @@ export interface SheetCongViecRow {
   mnv_a: string;
   mnv_r: string;
   mnv_c: string;
+  /** CSV mã nhân viên Ban giám đốc — giao việc + giám sát toàn bộ, không phụ thuộc cấp/tổ. */
+  mnv_bgd: string;
   uu_tien: string;
   ngay_bd: string;
   ngay_kt: string;
@@ -62,6 +64,7 @@ function fromRow(r: Record<string, string>): SheetCongViecRow {
     mnv_a: readAliased(r, 'mnv_a'),
     mnv_r: readAliased(r, 'mnv_r'),
     mnv_c: readAliased(r, 'mnv_c'),
+    mnv_bgd: r.mnv_bgd ?? '',
     uu_tien: r.uu_tien ?? '',
     ngay_bd: normalizeDate(r.ngay_bd ?? ''),
     ngay_kt: normalizeDate(r.ngay_kt ?? ''),
@@ -331,6 +334,7 @@ export interface CongViecCreateInput {
   mnv_a: string;
   mnv_r?: string | null;
   mnv_c?: string | null;
+  mnv_bgd?: string | null;
   uu_tien: string;
   ngay_bd: string;
   ngay_kt: string;
@@ -355,6 +359,7 @@ export async function createCongViec(input: CongViecCreateInput): Promise<SheetC
     mnv_a: input.mnv_a,
     mnv_r: input.mnv_r ?? '',
     mnv_c: input.mnv_c ?? '',
+    mnv_bgd: input.mnv_bgd ?? '',
     uu_tien: input.uu_tien,
     ngay_bd: input.ngay_bd,
     ngay_kt: input.ngay_kt,
@@ -383,6 +388,7 @@ export async function updateCongViec(id: string, input: CongViecUpdateInput): Pr
   setIf('mnv_a', input.mnv_a);
   setIf('mnv_r', input.mnv_r);
   setIf('mnv_c', input.mnv_c);
+  setIf('mnv_bgd', input.mnv_bgd);
   setIf('uu_tien', input.uu_tien);
   setIf('ngay_bd', input.ngay_bd);
   setIf('ngay_kt', input.ngay_kt);
