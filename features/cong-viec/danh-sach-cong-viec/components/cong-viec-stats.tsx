@@ -16,7 +16,7 @@ import {
 import StatsKpiGrid from '@/components/shared/stats/StatsKpiGrid';
 import StatsChartCard from '@/components/shared/stats/StatsChartCard';
 import LoadingSpinnerWithText from '@/components/shared/LoadingSpinnerWithText';
-import { formatDate } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { congViecStatsAggregatesQueryOptions } from '../queries/cong-viec';
 import { useCongViecTonQuaHanDetail } from '../hooks/use-cong-viec';
@@ -77,14 +77,23 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
 
   const nguoiArName = (item: (typeof tonQuaHanItems)[number]) => employeeMap?.get(item.mnv_a) ?? item.mnv_a;
 
-  const quaHanList = useMemo(
-    () =>
-      tonQuaHanItems
-        .filter((item) => getCongViecTrangThai(item) === 'qua_han')
-        .slice()
-        .sort((a, b) => nguoiArName(a).localeCompare(nguoiArName(b), 'vi') || a.ngay_kt.localeCompare(b.ngay_kt)),
-    [tonQuaHanItems, employeeMap],
-  );
+  /** Đánh dấu nhóm theo Người AR liền kề — tô xen kẽ 2 màu để phân biệt cá nhân cạnh nhau, không phải zebra theo dòng. */
+  const quaHanList = useMemo(() => {
+    const sorted = tonQuaHanItems
+      .filter((item) => getCongViecTrangThai(item) === 'qua_han')
+      .slice()
+      .sort((a, b) => nguoiArName(a).localeCompare(nguoiArName(b), 'vi') || a.ngay_kt.localeCompare(b.ngay_kt));
+    let groupIndex = -1;
+    let prevName: string | null = null;
+    return sorted.map((item) => {
+      const name = nguoiArName(item);
+      if (name !== prevName) {
+        groupIndex += 1;
+        prevName = name;
+      }
+      return { ...item, personGroup: groupIndex };
+    });
+  }, [tonQuaHanItems, employeeMap]);
   const tonList = useMemo(
     () =>
       tonQuaHanItems
@@ -245,7 +254,13 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
                 </thead>
                 <tbody>
                   {quaHanList.map((item, idx) => (
-                    <tr key={item.id} className="border-b border-border/60">
+                    <tr
+                      key={item.id}
+                      className={cn(
+                        'border-b border-border/60',
+                        item.personGroup % 2 === 1 && 'bg-muted/40',
+                      )}
+                    >
                       <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{idx + 1}</td>
                       <td className="py-2 px-3 text-foreground">{item.tieu_de}</td>
                       <td className="py-2 px-3 text-muted-foreground">{item.to_ar}</td>
