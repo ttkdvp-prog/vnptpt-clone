@@ -154,6 +154,7 @@ export const congViec = {
     "noData": "Không có dữ liệu",
     "quaHanDetailTitle": "Chi tiết công việc quá hạn",
     "tonDetailTitle": "Chi tiết công việc tồn (đang thực hiện)",
+    "colStt": "STT",
     "colTieuDe": "Tiêu đề",
     "colToAr": "Tổ chính",
     "colNguoiAr": "Người AR",
