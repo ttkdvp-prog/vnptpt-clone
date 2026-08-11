@@ -253,12 +253,12 @@ const CongViecStats: React.FC<CongViecStatsProps> = ({ employeeMap, employeeTeam
               <table className="w-full text-body-sm">
                 <thead>
                   <tr className="border-b border-border text-muted-foreground">
-                    <th className="text-right font-medium py-2 pr-3">{txt('congViec.stats.colStt')}</th>
-                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colTieuDe')}</th>
-                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colToAr')}</th>
-                    <th className="text-left font-medium py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
-                    <th className="text-right font-medium py-2 px-3">{txt('congViec.stats.colNgayKt')}</th>
-                    <th className="text-right font-medium py-2 pl-3">{txt('congViec.stats.colSoNgayTre')}</th>
+                    <th className="text-right font-bold py-2 pr-3">{txt('congViec.stats.colStt')}</th>
+                    <th className="text-left font-bold py-2 px-3">{txt('congViec.stats.colTieuDe')}</th>
+                    <th className="text-left font-bold py-2 px-3">{txt('congViec.stats.colToAr')}</th>
+                    <th className="text-left font-bold py-2 px-3">{txt('congViec.stats.colNguoiAr')}</th>
+                    <th className="text-right font-bold py-2 px-3">{txt('congViec.stats.colNgayKt')}</th>
+                    <th className="text-right font-bold py-2 pl-3">{txt('congViec.stats.colSoNgayTre')}</th>
                   </tr>
                 </thead>
                 <tbody>
