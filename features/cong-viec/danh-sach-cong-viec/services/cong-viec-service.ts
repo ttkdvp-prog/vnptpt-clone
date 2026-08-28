@@ -70,12 +70,8 @@ function compareId(a: string, b: string): number {
 function mockSort(items: CongViec[], orderBy?: string, ascending = true): CongViec[] {
   const mul = ascending ? 1 : -1;
   if (!orderBy || orderBy === 'id') {
-    // Mặc định: nhóm các công việc trùng tiêu đề đứng gần nhau, trong nhóm sắp theo id.
-    return [...items].sort((a, b) => {
-      const t = a.tieu_de.localeCompare(b.tieu_de, 'vi');
-      if (t !== 0) return t;
-      return compareId(a.id, b.id) * mul;
-    });
+    // Mặc định: sắp theo id tăng dần đúng thứ tự trên Google Sheet (1, 2, 3...).
+    return [...items].sort((a, b) => compareId(a.id, b.id) * mul);
   }
   return [...items].sort((a, b) => {
     let aVal: string | number;
