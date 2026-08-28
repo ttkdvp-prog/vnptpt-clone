@@ -67,7 +67,7 @@ const CongViecTable = memo(function CongViecTable({
         case 'tieu_de':
           return (
             <div className="min-w-0">
-              <span className="font-semibold text-foreground text-body-sm truncate block">{item.tieu_de}</span>
+              <span className="font-semibold text-foreground text-body-sm whitespace-normal break-words block">{item.tieu_de}</span>
               <span className="text-xs text-muted-foreground">#{item.id}</span>
             </div>
           );
