@@ -184,12 +184,8 @@ function compareId(a: string, b: string): number {
 function sortRows(rows: SheetCongViecRow[], orderBy: string | undefined, ascending: boolean): SheetCongViecRow[] {
   const dir = ascending ? 1 : -1;
   if (!orderBy || orderBy === 'id') {
-    // Mặc định: nhóm các công việc trùng tiêu đề đứng gần nhau, trong nhóm sắp theo id.
-    return [...rows].sort((a, b) => {
-      const t = a.tieu_de.localeCompare(b.tieu_de, 'vi');
-      if (t !== 0) return t;
-      return compareId(a.id, b.id) * dir;
-    });
+    // Mặc định: sắp theo id tăng dần đúng thứ tự trên Google Sheet (1, 2, 3...).
+    return [...rows].sort((a, b) => compareId(a.id, b.id) * dir);
   }
   const key = (row: SheetCongViecRow): string | number => {
     switch (orderBy) {
