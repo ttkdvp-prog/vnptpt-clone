@@ -59,8 +59,24 @@ function mockMatches(item: CongViec, params: GetCongViecParams): boolean {
   return Boolean(searchOk && capOk && uuTienOk && toArOk && toROk && mnvAOk && mnvROk && mnvCOk && trangThaiOk);
 }
 
+/** Id không đồng nhất (số, `task-N`...) — so số nếu cả hai numeric, không thì so chuỗi. */
+function compareId(a: string, b: string): number {
+  const na = Number(a);
+  const nb = Number(b);
+  if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+  return a.localeCompare(b, 'vi');
+}
+
 function mockSort(items: CongViec[], orderBy?: string, ascending = true): CongViec[] {
   const mul = ascending ? 1 : -1;
+  if (!orderBy || orderBy === 'id') {
+    // Mặc định: nhóm các công việc trùng tiêu đề đứng gần nhau, trong nhóm sắp theo id.
+    return [...items].sort((a, b) => {
+      const t = a.tieu_de.localeCompare(b.tieu_de, 'vi');
+      if (t !== 0) return t;
+      return compareId(a.id, b.id) * mul;
+    });
+  }
   return [...items].sort((a, b) => {
     let aVal: string | number;
     let bVal: string | number;

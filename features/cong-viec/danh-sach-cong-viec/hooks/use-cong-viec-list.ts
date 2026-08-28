@@ -22,11 +22,11 @@ export type UseCongViecListResult = {
 
 export function toListParams(page: number, pageSize: number, sort: SortState, searchTerm: string, filters: CongViecFilters) {
   const hasExplicitSort = sort.column && sort.column.length > 0;
-  // Mặc định: mới tạo lên đầu. `id` không dùng được làm mặc định vì dữ liệu cũ trên
-  // sheet có id dạng chuỗi không đồng nhất (task-N, TASK_xxx...), không phản ánh thời
-  // gian tạo — dùng `id` mặc định khiến việc mới tạo "biến mất" xuống cuối/trang sau.
-  const orderBy = hasExplicitSort ? sort.column! : 'tg_tao';
-  const ascending = hasExplicitSort ? sort.direction !== 'desc' : false;
+  // Mặc định: id tăng dần, ưu tiên nhóm các công việc trùng tiêu đề đứng gần
+  // nhau (xem `sortRows` server + `mockSort`) — theo yêu cầu nghiệp vụ, không
+  // còn ưu tiên "mới tạo lên đầu" như trước.
+  const orderBy = hasExplicitSort ? sort.column! : 'id';
+  const ascending = hasExplicitSort ? sort.direction !== 'desc' : true;
   return {
     limit: pageSize,
     offset: (page - 1) * pageSize,

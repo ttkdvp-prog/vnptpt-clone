@@ -173,8 +173,24 @@ function matchesFilters(row: SheetCongViecRow, filters: CongViecListFilters, ski
   return true;
 }
 
+/** Id không đồng nhất trên sheet (số, `task-N`, `TASK_xxx`...) — so số nếu cả hai numeric, không thì so chuỗi. */
+function compareId(a: string, b: string): number {
+  const na = Number(a);
+  const nb = Number(b);
+  if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+  return a.localeCompare(b, 'vi');
+}
+
 function sortRows(rows: SheetCongViecRow[], orderBy: string | undefined, ascending: boolean): SheetCongViecRow[] {
   const dir = ascending ? 1 : -1;
+  if (!orderBy || orderBy === 'id') {
+    // Mặc định: nhóm các công việc trùng tiêu đề đứng gần nhau, trong nhóm sắp theo id.
+    return [...rows].sort((a, b) => {
+      const t = a.tieu_de.localeCompare(b.tieu_de, 'vi');
+      if (t !== 0) return t;
+      return compareId(a.id, b.id) * dir;
+    });
+  }
   const key = (row: SheetCongViecRow): string | number => {
     switch (orderBy) {
       case 'tieu_de':
