@@ -193,7 +193,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       setChangePasswordError(txt('nav.changePassword.errorCurrentRequired'));
       return;
     }
-    if (newPw.length < 6) {
+    if (newPw.length < 1) {
       setChangePasswordError(txt('nav.changePassword.errorNewMin'));
       return;
     }

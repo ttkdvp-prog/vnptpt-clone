@@ -15,7 +15,7 @@ export function setMockPassword(employeeId: string, password: string): void {
 export function verifyMockPassword(employeeId: string, password: string): boolean {
   const stored = mockPasswords.get(employeeId);
   if (stored !== undefined) return stored === password;
-  return password.length >= 6;
+  return password.length >= 1;
 }
 
 export async function resetEmployeeAuthPassword(

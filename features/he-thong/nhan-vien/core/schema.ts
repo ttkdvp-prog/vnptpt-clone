@@ -19,7 +19,7 @@ export const employeeCreateAuthFieldsSchema = z.object({
   id: z.string().min(1, { message: txt('employee.validation.codeRequired') }),
   mat_khau_tam: z
     .string()
-    .min(6, { message: txt('employee.validation.tempPasswordMin') }),
+    .min(1, { message: txt('employee.validation.tempPasswordMin') }),
 });
 
 export function createEmployeeCreateSchema() {

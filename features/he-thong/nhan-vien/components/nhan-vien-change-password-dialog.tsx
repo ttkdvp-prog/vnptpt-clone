@@ -13,7 +13,7 @@ interface Props {
   employeeName: string;
 }
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 1;
 
 const NhanVienChangePasswordDialog: React.FC<Props> = ({ open, onClose, employeeId, employeeName }) => {
   const [password, setPassword] = useState('');

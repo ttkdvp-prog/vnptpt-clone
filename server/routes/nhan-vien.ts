@@ -71,8 +71,8 @@ const createBodySchema = z.object({
   id: z.string().min(1).optional(),
   ho_ten: z.string().min(1).optional(),
   ho_va_ten: z.string().min(1).optional(),
-  mat_khau: z.string().min(6).optional(),
-  mat_khau_tam: z.string().min(6).optional(),
+  mat_khau: z.string().min(1).optional(),
+  mat_khau_tam: z.string().min(1).optional(),
   trang_thai: z.string().optional(),
   anh_dai_dien: z.union([z.string(), z.null()]).optional(),
   hinh_anh: z.union([z.string(), z.null()]).optional(),
@@ -89,8 +89,8 @@ async function createOne(
   const id = String(body.id ?? '').trim();
   const hoTen = String(body.ho_ten ?? body.ho_va_ten ?? '').trim();
   const password = String(body.mat_khau ?? body.mat_khau_tam ?? '');
-  if (!id || !hoTen || password.length < 6) {
-    throw new Error('id, ho_ten và mat_khau (≥6) là bắt buộc');
+  if (!id || !hoTen || password.length < 1) {
+    throw new Error('id, ho_ten và mat_khau là bắt buộc');
   }
 
   const hash = await bcrypt.hash(password, 10);
@@ -307,9 +307,6 @@ nhanVienRoutes.patch('/:id', async (c) => {
   let matKhauHash: string | undefined;
   const newPassword = String(body.mat_khau ?? body.mat_khau_tam ?? '').trim();
   if (newPassword) {
-    if (newPassword.length < 6) {
-      return c.json({ error: 'mat_khau phải ≥ 6 ký tự' }, 400);
-    }
     matKhauHash = await bcrypt.hash(newPassword, 10);
   }
 

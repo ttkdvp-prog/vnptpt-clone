@@ -27,7 +27,7 @@ export default function ForceChangePasswordPage() {
     () =>
       z
         .object({
-          password: z.string().min(6, txt('page.forceChangePassword.minLength')),
+          password: z.string().min(1, txt('page.forceChangePassword.minLength')),
           confirmPassword: z.string().min(1),
         })
         .refine((d) => d.password === d.confirmPassword, {

@@ -18,7 +18,7 @@ interface Props {
   onSuccess: () => void;
 }
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 1;
 
 /**
  * Đặt lại mật khẩu cho nhiều nhân viên bằng **một mật khẩu tạm dùng chung**.

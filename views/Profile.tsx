@@ -75,7 +75,7 @@ const Profile: React.FC = () => {
       setPasswordError(txt('nav.changePassword.errorCurrentRequired'));
       return;
     }
-    if (newPw.length < 6) {
+    if (newPw.length < 1) {
       setPasswordError(txt('nav.changePassword.errorNewMin'));
       return;
     }

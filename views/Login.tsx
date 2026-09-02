@@ -31,7 +31,7 @@ const Login: React.FC = () => {
     employeeId: z
       .string()
       .min(1, txt('page.login.usernameRequired')),
-    password: z.string().min(6, txt('page.login.passwordMin')),
+    password: z.string().min(1, txt('page.login.passwordMin')),
   }), []);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<LoginValues>({

@@ -30,7 +30,7 @@ const Register: React.FC = () => {
             .string()
             .min(1, txt('page.login.usernameRequired'))
             .min(2, txt('page.login.usernameMin')),
-          password: z.string().min(6, txt('page.login.passwordMin')),
+          password: z.string().min(1, txt('page.login.passwordMin')),
           confirmPassword: z.string().min(1, txt('page.register.passwordMismatch')),
         })
         .refine((data) => data.password === data.confirmPassword, {

@@ -14,7 +14,7 @@ export function getDefaultEmployeeCreateFormValues(): EmployeeCreateFormValues {
   return {
     ...getDefaultEmployeeFormValues(),
     id: '',
-    mat_khau_tam: '',
+    mat_khau_tam: '1',
   };
 }
 

@@ -124,7 +124,7 @@ const EmployeeForm: React.FC<Props> = ({ initialData, mode, prefillData, onClose
   };
 
   const handleResetPassword = async () => {
-    if (!initialData?.id || newTempPassword.length < 6) return;
+    if (!initialData?.id || newTempPassword.length < 1) return;
     await resetPasswordMutation.mutateAsync({ id: initialData.id, password: newTempPassword });
     setResetPasswordOpen(false);
     setNewTempPassword('');
@@ -278,7 +278,7 @@ const EmployeeForm: React.FC<Props> = ({ initialData, mode, prefillData, onClose
                       size="sm"
                       onClick={handleResetPassword}
                       isLoading={resetPasswordMutation.isPending}
-                      disabled={newTempPassword.length < 6}
+                      disabled={newTempPassword.length < 1}
                     >
                       {txt('common.save')}
                     </Button>
