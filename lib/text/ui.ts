@@ -9,12 +9,12 @@ export const ui = {
       "confirmPassword": "Xác nhận mật khẩu mới",
       "showPassword": "Hiện mật khẩu",
       "hidePassword": "Ẩn mật khẩu",
-      "newPasswordHint": "Ít nhất 6 ký tự.",
+      "newPasswordHint": "Ít nhất 1 ký tự (số hoặc chữ).",
       "submit": "Cập nhật mật khẩu",
       "success": "Đổi mật khẩu thành công.",
       "errorCurrentRequired": "Vui lòng nhập mật khẩu hiện tại.",
       "errorCurrentInvalid": "Mật khẩu hiện tại không đúng.",
-      "errorNewMin": "Mật khẩu mới phải có ít nhất 6 ký tự.",
+      "errorNewMin": "Mật khẩu mới phải có ít nhất 1 ký tự (số hoặc chữ).",
       "errorConfirmMismatch": "Xác nhận mật khẩu không khớp.",
       "errorSameAsCurrent": "Mật khẩu mới phải khác mật khẩu hiện tại."
     },
@@ -198,7 +198,7 @@ export const ui = {
       "usernameRequired": "Vui lòng nhập tên tài khoản",
       "usernameMin": "Tên tài khoản phải có ít nhất 2 ký tự",
       "username": "Tên tài khoản",
-      "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordMin": "Vui lòng nhập mật khẩu",
       "mockUserName": "Lê Minh Công",
       "loginSuccess": "Đăng nhập thành công!",
       "googleUser": "Google User",
@@ -250,7 +250,7 @@ export const ui = {
       "submit": "Cập nhật mật khẩu",
       "success": "Đã cập nhật mật khẩu thành công",
       "mismatch": "Mật khẩu xác nhận không khớp",
-      "minLength": "Mật khẩu phải có ít nhất 6 ký tự"
+      "minLength": "Mật khẩu phải có ít nhất 1 ký tự (số hoặc chữ)"
     },
     "registerDisabled": {
       "title": "Đăng ký không khả dụng",
@@ -262,7 +262,7 @@ export const ui = {
       "desc": "Chỉ cần nhập tên đăng nhập (không cần @gmail.com — hệ thống tự thêm khi xác thực).",
       "fullName": "Họ và tên",
       "password": "Mật khẩu",
-      "passwordHint": "Tối thiểu 6 ký tự.",
+      "passwordHint": "Tối thiểu 1 ký tự (số hoặc chữ).",
       "confirmPassword": "Xác nhận mật khẩu",
       "submit": "Đăng ký",
       "success": "Đăng ký thành công! Bạn có thể đăng nhập ngay.",
