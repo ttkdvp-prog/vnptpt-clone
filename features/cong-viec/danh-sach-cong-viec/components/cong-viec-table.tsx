@@ -220,6 +220,18 @@ const CongViecTable = memo(function CongViecTable({
                 <span className="font-medium text-foreground">Hạn:</span> {formatDate(item.ngay_kt)}
               </span>
             </div>
+            {item.tep_dinh_kem && (
+              <a
+                href={item.tep_dinh_kem}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+              >
+                <FileText className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                {txt('congViec.store.tepDinhKemCol')}
+              </a>
+            )}
           </div>
         )}
         footerStart={(
