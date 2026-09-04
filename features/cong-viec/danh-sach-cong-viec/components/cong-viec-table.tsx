@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { txt } from '@/lib/text';
-import { Pencil, Trash2, ListTodo } from 'lucide-react';
+import { Pencil, Trash2, ListTodo, FileText } from 'lucide-react';
 import { CongViec, getCongViecTrangThai } from '../core/types';
 import { useCongViecStore } from '../store/useCongViecStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -131,6 +131,21 @@ const CongViecTable = memo(function CongViecTable({
             <span className="text-body-sm text-muted-foreground whitespace-pre-wrap break-words">
               {item.ghi_chu || '—'}
             </span>
+          );
+        case 'tep_dinh_kem':
+          return item.tep_dinh_kem ? (
+            <a
+              href={item.tep_dinh_kem}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-body-sm text-primary hover:underline shrink-0"
+            >
+              <FileText className="w-3.5 h-3.5 shrink-0" aria-hidden />
+              {txt('congViec.store.tepDinhKemCol')}
+            </a>
+          ) : (
+            <span className="text-body-sm text-muted-foreground">—</span>
           );
         case 'actions':
           return (

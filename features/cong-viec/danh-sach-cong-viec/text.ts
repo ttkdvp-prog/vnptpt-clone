@@ -55,7 +55,8 @@ export const congViec = {
     "ngayKtCol": "Ngày kết thúc",
     "trangThaiCol": "Trạng thái",
     "ngayHtCol": "Ngày hoàn thành",
-    "ghiChuCol": "Ghi chú tiến độ"
+    "ghiChuCol": "Ghi chú tiến độ",
+    "tepDinhKemCol": "Xem file"
   },
   "toolbar": {
     "cap": "Cấp",
