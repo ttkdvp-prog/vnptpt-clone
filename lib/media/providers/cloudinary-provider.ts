@@ -49,3 +49,42 @@ export async function uploadImageCloudinary(
     height: data.height,
   };
 }
+
+/**
+ * Unsigned upload of a non-image file (PDF, docx...) to Cloudinary via `resource_type=raw`.
+ * Dùng chung cloud name / upload preset với ảnh — không cần cấu hình riêng.
+ */
+export async function uploadDocumentCloudinary(
+  file: File,
+  context?: ImageUploadContext,
+): Promise<ImageUploadResult> {
+  const config = getMediaConfig();
+  if (config.provider !== 'cloudinary' || !config.cloudinary) {
+    throw new Error('Cloudinary chưa được cấu hình');
+  }
+
+  const { cloudName, uploadPreset } = config.cloudinary;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', uploadPreset);
+  if (context?.folder) {
+    formData.append('folder', context.folder);
+  }
+  if (context?.tags?.length) {
+    formData.append('tags', context.tags.join(','));
+  }
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
+    { method: 'POST', body: formData },
+  );
+
+  const data = (await response.json()) as CloudinaryUploadResponse;
+
+  if (!response.ok || !data.secure_url) {
+    const message = data.error?.message ?? `Cloudinary upload failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  return { url: data.secure_url, publicId: data.public_id };
+}

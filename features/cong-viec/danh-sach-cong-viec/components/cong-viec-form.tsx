@@ -5,7 +5,7 @@ import { useForm, Controller, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ListTodo, ClipboardList, Users, CalendarClock, FileType, AlertCircle, Loader2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
-import { uploadDocumentToServer } from '@/lib/media/providers/uploads-provider';
+import { uploadDocument } from '@/lib/media/upload-document';
 import FormDrawerFooter from '@/components/shared/FormDrawerFooter';
 import Input from '@/components/ui/Input';
 import Combobox from '@/components/ui/Combobox';
@@ -191,7 +191,7 @@ const CongViecForm: React.FC<Props> = ({ initialData, mode, onClose }) => {
 
     setIsUploadingDoc(true);
     try {
-      const result = await uploadDocumentToServer(file, { folder: 'cong-viec' });
+      const result = await uploadDocument(file, { context: { folder: 'cong-viec' } });
       setValue('tep_dinh_kem', result.url, { shouldDirty: true, shouldValidate: true });
     } catch {
       toast.error(txt('congViec.form.uploadPdfError'));

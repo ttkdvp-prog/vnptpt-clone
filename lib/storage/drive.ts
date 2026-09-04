@@ -54,6 +54,9 @@ export async function uploadFileToDrive(
       body: bufferToStream(buffer),
     },
     fields: 'id',
+    // Bắt buộc nếu `parentId` nằm trong Shared Drive — service account không có quota
+    // trên "My Drive" thường (lỗi `storageQuotaExceeded`), chỉ ghi được vào Shared Drive.
+    supportsAllDrives: true,
   });
 
   const fileId = res.data.id;
@@ -62,6 +65,7 @@ export async function uploadFileToDrive(
   await drive.permissions.create({
     fileId,
     requestBody: { role: 'reader', type: 'anyone' },
+    supportsAllDrives: true,
   });
 
   return { fileId, url: `https://drive.google.com/uc?export=view&id=${fileId}` };
@@ -69,7 +73,7 @@ export async function uploadFileToDrive(
 
 export async function deleteFileFromDrive(fileId: string): Promise<void> {
   const drive = getDriveClient();
-  await drive.files.delete({ fileId });
+  await drive.files.delete({ fileId, supportsAllDrives: true });
 }
 
 function bufferToStream(buffer: Buffer): NodeJS.ReadableStream {
