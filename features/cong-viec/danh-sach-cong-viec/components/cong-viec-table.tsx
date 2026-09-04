@@ -200,7 +200,27 @@ const CongViecTable = memo(function CongViecTable({
           </div>
         )}
         metaLine={(
-          <EnumBadge value={getCongViecTrangThai(item)} config={TRANG_THAI_BADGE_CONFIG} />
+          <div className="space-y-1">
+            <EnumBadge value={getCongViecTrangThai(item)} config={TRANG_THAI_BADGE_CONFIG} wrap />
+            {item.mo_ta && (
+              <p className="text-xs text-muted-foreground line-clamp-2">{item.mo_ta}</p>
+            )}
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+              <span>
+                <span className="font-medium text-foreground">AR:</span>{' '}
+                {employeeMap.get(item.mnv_a) ?? item.mnv_a}
+              </span>
+              {item.mnv_r && (
+                <span>
+                  <span className="font-medium text-foreground">R:</span>{' '}
+                  {employeeMap.get(item.mnv_r) ?? item.mnv_r}
+                </span>
+              )}
+              <span>
+                <span className="font-medium text-foreground">Hạn:</span> {formatDate(item.ngay_kt)}
+              </span>
+            </div>
+          </div>
         )}
         footerStart={(
           <label className="inline-flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-lg">
@@ -226,7 +246,7 @@ const CongViecTable = memo(function CongViecTable({
         )}
       />
     ),
-    [onEdit, onDelete, onView, toggleSelection],
+    [onEdit, onDelete, onView, toggleSelection, employeeMap],
   );
 
   return (
